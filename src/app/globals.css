@@ -1,0 +1,143 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Wealthy Advisors Club palette
+ *   Black  #0A0A0A   Gold #E5B45C   White #FFFFFF
+ * Light mode inverts the ground; gold stays the single accent in both themes.
+ */
+
+@layer base {
+  :root {
+    --background: 40 20% 98%;
+    --foreground: 0 0% 7%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 7%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 7%;
+
+    /* Black is the primary action colour in light mode */
+    --primary: 0 0% 7%;
+    --primary-foreground: 40 30% 97%;
+
+    --secondary: 40 14% 94%;
+    --secondary-foreground: 0 0% 12%;
+
+    --muted: 40 12% 95%;
+    --muted-foreground: 30 6% 40%;
+
+    /* Gold — deepened in light mode so text on it stays legible */
+    --accent: 38 68% 52%;
+    --accent-foreground: 0 0% 7%;
+    --accent-strong: 38 62% 38%;
+
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 152 55% 32%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 88% 42%;
+    --warning-foreground: 0 0% 100%;
+
+    --border: 36 14% 88%;
+    --input: 36 14% 86%;
+    --ring: 38 68% 52%;
+
+    /* The sidebar is always the black brand surface, in both themes */
+    --sidebar: 0 0% 5%;
+    --sidebar-foreground: 40 20% 96%;
+    --sidebar-muted: 36 8% 62%;
+    --sidebar-accent: 38 72% 63%;
+    --sidebar-border: 0 0% 16%;
+
+    --radius: 0.65rem;
+  }
+
+  .dark {
+    --background: 0 0% 5%;
+    --foreground: 40 20% 96%;
+
+    --card: 0 0% 8%;
+    --card-foreground: 40 20% 96%;
+
+    --popover: 0 0% 9%;
+    --popover-foreground: 40 20% 96%;
+
+    /* Gold leads in dark mode */
+    --primary: 38 72% 63%;
+    --primary-foreground: 0 0% 7%;
+
+    --secondary: 0 0% 13%;
+    --secondary-foreground: 40 18% 94%;
+
+    --muted: 0 0% 12%;
+    --muted-foreground: 36 8% 65%;
+
+    --accent: 38 72% 63%;
+    --accent-foreground: 0 0% 7%;
+    --accent-strong: 38 78% 72%;
+
+    --destructive: 0 68% 52%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 152 48% 44%;
+    --success-foreground: 0 0% 7%;
+
+    --warning: 38 85% 58%;
+    --warning-foreground: 0 0% 7%;
+
+    --border: 0 0% 17%;
+    --input: 0 0% 20%;
+    --ring: 38 72% 63%;
+
+    --sidebar: 0 0% 4%;
+    --sidebar-foreground: 40 20% 95%;
+    --sidebar-muted: 36 7% 58%;
+    --sidebar-accent: 38 72% 63%;
+    --sidebar-border: 0 0% 14%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+  ::selection {
+    @apply bg-accent/30;
+  }
+}
+
+@layer utilities {
+  /* Black brand surface used by the sidebar, auth panel and hero */
+  .brand-surface {
+    background-color: #0a0a0a;
+    background-image: radial-gradient(120% 90% at 85% 0%, rgba(229, 180, 92, 0.16) 0%, transparent 58%);
+  }
+  .brand-gradient {
+    background-image: linear-gradient(140deg, #0a0a0a 0%, #171717 55%, #262626 100%);
+  }
+  .gold-gradient {
+    background-image: linear-gradient(135deg, #c08f2e 0%, #e5b45c 45%, #f0d49a 100%);
+  }
+  .gold-rule {
+    background-image: linear-gradient(90deg, #c08f2e 0%, #e5b45c 50%, #f0d49a 100%);
+  }
+  .text-gold {
+    color: #e5b45c;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-border;
+  }
+}

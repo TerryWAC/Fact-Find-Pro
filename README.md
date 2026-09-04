@@ -1,0 +1,292 @@
+# FactFind Pro
+
+Client fact-finding SaaS for UK mortgage &amp; protection advisers, under the **Wealthy Advisors Club** brand.
+
+Advisers register, wait for admin approval, then receive four unique client-facing FactFind links
+(Mortgage, Protection, Medical, Home). Every client submission is bound to the adviser whose link was used,
+and advisers can only ever see their own.
+
+> **Scope of this build.** This is the complete platform: authentication, approval workflow, roles, CRM,
+> dashboards, database architecture, email infrastructure and a JSON-driven form engine. The FactFind
+> **question sets are deliberately placeholders** — see [Adding real questions](#adding-real-questions).
+
+---
+
+## Stack
+
+| Layer | Choice |
+| --- | --- |
+| Framework | Next.js 15 (App Router, Server Actions, React 19) |
+| Language | TypeScript (strict) |
+| Styling | Tailwind CSS 3 + shadcn/ui (Radix primitives) |
+| Database / Auth / Storage | Supabase (Postgres, GoTrue, Storage) |
+| Forms | React Hook Form + Zod |
+| Email | Resend (optional) with a log-only fallback |
+| Hosting | Vercel |
+
+Brand palette: **black `#0A0A0A` · gold `#E5B45C` · white**, with full light and dark modes
+(`next-themes`, system-aware, toggle in the top bar).
+
+---
+
+## Quick start
+
+```bash
+git clone <this-repo> && cd factfind-pro
+npm install
+cp .env.example .env.local     # fill in your Supabase keys
+
+# Option A — local Supabase (recommended)
+npx supabase start             # Postgres + Auth + Studio + Inbucket
+npx supabase db reset          # applies migrations + seeds demo data
+
+# Option B — hosted Supabase
+npx supabase link --project-ref <your-ref>
+npx supabase db push
+# then paste supabase/seed.sql into the SQL editor
+
+npm run dev                    # http://localhost:3000
+```
+
+### Demo accounts
+
+Seeded by `supabase/seed.sql`. Password for every account: **`FactFind2025!`**
+
+| Email | Role | Status |
+| --- | --- | --- |
+| `admin@wealthyadvisorsclub.co.uk` | Admin | Approved |
+| `james@hartleyfinancial.co.uk` | Adviser | Approved (7 submissions) |
+| `sarah@meridianmortgages.co.uk` | Adviser | Approved (4 submissions) |
+| `daniel@reidprotection.co.uk` | Adviser | **Pending** — approve them to see the flow |
+| `priya@shahwealth.co.uk` | Adviser | **Pending** |
+
+Sign in as the admin, approve Daniel, and his four FactFind links are provisioned automatically.
+
+---
+
+## Environment variables
+
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | ✅ | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ✅ | Anon key — all client/server queries run under RLS |
+| `SUPABASE_SERVICE_ROLE_KEY` | Recommended | Admin recipient lookup, email logging, adviser submission alerts. **Server-only.** |
+| `NEXT_PUBLIC_APP_URL` | Recommended | Absolute base URL used to build client links and email links |
+| `RESEND_API_KEY` | Optional | Enables real email delivery. Without it, emails are logged instead |
+| `EMAIL_FROM` / `EMAIL_REPLY_TO` | Optional | Sender identity |
+| `ADMIN_NOTIFICATION_EMAIL` | Optional | Comma-separated admin inbox for new registrations. Falls back to approved admin profiles |
+| `NEXT_PUBLIC_SUPPORT_EMAIL` | Optional | Support address shown in the UI |
+
+The app is fully functional without a mail provider: every notification is written to the server log **and**
+the `email_log` table, visible at **Admin → Email Templates**.
+
+---
+
+## Architecture
+
+```
+src/
+├── app/
+│   ├── (auth)/                 Login, signup, forgot/reset password, pending approval
+│   ├── (dashboard)/            Authenticated shell (sidebar + topbar)
+│   │   ├── dashboard/          Adviser dashboard — stats, recent activity, quick links
+│   │   ├── links/              My FactFind Links (copy / open)
+│   │   ├── submissions/[id]/   Submissions list + detail
+│   │   ├── settings/           Profile, password, branding roadmap
+│   │   └── admin/              Admin dashboard, user approvals, all submissions, email templates
+│   ├── f/[type]/[slug]/        PUBLIC client-facing FactFind pages
+│   └── auth/callback/          Supabase auth code exchange
+├── components/
+│   ├── ui/                     shadcn primitives
+│   ├── layout/                 Sidebar, topbar, nav config
+│   ├── forms/                  Form engine renderer (field renderer, step indicator)
+│   ├── submissions/            Table, filters, detail, answers renderer
+│   ├── admin/                  Users table, filters, reject dialog
+│   └── shared/                 Logo, stat cards, pagination, copy button, theme toggle
+├── lib/
+│   ├── supabase/               Browser / server / service-role clients + typed schema
+│   ├── forms/                  Form engine: types, schemas, registry, runtime
+│   ├── email/                  Templates, renderer, provider-agnostic sender
+│   ├── auth.ts                 Session + role guards
+│   ├── queries.ts              Dashboard aggregations
+│   ├── submissions.ts          Search / filter / paginate
+│   └── validations.ts          Zod schemas
+├── middleware.ts               Session refresh + route gating
+└── supabase/
+    ├── migrations/             Schema, RLS, triggers, RPCs, email templates, storage
+    ├── seed.sql                Demo users + submissions
+    └── config.toml             Local Supabase config
+```
+
+### Database
+
+| Table | Purpose |
+| --- | --- |
+| `profiles` | Application users (1:1 with `auth.users`). Holds `role`, `status`, `adviser_slug` |
+| `factfind_forms` | One row per adviser per FactFind type — the four unique links |
+| `factfind_submissions` | Client submissions, always bound to an adviser |
+| `email_templates` | Configurable notification copy, editable without a deploy |
+| `email_log` | Delivery audit trail (and the outbox when no provider is configured) |
+| `activity_log` | Powers the "Recent activity" panels |
+
+Key database behaviour:
+
+- **`on_auth_user_created`** → mirrors a new signup into `profiles` with `status = 'pending'` and a unique
+  `adviser_slug`.
+- **`on_profile_status_change`** → when status flips to `approved`, provisions the four `factfind_forms`
+  rows automatically.
+- **`resolve_factfind_form(type, slug)`** and **`submit_factfind(...)`** are `SECURITY DEFINER` functions
+  granted to `anon`. Public FactFind pages go through these, so the tables themselves stay private and the
+  browser never gets to name an adviser.
+
+### Security model
+
+- **RLS on every table.** Advisers read only rows where `adviser_id = auth.uid()`; admins read everything
+  via a `SECURITY DEFINER` `is_admin()` helper (which avoids policy recursion on `profiles`).
+- **Advisers cannot escalate.** The `profiles_update_own` policy pins `role` and `status` to their current
+  values, so an adviser can edit their name but never approve themselves.
+- **No public INSERT policy** on `factfind_submissions`. Submissions arrive exclusively through
+  `submit_factfind()`, which resolves the owning adviser from the slug server-side. A client cannot post a
+  submission onto someone else's account.
+- **Middleware gating.** `getUser()` (not `getSession()`) revalidates the token on every request;
+  unapproved users are held on `/pending`, non-admins are kept out of `/admin`.
+- **Service-role key is server-only** and used solely for notification lookups and email logging.
+
+---
+
+## The form engine
+
+FactFinds are pure data. A form is a `FormSchema`:
+
+```ts
+{
+  type: 'mortgage',
+  version: '1.0.0',
+  title: 'Mortgage FactFind',
+  steps: [
+    {
+      id: 'about-you',
+      title: 'About you',
+      fields: [
+        { id: 'client_name',  type: 'text',  label: 'Full name', required: true, identity: 'client_name' },
+        { id: 'client_email', type: 'email', label: 'Email',     required: true, identity: 'client_email' },
+        { id: 'employment',   type: 'select', label: 'Employment status',
+          options: [{ value: 'employed', label: 'Employed' }, { value: 'self', label: 'Self-employed' }] },
+        { id: 'trading_years', type: 'number', label: 'Years trading', required: true,
+          visibleWhen: { field: 'employment', operator: 'eq', value: 'self' } }
+      ]
+    }
+  ]
+}
+```
+
+Supported field types: `text`, `email`, `tel`, `number`, `currency`, `percent`, `date`, `textarea`,
+`select`, `radio`, `checkbox`, `checkbox-group`, `yesno`, plus the presentational `heading`, `paragraph`
+and `divider`.
+
+The engine gives you, for free:
+
+- Multi-step navigation with a progress bar and step indicator
+- Per-step Zod validation generated from the schema (`stepValidationSchema`)
+- Conditional fields via `visibleWhen` (`eq`, `neq`, `in`, `not_in`, `gt`, `lt`, `truthy`, `falsy`)
+- A normalised `submission_data` payload with both a grouped, display-ready view and a flat answers map
+- Automatic client-identity extraction through the `identity` marker
+
+### Adding real questions
+
+1. Open `src/lib/forms/schemas/mortgage.ts` (or protection / medical / home).
+2. Replace `createPlaceholderSchema('mortgage')` with a literal `FormSchema` — or `import questions from
+   './mortgage.json'`.
+3. Keep one field marked `identity: 'client_name'` and one `identity: 'client_email'`; the submission is
+   bound to the client through those.
+4. Bump `version` and set `placeholder: false`.
+
+Nothing else changes. The renderer, validation, progress bar, submission pipeline, detail view and adviser
+notification all adapt automatically.
+
+---
+
+## Deployment — Vercel + Supabase
+
+### 1. Supabase
+
+1. Create a project at [supabase.com](https://supabase.com) and note the project ref.
+2. Apply the schema:
+   ```bash
+   npx supabase link --project-ref <your-ref>
+   npx supabase db push
+   ```
+   (Or paste each file in `supabase/migrations/` into the SQL editor, in filename order.)
+3. **Auth → URL Configuration**
+   - Site URL: `https://your-domain.com`
+   - Redirect URLs: `https://your-domain.com/auth/callback`
+4. **Auth → Providers → Email**: enable email confirmations for production.
+5. **Project Settings → API**: copy the project URL, `anon` key and `service_role` key.
+6. Create your first admin:
+   ```sql
+   -- after signing up through the app with your own email
+   update public.profiles
+      set role = 'admin', status = 'approved', approved_at = now()
+    where email = 'you@yourdomain.co.uk';
+   ```
+
+### 2. Vercel
+
+1. Import the repository at [vercel.com/new](https://vercel.com/new). Next.js is detected automatically.
+2. Add the environment variables from the table above (Production, Preview and Development).
+   Set `NEXT_PUBLIC_APP_URL` to your final domain.
+3. Deploy. Build command `npm run build`, output handled by the Next.js adapter — no extra configuration.
+4. After attaching a custom domain, update `NEXT_PUBLIC_APP_URL` and the Supabase redirect URLs to match,
+   then redeploy so client links carry the right host.
+
+### 3. Email (optional)
+
+1. Create a [Resend](https://resend.com) API key and verify your sending domain.
+2. Set `RESEND_API_KEY`, `EMAIL_FROM` and `ADMIN_NOTIFICATION_EMAIL` in Vercel.
+
+Without these, notifications still fire — they're recorded in `email_log` and the server log instead of
+being delivered.
+
+### Post-deploy checklist
+
+- [ ] Sign up as a test adviser → you land on `/pending` and cannot reach `/dashboard`
+- [ ] The admin inbox receives (or `email_log` records) the registration alert
+- [ ] Approve the adviser → four links appear on **My FactFind Links**
+- [ ] Open a public link in a private window, submit → it appears under that adviser's submissions only
+- [ ] A second adviser cannot see the first adviser's submissions
+
+---
+
+## Scripts
+
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Development server |
+| `npm run build` | Production build |
+| `npm run start` | Serve the production build |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm run db:start` | Start local Supabase |
+| `npm run db:reset` | Re-apply migrations and reseed |
+| `npm run db:push` | Push migrations to the linked project |
+| `npm run db:types` | Regenerate `database.types.ts` from the local database |
+
+> **Typing note.** Everything in `src/lib/supabase/database.types.ts` is declared with `type`, never
+> `interface`. supabase-js constrains the schema to `Record<string, unknown>`, and interfaces have no
+> implicit index signature — using one silently resolves every query result to `never`.
+
+---
+
+## Roadmap
+
+Deliberately stubbed, with the structure already in place:
+
+- Real FactFind question sets (drop into the schema registry)
+- PDF / CSV export (the **Export** button currently copies the submission JSON)
+- Adviser logo upload and custom branding (`branding` storage bucket and `profiles.logo_url` exist)
+- In-app email template editing (templates are already database-backed and rendered dynamically)
+- Client document uploads (`submission-uploads` bucket is provisioned and locked down)
+
+---
+
+© Wealthy Advisors Club. All rights reserved.
