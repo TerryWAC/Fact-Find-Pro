@@ -15,7 +15,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     <div className="grid min-h-screen lg:grid-cols-[1.05fr_1fr]">
       {/* Brand panel */}
       <aside className="brand-surface relative hidden flex-col justify-between p-10 lg:flex">
-        <Logo variant="light" href="/" />
+        <Logo variant="light" href="/login" />
 
         <div className="max-w-md">
           <h2 className="text-3xl font-semibold leading-tight tracking-tight text-white">
@@ -45,7 +45,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       {/* Form panel */}
       <main className="flex flex-col bg-background">
         <div className="flex h-16 items-center justify-between border-b px-6">
-          <Logo href="/" className="lg:invisible" />
+          <Logo href="/login" className="lg:invisible" />
           <ThemeToggle />
         </div>
 
