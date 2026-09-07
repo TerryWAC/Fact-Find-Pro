@@ -2,31 +2,27 @@
 
 import Link from 'next/link'
 import { useActionState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { AlertCircle, CheckCircle2 } from 'lucide-react'
-import { resetPasswordAction, type ActionState } from '../actions'
+import { resetPasswordAction, signOutAction, type ActionState } from '../actions'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { FieldError } from '@/components/shared/field-error'
 import { SubmitButton } from '@/components/shared/submit-button'
-import { createClient } from '@/lib/supabase/client'
 
 const initialState: ActionState = {}
 
 export function ResetPasswordForm() {
-  const router = useRouter()
   const [state, formAction] = useActionState(resetPasswordAction, initialState)
 
   // After a successful reset, end the recovery session and return to sign in.
   useEffect(() => {
     if (!state.ok) return
-    const timer = setTimeout(async () => {
-      await createClient().auth.signOut()
-      router.push('/login?reset=1')
+    const timer = setTimeout(() => {
+      void signOutAction('/login?reset=1')
     }, 2000)
     return () => clearTimeout(timer)
-  }, [state.ok, router])
+  }, [state.ok])
 
   return (
     <div className="space-y-6">

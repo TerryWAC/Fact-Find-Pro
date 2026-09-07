@@ -210,11 +210,23 @@ export async function resetPasswordAction(_prev: ActionState, formData: FormData
 // -----------------------------------------------------------------------------
 // Sign out
 // -----------------------------------------------------------------------------
-export async function signOutAction() {
-  if (!isSupabaseConfigured()) redirect('/login')
+/**
+ * Signs the user out server-side.
+ *
+ * Deliberately a server action rather than a browser Supabase client: it keeps
+ * credentials entirely on the server, so the app needs no NEXT_PUBLIC_ variable
+ * inlined at build time and works with whatever names a platform integration
+ * happens to inject.
+ */
+export async function signOutAction(redirectTo = '/login') {
+  const safeRedirect =
+    redirectTo.startsWith('/') && !redirectTo.startsWith('//') ? redirectTo : '/login'
 
-  const supabase = await createClient()
-  await supabase.auth.signOut()
+  if (isSupabaseConfigured()) {
+    const supabase = await createClient()
+    await supabase.auth.signOut()
+  }
+
   revalidatePath('/', 'layout')
-  redirect('/login')
+  redirect(safeRedirect)
 }

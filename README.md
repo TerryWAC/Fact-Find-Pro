@@ -89,8 +89,21 @@ at the top of the file to provision a different account.
 | Variable | Required | Purpose |
 | --- | --- | --- |
 | `NEXT_PUBLIC_SUPABASE_URL` | ✅ | Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ✅ | Anon key — all client/server queries run under RLS |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ✅ | Anon / publishable key — all queries run under RLS |
 | `SUPABASE_SERVICE_ROLE_KEY` | Recommended | Admin recipient lookup, email logging, adviser submission alerts. **Server-only.** |
+
+**Using a platform integration instead?** The Vercel ↔ Supabase integration injects its own variable
+names, so the app accepts these aliases and uses whichever it finds first:
+
+| Setting | Names accepted (in order) |
+| --- | --- |
+| URL | `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_URL`, `SUPABASE_NEXT_PUBLIC_SUPABASE_URL` |
+| Anon key | `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_ANON_KEY`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY`, `SUPABASE_NEXT_PUBLIC_SUPABASE_ANON_KEY` |
+| Service key | `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_SERVICE_KEY`, `SUPABASE_SECRET_KEY` |
+
+Authentication is handled entirely server-side, so the app needs **no** `NEXT_PUBLIC_` Supabase variable —
+the non-public names are read at runtime and work without a rebuild. You still need a deployment carrying
+this version of the code.
 | `NEXT_PUBLIC_APP_URL` | Recommended | Absolute base URL used to build client links and email links |
 | `RESEND_API_KEY` | Optional | Enables real email delivery. Without it, emails are logged instead |
 | `EMAIL_FROM` / `EMAIL_REPLY_TO` | Optional | Sender identity |
@@ -269,12 +282,15 @@ being delivered.
 
 ### Troubleshooting
 
-**"Something went wrong" straight after signing in.** Almost always missing Supabase environment
-variables. `NEXT_PUBLIC_*` values are inlined when the app is **built**, not read at runtime — so adding
-them in Vercel without triggering a new deployment leaves them undefined, and the first thing that touches
-Supabase (the sign-in action) throws. The login screen now detects this and names the missing variables
-instead of failing silently. Fix: set them for the right environment (Production *and* Preview), then
-**redeploy**.
+**"Something went wrong" straight after signing in.** Missing Supabase environment variables. The login
+page renders without touching Supabase, so the failure only appears when you submit. Two usual causes:
+
+- The variables are not set for the environment being served (check Production *and* Preview).
+- They were added *after* the last build. `NEXT_PUBLIC_*` values are inlined when the app is **built**, so
+  they stay undefined until a new deployment runs. The non-public aliases above avoid this, since they are
+  read at runtime.
+
+The login screen now detects this and names the missing variables instead of failing silently.
 
 **Signing in bounces you back to the login page.** The account has no readable `profiles` row — either the
 migrations were never applied, or RLS is blocking the user from reading their own row. The exact reason is

@@ -1,6 +1,5 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useState, useTransition } from 'react'
 import { ChevronDown, LogOut, Settings, ShieldCheck, User } from 'lucide-react'
@@ -14,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { createClient } from '@/lib/supabase/client'
+import { signOutAction } from '@/app/(auth)/actions'
 import { initials } from '@/lib/utils'
 
 interface UserMenuProps {
@@ -25,16 +24,12 @@ interface UserMenuProps {
 }
 
 export function UserMenu({ name, email, companyName, isAdmin }: UserMenuProps) {
-  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
 
-  async function handleSignOut() {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    startTransition(() => {
-      router.push('/login')
-      router.refresh()
+  function handleSignOut() {
+    startTransition(async () => {
+      await signOutAction()
     })
   }
 

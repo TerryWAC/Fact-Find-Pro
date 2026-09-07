@@ -2,7 +2,7 @@ import 'server-only'
 
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import type { Database } from './database.types'
-import { isSupabaseConfigured, requireSupabaseEnv } from '@/lib/env'
+import { isSupabaseConfigured, requireSupabaseEnv, supabaseServiceKey } from '@/lib/env'
 
 /**
  * Service-role Supabase client. BYPASSES RLS — never expose it to the browser
@@ -12,7 +12,7 @@ import { isSupabaseConfigured, requireSupabaseEnv } from '@/lib/env'
  * the admin notification recipient list and writing the email delivery log.
  */
 export function createAdminClient() {
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  const serviceKey = supabaseServiceKey()
 
   if (!serviceKey) {
     throw new Error(
@@ -29,5 +29,5 @@ export function createAdminClient() {
 
 /** True when the service role key is configured. */
 export function hasAdminClient(): boolean {
-  return Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY) && isSupabaseConfigured()
+  return Boolean(supabaseServiceKey()) && isSupabaseConfigured()
 }

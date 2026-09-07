@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import type { Database } from './database.types'
-import { isSupabaseConfigured, supabaseConfigMessage } from '@/lib/env'
+import { isSupabaseConfigured, requireSupabaseEnv, supabaseConfigMessage } from '@/lib/env'
 
 /** Routes that never require a session. */
 const PUBLIC_PREFIXES = ['/login', '/signup', '/forgot-password', '/reset-password', '/pending', '/f/', '/auth/']
@@ -32,9 +32,11 @@ export async function updateSession(request: NextRequest) {
     return response
   }
 
+  const { url, anonKey } = requireSupabaseEnv()
+
   const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
+    url,
+    anonKey,
     {
       cookies: {
         getAll() {

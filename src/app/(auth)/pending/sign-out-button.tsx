@@ -1,20 +1,17 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useTransition } from 'react'
 import { LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { createClient } from '@/lib/supabase/client'
+import { signOutAction } from '../actions'
 
 export function SignOutButton() {
-  const router = useRouter()
-  const [pending, setPending] = useState(false)
+  const [pending, startTransition] = useTransition()
 
-  async function handleSignOut() {
-    setPending(true)
-    await createClient().auth.signOut()
-    router.push('/login')
-    router.refresh()
+  function handleSignOut() {
+    startTransition(async () => {
+      await signOutAction()
+    })
   }
 
   return (
