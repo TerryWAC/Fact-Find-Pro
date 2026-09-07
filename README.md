@@ -267,6 +267,19 @@ notification all adapt automatically.
 Without these, notifications still fire — they're recorded in `email_log` and the server log instead of
 being delivered.
 
+### Troubleshooting
+
+**"Something went wrong" straight after signing in.** Almost always missing Supabase environment
+variables. `NEXT_PUBLIC_*` values are inlined when the app is **built**, not read at runtime — so adding
+them in Vercel without triggering a new deployment leaves them undefined, and the first thing that touches
+Supabase (the sign-in action) throws. The login screen now detects this and names the missing variables
+instead of failing silently. Fix: set them for the right environment (Production *and* Preview), then
+**redeploy**.
+
+**Signing in bounces you back to the login page.** The account has no readable `profiles` row — either the
+migrations were never applied, or RLS is blocking the user from reading their own row. The exact reason is
+written to the server log, prefixed `[factfind]`.
+
 ### Post-deploy checklist
 
 - [ ] Sign up as a test adviser → you land on `/pending` and cannot reach `/dashboard`

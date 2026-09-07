@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useActionState } from 'react'
-import { AlertCircle, CheckCircle2 } from 'lucide-react'
+import { AlertCircle, CheckCircle2, PlugZap } from 'lucide-react'
 import { signInAction, type ActionState } from '../actions'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
@@ -16,10 +16,13 @@ export function LoginForm({
   redirectTo,
   notice,
   reset,
+  setupError,
 }: {
   redirectTo?: string
   notice?: string
   reset?: boolean
+  /** Set when the deployment has no Supabase credentials. */
+  setupError?: string
 }) {
   const [state, formAction] = useActionState(signInAction, initialState)
 
@@ -31,6 +34,13 @@ export function LoginForm({
           Welcome back. Enter your details to access your adviser workspace.
         </p>
       </div>
+
+      {setupError && (
+        <Alert variant="warning">
+          <PlugZap />
+          <AlertDescription>{setupError}</AlertDescription>
+        </Alert>
+      )}
 
       {reset && (
         <Alert variant="success">
@@ -82,7 +92,7 @@ export function LoginForm({
           <FieldError message={state.fieldErrors?.password} />
         </div>
 
-        <SubmitButton className="w-full" size="lg" pendingLabel="Signing in…">
+        <SubmitButton className="w-full" size="lg" pendingLabel="Signing in…" disabled={Boolean(setupError)}>
           Sign in
         </SubmitButton>
       </form>

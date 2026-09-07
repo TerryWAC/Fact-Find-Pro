@@ -3,6 +3,7 @@ import 'server-only'
 import { cache } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { isSupabaseConfigured, supabaseConfigMessage } from '@/lib/env'
 import type { Profile } from '@/lib/supabase/database.types'
 
 export interface SessionUser {
@@ -16,6 +17,11 @@ export interface SessionUser {
  * layouts and pages in the same render do not re-query.
  */
 export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
+  if (!isSupabaseConfigured()) {
+    console.error(`[factfind] ${supabaseConfigMessage()}`)
+    return null
+  }
+
   const supabase = await createClient()
 
   const {
@@ -24,9 +30,30 @@ export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
 
   if (!user) return null
 
-  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle()
+  const { data: profile, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .maybeSingle()
 
-  if (!profile) return null
+  // A failed lookup and a genuinely absent profile both end in a redirect, so
+  // log the difference — otherwise a broken policy or a missing table looks
+  // exactly like "your login didn't work".
+  if (error) {
+    console.error(
+      `[factfind] Could not load the profile for ${user.id}: ${error.message}. ` +
+        'Check that the migrations have been applied and that RLS allows the user to read their own row.',
+    )
+    return null
+  }
+
+  if (!profile) {
+    console.error(
+      `[factfind] No profiles row for auth user ${user.id}. ` +
+        'The on_auth_user_created trigger should create one at signup.',
+    )
+    return null
+  }
 
   return { id: user.id, email: user.email ?? profile.email, profile }
 })

@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import type { Database } from './database.types'
+import { isSupabaseConfigured, supabaseConfigMessage } from '@/lib/env'
 
 /** Routes that never require a session. */
 const PUBLIC_PREFIXES = ['/login', '/signup', '/forgot-password', '/reset-password', '/pending', '/f/', '/auth/']
@@ -23,9 +24,17 @@ function isPublicPath(pathname: string): boolean {
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request })
 
+  // Without Supabase credentials there is no session to read. Let the request
+  // through so the app can render a page explaining the misconfiguration,
+  // rather than failing every route with an opaque 500.
+  if (!isSupabaseConfigured()) {
+    console.error(`[factfind] ${supabaseConfigMessage()}`)
+    return response
+  }
+
   const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
     {
       cookies: {
         getAll() {

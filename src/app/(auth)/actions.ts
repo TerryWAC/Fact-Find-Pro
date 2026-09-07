@@ -6,12 +6,24 @@ import { createClient } from '@/lib/supabase/server'
 import { getAdminRecipients, sendEmail } from '@/lib/email/send'
 import { forgotPasswordSchema, loginSchema, resetPasswordSchema, signupSchema } from '@/lib/validations'
 import { getBaseUrl } from '@/lib/utils'
+import { isSupabaseConfigured, supabaseConfigMessage } from '@/lib/env'
 
 export interface ActionState {
   ok?: boolean
   error?: string
   message?: string
   fieldErrors?: Record<string, string>
+}
+
+/**
+ * Guards every auth action. Without Supabase credentials `createClient()`
+ * throws deep inside the SDK, which surfaces to the user as an unexplained
+ * error page — so catch it here and say exactly what is wrong.
+ */
+function configGuard(): ActionState | null {
+  if (isSupabaseConfigured()) return null
+  console.error(`[factfind] ${supabaseConfigMessage()}`)
+  return { error: supabaseConfigMessage() }
 }
 
 function fieldErrorsFrom(error: { issues: { path: (string | number)[]; message: string }[] }) {
@@ -27,6 +39,9 @@ function fieldErrorsFrom(error: { issues: { path: (string | number)[]; message: 
 // Sign in
 // -----------------------------------------------------------------------------
 export async function signInAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const misconfigured = configGuard()
+  if (misconfigured) return misconfigured
+
   const parsed = loginSchema.safeParse({
     email: formData.get('email'),
     password: formData.get('password'),
@@ -83,6 +98,9 @@ export async function signInAction(_prev: ActionState, formData: FormData): Prom
 // Sign up
 // -----------------------------------------------------------------------------
 export async function signUpAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const misconfigured = configGuard()
+  if (misconfigured) return misconfigured
+
   const parsed = signupSchema.safeParse({
     name: formData.get('name'),
     company_name: formData.get('company_name'),
@@ -137,6 +155,9 @@ export async function signUpAction(_prev: ActionState, formData: FormData): Prom
 // Forgot / reset password
 // -----------------------------------------------------------------------------
 export async function forgotPasswordAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const misconfigured = configGuard()
+  if (misconfigured) return misconfigured
+
   const parsed = forgotPasswordSchema.safeParse({ email: formData.get('email') })
 
   if (!parsed.success) {
@@ -157,6 +178,9 @@ export async function forgotPasswordAction(_prev: ActionState, formData: FormDat
 }
 
 export async function resetPasswordAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const misconfigured = configGuard()
+  if (misconfigured) return misconfigured
+
   const parsed = resetPasswordSchema.safeParse({
     password: formData.get('password'),
     confirm_password: formData.get('confirm_password'),
@@ -187,6 +211,8 @@ export async function resetPasswordAction(_prev: ActionState, formData: FormData
 // Sign out
 // -----------------------------------------------------------------------------
 export async function signOutAction() {
+  if (!isSupabaseConfigured()) redirect('/login')
+
   const supabase = await createClient()
   await supabase.auth.signOut()
   revalidatePath('/', 'layout')

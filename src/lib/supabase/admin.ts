@@ -2,6 +2,7 @@ import 'server-only'
 
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import type { Database } from './database.types'
+import { isSupabaseConfigured, requireSupabaseEnv } from '@/lib/env'
 
 /**
  * Service-role Supabase client. BYPASSES RLS — never expose it to the browser
@@ -19,12 +20,14 @@ export function createAdminClient() {
     )
   }
 
-  return createSupabaseClient<Database>(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceKey, {
+  const { url } = requireSupabaseEnv()
+
+  return createSupabaseClient<Database>(url, serviceKey, {
     auth: { autoRefreshToken: false, persistSession: false },
   })
 }
 
 /** True when the service role key is configured. */
 export function hasAdminClient(): boolean {
-  return Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY)
+  return Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY) && isSupabaseConfigured()
 }
