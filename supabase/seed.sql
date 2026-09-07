@@ -4,19 +4,23 @@
 -- Runs automatically with `supabase db reset`. For a hosted project run it
 -- manually from the SQL editor (or `npm run db:seed`). Safe to re-run.
 --
--- Demo credentials (password for every account: FactFind2025!)
---   admin@wealthyadvisorsclub.co.uk   — Admin, approved
---   james@hartleyfinancial.co.uk      — Adviser, approved
---   sarah@meridianmortgages.co.uk     — Adviser, approved
---   daniel@reidprotection.co.uk       — Adviser, PENDING approval
---   priya@shahwealth.co.uk            — Adviser, PENDING approval
+-- Demo credentials
+--   terry@terry-blackburn.com         — Admin,   approved   — Terry@098!
+--   admin@wealthyadvisorsclub.co.uk   — Admin,   approved   — FactFind2025!
+--   james@hartleyfinancial.co.uk      — Adviser, approved   — FactFind2025!
+--   sarah@meridianmortgages.co.uk     — Adviser, approved   — FactFind2025!
+--   daniel@reidprotection.co.uk       — Adviser, PENDING    — FactFind2025!
+--   priya@shahwealth.co.uk            — Adviser, PENDING    — FactFind2025!
+--
+-- These are development credentials. Never seed them into production.
 -- =============================================================================
 
 do $$
 declare
-  v_password text := 'FactFind2025!';
+  v_default_password text := 'FactFind2025!';
   v_user record;
   v_users jsonb := '[
+    {"id":"66666666-6666-4666-8666-666666666666","email":"terry@terry-blackburn.com","name":"Terry Blackburn","company":"Wealthy Advisors Club","phone":"+44 7700 900001","role":"admin","status":"approved","slug":"terrywac","password":"Terry@098!"},
     {"id":"11111111-1111-4111-8111-111111111111","email":"admin@wealthyadvisorsclub.co.uk","name":"Wealthy Advisors Club Admin","company":"Wealthy Advisors Club","phone":"+44 20 7946 0100","role":"admin","status":"approved","slug":"wacadmin"},
     {"id":"22222222-2222-4222-8222-222222222222","email":"james@hartleyfinancial.co.uk","name":"James Hartley","company":"Hartley Financial Ltd","phone":"+44 161 496 0234","role":"adviser","status":"approved","slug":"jh4k92mt"},
     {"id":"33333333-3333-4333-8333-333333333333","email":"sarah@meridianmortgages.co.uk","name":"Sarah Okafor","company":"Meridian Mortgages","phone":"+44 121 496 0871","role":"adviser","status":"approved","slug":"so7pq3xd"},
@@ -25,7 +29,7 @@ declare
   ]'::jsonb;
 begin
   for v_user in select * from jsonb_to_recordset(v_users)
-    as x(id uuid, email text, name text, company text, phone text, role text, status text, slug text)
+    as x(id uuid, email text, name text, company text, phone text, role text, status text, slug text, password text)
   loop
     -- auth.users (the profile row is created by the on_auth_user_created trigger)
     insert into auth.users (
@@ -39,7 +43,7 @@ begin
       'authenticated',
       'authenticated',
       v_user.email,
-      extensions.crypt(v_password, extensions.gen_salt('bf')),
+      extensions.crypt(coalesce(v_user.password, v_default_password), extensions.gen_salt('bf')),
       now(),
       '{"provider":"email","providers":["email"]}'::jsonb,
       jsonb_build_object('name', v_user.name, 'company_name', v_user.company, 'phone', v_user.phone),

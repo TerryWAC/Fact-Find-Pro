@@ -50,17 +50,37 @@ npm run dev                    # http://localhost:3000
 
 ### Demo accounts
 
-Seeded by `supabase/seed.sql`. Password for every account: **`FactFind2025!`**
+Seeded by `supabase/seed.sql`.
 
-| Email | Role | Status |
-| --- | --- | --- |
-| `admin@wealthyadvisorsclub.co.uk` | Admin | Approved |
-| `james@hartleyfinancial.co.uk` | Adviser | Approved (7 submissions) |
-| `sarah@meridianmortgages.co.uk` | Adviser | Approved (4 submissions) |
-| `daniel@reidprotection.co.uk` | Adviser | **Pending** — approve them to see the flow |
-| `priya@shahwealth.co.uk` | Adviser | **Pending** |
+| Email | Password | Role | Status |
+| --- | --- | --- | --- |
+| `terry@terry-blackburn.com` | `Terry@098!` | Admin | Approved |
+| `admin@wealthyadvisorsclub.co.uk` | `FactFind2025!` | Admin | Approved |
+| `james@hartleyfinancial.co.uk` | `FactFind2025!` | Adviser | Approved (7 submissions) |
+| `sarah@meridianmortgages.co.uk` | `FactFind2025!` | Adviser | Approved (4 submissions) |
+| `daniel@reidprotection.co.uk` | `FactFind2025!` | Adviser | **Pending** — approve to see the flow |
+| `priya@shahwealth.co.uk` | `FactFind2025!` | Adviser | **Pending** |
 
-Sign in as the admin, approve Daniel, and his four FactFind links are provisioned automatically.
+An admin sees both the adviser workspace *and* the admin area, and gets their own four FactFind links —
+so one admin login exercises the whole platform.
+
+Sign in as an admin, approve Daniel, and his four FactFind links are provisioned automatically.
+
+> ⚠️ These are development credentials in a committed file. Never seed them into production, and change
+> the password after first sign-in (Settings → Password).
+
+### Adding a login to an existing database
+
+To create (or reset) a single admin account without wiping data — useful on a project that is already
+deployed — run `supabase/create-test-user.sql` in the Supabase SQL editor:
+
+```bash
+psql "$DATABASE_URL" -f supabase/create-test-user.sql
+```
+
+It is safe to re-run: an existing account has its password reset and its role re-applied, and an account
+that already has FactFind links keeps its slug so links you have shared keep working. Edit the variables
+at the top of the file to provision a different account.
 
 ---
 

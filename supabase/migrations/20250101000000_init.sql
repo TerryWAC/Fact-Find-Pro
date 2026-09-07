@@ -546,6 +546,17 @@ create policy "activity_select_admin" on public.activity_log
 -- =============================================================================
 -- Grants
 -- =============================================================================
+-- Supabase projects normally carry default privileges that grant these
+-- automatically, but granting explicitly keeps the migration self-contained
+-- (and correct on self-hosted Postgres). RLS still gates every row.
+grant usage on schema public to anon, authenticated, service_role;
+
+grant select, insert, update, delete on all tables in schema public to authenticated, service_role;
+grant usage, select on all sequences in schema public to authenticated, service_role;
+
+-- `anon` gets no table access at all: the public FactFind pages reach the data
+-- exclusively through the SECURITY DEFINER functions granted below.
+
 revoke all on function public.resolve_factfind_form(public.factfind_type, text) from public;
 revoke all on function public.submit_factfind(public.factfind_type, text, text, text, text, jsonb, jsonb) from public;
 
