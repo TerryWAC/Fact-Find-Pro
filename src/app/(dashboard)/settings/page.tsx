@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
-import { Building2, Image as ImageIcon, Mail, Palette } from 'lucide-react'
+import Link from 'next/link'
+import { Building2, Image as ImageIcon, Mail, Palette, Wand2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
@@ -35,7 +37,18 @@ export default async function SettingsPage() {
 
   return (
     <>
-      <PageHeader title="Settings" description="Manage your details, security and branding." />
+      <PageHeader
+        title="Settings"
+        description="Manage your details, security and branding."
+        actions={
+          <Button asChild variant="outline">
+            <Link href="/onboarding?step=1">
+              <Wand2 className="h-4 w-4" />
+              Re-run setup
+            </Link>
+          </Button>
+        }
+      />
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">

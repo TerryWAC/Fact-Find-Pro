@@ -33,6 +33,16 @@ type ProfileRow = {
   approved_by: string | null
   rejected_at: string | null
   rejection_reason: string | null
+  job_title: string | null
+  fca_number: string | null
+  website: string | null
+  business_location: string | null
+  delivery_email_copy: boolean
+  delivery_downloads: boolean
+  delivery_webhook_enabled: boolean
+  delivery_webhook_url: string | null
+  onboarding_step: number
+  onboarding_completed_at: string | null
   created_at: string
   updated_at: string
 }
@@ -53,6 +63,16 @@ type ProfileInsert = {
   approved_by?: string | null
   rejected_at?: string | null
   rejection_reason?: string | null
+  job_title?: string | null
+  fca_number?: string | null
+  website?: string | null
+  business_location?: string | null
+  delivery_email_copy?: boolean
+  delivery_downloads?: boolean
+  delivery_webhook_enabled?: boolean
+  delivery_webhook_url?: string | null
+  onboarding_step?: number
+  onboarding_completed_at?: string | null
   created_at?: string
   updated_at?: string
 }
@@ -153,6 +173,36 @@ type EmailLogInsert = {
   created_at?: string
 }
 
+export type TeamRole = 'adviser' | 'administrator' | 'paraplanner'
+
+type TeamMemberRow = {
+  id: string
+  owner_id: string
+  linked_profile_id: string | null
+  name: string
+  email: string
+  phone: string | null
+  job_title: string | null
+  fca_number: string | null
+  role: TeamRole
+  headshot_url: string | null
+  created_at: string
+}
+
+type TeamMemberInsert = {
+  id?: string
+  owner_id: string
+  linked_profile_id?: string | null
+  name: string
+  email: string
+  phone?: string | null
+  job_title?: string | null
+  fca_number?: string | null
+  role?: TeamRole
+  headshot_url?: string | null
+  created_at?: string
+}
+
 type ActivityLogRow = {
   id: string
   adviser_id: string | null
@@ -216,6 +266,12 @@ export type Database = {
         Update: Partial<EmailLogInsert>
         Relationships: []
       }
+      team_members: {
+        Row: TeamMemberRow
+        Insert: TeamMemberInsert
+        Update: Partial<TeamMemberInsert>
+        Relationships: []
+      }
       activity_log: {
         Row: ActivityLogRow
         Insert: ActivityLogInsert
@@ -273,3 +329,4 @@ export type FactFindForm = FactFindFormRow
 export type FactFindSubmission = FactFindSubmissionRow
 export type EmailTemplate = EmailTemplateRow
 export type ActivityLogEntry = ActivityLogRow
+export type TeamMember = TeamMemberRow

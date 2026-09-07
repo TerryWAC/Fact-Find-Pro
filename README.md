@@ -135,6 +135,7 @@ the `email_log` table, visible at **Admin → Email Templates**.
 src/
 ├── app/
 │   ├── (auth)/                 Login, signup, forgot/reset password, pending approval
+│   ├── (onboarding)/           Six-step setup wizard shown on first sign-in
 │   ├── (dashboard)/            Authenticated shell (sidebar + topbar)
 │   │   ├── dashboard/          Adviser dashboard — stats, recent activity, quick links
 │   │   ├── links/              My FactFind Links (copy / open)
@@ -147,6 +148,7 @@ src/
 │   ├── ui/                     shadcn primitives
 │   ├── layout/                 Sidebar, topbar, nav config
 │   ├── forms/                  Form engine renderer (field renderer, step indicator)
+│   ├── onboarding/             Setup wizard steps, progress bar, image picker
 │   ├── submissions/            Table, filters, detail, answers renderer
 │   ├── admin/                  Users table, filters, reject dialog
 │   └── shared/                 Logo, stat cards, pagination, copy button, theme toggle
@@ -175,6 +177,7 @@ src/
 | `email_templates` | Configurable notification copy, editable without a deploy |
 | `email_log` | Delivery audit trail (and the outbox when no provider is configured) |
 | `activity_log` | Powers the "Recent activity" panels |
+| `team_members` | Team roster captured during onboarding (not sign-ins — see `linked_profile_id`) |
 
 Key database behaviour:
 
@@ -185,6 +188,21 @@ Key database behaviour:
 - **`resolve_factfind_form(type, slug)`** and **`submit_factfind(...)`** are `SECURITY DEFINER` functions
   granted to `anon`. Public FactFind pages go through these, so the tables themselves stay private and the
   browser never gets to name an adviser.
+
+### Onboarding
+
+An approved adviser lands on a six-step setup wizard the first time they sign in: welcome checklist, their
+details, logo and headshot, where completed fact finds should go, their team, then their live client links.
+
+- Every step can be skipped, and the welcome screen has an explicit escape to the dashboard — setup is
+  never a trap.
+- Progress is stored in `profiles.onboarding_step`, so closing the tab resumes where they left off.
+- `profiles.onboarding_completed_at` gates the redirect; once set, the wizard stops appearing. Advisers can
+  re-open it from **Settings → Re-run setup**.
+- Image uploads go through a server action into the `branding` storage bucket, scoped to the adviser's own
+  folder — no browser Supabase client, so no public keys are needed at build time.
+- Replace the welcome banner by dropping artwork at `public/brand/onboarding-banner.png`; without it a
+  typographic Wealthy Advisers Club lockup is rendered.
 
 ### Security model
 

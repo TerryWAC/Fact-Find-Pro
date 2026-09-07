@@ -71,7 +71,7 @@ export async function updateSession(request: NextRequest) {
   // Signed in — resolve the profile to gate on status and role.
   const { data: profile } = await supabase
     .from('profiles')
-    .select('role, status')
+    .select('role, status, onboarding_completed_at')
     .eq('id', user.id)
     .maybeSingle()
 
@@ -90,8 +90,25 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(redirect)
   }
 
+  // First run: send approved users through setup until they finish or dismiss it.
+  const needsSetup = !profile?.onboarding_completed_at
+  if (needsSetup && pathname !== '/onboarding') {
+    const redirect = request.nextUrl.clone()
+    redirect.pathname = '/onboarding'
+    redirect.search = ''
+    return NextResponse.redirect(redirect)
+  }
+
   // Approved users have no business on the auth screens.
   if (['/login', '/signup', '/forgot-password', '/pending', '/'].includes(pathname)) {
+    const redirect = request.nextUrl.clone()
+    redirect.pathname = needsSetup ? '/onboarding' : isAdmin ? '/admin' : '/dashboard'
+    redirect.search = ''
+    return NextResponse.redirect(redirect)
+  }
+
+  // Setup is done — don't let the wizard reappear.
+  if (!needsSetup && pathname === '/onboarding' && !request.nextUrl.searchParams.has('step')) {
     const redirect = request.nextUrl.clone()
     redirect.pathname = isAdmin ? '/admin' : '/dashboard'
     redirect.search = ''

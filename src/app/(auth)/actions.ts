@@ -63,7 +63,7 @@ export async function signInAction(_prev: ActionState, formData: FormData): Prom
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('role, status')
+    .select('role, status, onboarding_completed_at')
     .eq('id', data.user.id)
     .maybeSingle()
 
@@ -91,7 +91,12 @@ export async function signInAction(_prev: ActionState, formData: FormData): Prom
   const safeRedirect = redirectTo.startsWith('/') && !redirectTo.startsWith('//') ? redirectTo : null
 
   revalidatePath('/', 'layout')
-  redirect(safeRedirect ?? (profile?.role === 'admin' ? '/admin' : '/dashboard'))
+
+  // First sign-in goes to setup; middleware would bounce them there anyway, and
+  // redirecting once keeps the URL clean.
+  if (!profile?.onboarding_completed_at) redirect('/onboarding')
+
+  redirect(safeRedirect ?? (profile.role === 'admin' ? '/admin' : '/dashboard'))
 }
 
 // -----------------------------------------------------------------------------
