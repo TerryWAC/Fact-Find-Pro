@@ -69,6 +69,15 @@ Sign in as an admin, approve Daniel, and his four FactFind links are provisioned
 > ⚠️ These are development credentials in a committed file. Never seed them into production, and change
 > the password after first sign-in (Settings → Password).
 
+### SQL files, and when to run each
+
+| File | When | Notes |
+| --- | --- | --- |
+| `supabase/setup.sql` | **First — always** | Whole schema in one paste: tables, RLS, triggers, RPCs, storage, email templates. Re-runnable. |
+| `supabase/create-test-user.sql` | **Second** | Creates your admin login. Re-runnable — resets the password if the account exists. |
+| `supabase/seed.sql` | Optional, dev only | Demo advisers and submissions. Contains plaintext demo passwords, so never run it on production. |
+| `supabase/migrations/*.sql` | CLI users | What `supabase db push` applies. `setup.sql` is these three concatenated. |
+
 ### Adding a login to an existing database
 
 To create (or reset) a single admin account without wiping data — useful on a project that is already
@@ -249,7 +258,9 @@ notification all adapt automatically.
    npx supabase link --project-ref <your-ref>
    npx supabase db push
    ```
-   (Or paste each file in `supabase/migrations/` into the SQL editor, in filename order.)
+   **No CLI?** Open the Supabase dashboard → **SQL Editor** → New query, paste the whole of
+   [`supabase/setup.sql`](supabase/setup.sql) and run it. That single file is the three migrations
+   concatenated in order, and it is safe to run more than once.
 3. **Auth → URL Configuration**
    - Site URL: `https://your-domain.com`
    - Redirect URLs: `https://your-domain.com/auth/callback`
