@@ -75,8 +75,13 @@ Sign in as an admin, approve Daniel, and his four FactFind links are provisioned
 | --- | --- | --- |
 | `supabase/setup.sql` | **First — always** | Whole schema in one paste: tables, RLS, triggers, RPCs, storage, email templates. Re-runnable. |
 | `supabase/create-test-user.sql` | **Second** | Creates your admin login. Re-runnable — resets the password if the account exists. |
+
 | `supabase/seed.sql` | Optional, dev only | Demo advisers and submissions. Contains plaintext demo passwords, so never run it on production. |
 | `supabase/migrations/*.sql` | CLI users | What `supabase db push` applies. `setup.sql` is these three concatenated. |
+
+Both dashboard files use `/* ... */` block comments and contain no `--` sequence anywhere. SQL line
+comments start with a double hyphen, which some editors and renderers turn into an en dash or silently
+shorten when text is pasted — the comment then parses as SQL and the whole script fails on line 1.
 
 ### Adding a login to an existing database
 

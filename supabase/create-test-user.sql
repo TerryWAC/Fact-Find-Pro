@@ -1,23 +1,25 @@
--- =============================================================================
--- FactFind Pro — create (or reset) a single admin/test account
--- =============================================================================
--- Run this in the Supabase SQL editor, or locally with:
---   psql "$DATABASE_URL" -f supabase/create-test-user.sql
---
--- Safe to re-run: if the account already exists it resets the password and
--- re-applies the role/status rather than erroring.
---
--- Creates:
---   terry@terry-blackburn.com  /  Terry@098!   — Admin, approved
---
--- An admin sees BOTH the adviser workspace (dashboard, links, submissions)
--- and the admin area (approvals, all submissions, email templates), so this
--- one login is enough to test the whole platform.
---
--- SECURITY: this file contains a plaintext password. Change it after first
--- sign-in (Settings → Password), and do not use these credentials in
--- production. Edit the values below to provision a different account.
--- =============================================================================
+/*
+   =============================================================================
+   FactFind Pro — create (or reset) a single admin/test account
+   =============================================================================
+   Run this in the Supabase SQL editor, or locally with:
+   psql "$DATABASE_URL" -f supabase/create-test-user.sql
+
+   Safe to re-run: if the account already exists it resets the password and
+   re-applies the role/status rather than erroring.
+
+   Creates:
+   terry@terry-blackburn.com  /  Terry@098!   — Admin, approved
+
+   An admin sees BOTH the adviser workspace (dashboard, links, submissions)
+   and the admin area (approvals, all submissions, email templates), so this
+   one login is enough to test the whole platform.
+
+   SECURITY: this file contains a plaintext password. Change it after first
+   sign-in (Settings → Password), and do not use these credentials in
+   production. Edit the values below to provision a different account.
+   =============================================================================
+ */
 
 do $$
 declare
@@ -35,7 +37,7 @@ begin
   v_is_new := v_id is null;
 
   if v_is_new then
-    -- ---- New account -------------------------------------------------------
+    /* ==== New account ======================================================= */
     v_id := gen_random_uuid();
 
     insert into auth.users (
@@ -70,7 +72,7 @@ begin
 
     raise notice 'Created auth user % (%)', v_email, v_id;
   else
-    -- ---- Existing account: reset the password and confirm the email --------
+    /* ==== Existing account: reset the password and confirm the email ======== */
     update auth.users
        set encrypted_password = extensions.crypt(v_password, extensions.gen_salt('bf')),
            email_confirmed_at = coalesce(email_confirmed_at, now()),
@@ -80,12 +82,14 @@ begin
     raise notice 'Reset password for existing user % (%)', v_email, v_id;
   end if;
 
-  -- Slug policy:
-  --  * existing account  -> keep the slug they already have, so client links
-  --                         that have been shared out keep working
-  --  * new account       -> use the requested slug (the on_auth_user_created
-  --                         trigger will have assigned a random one), unless
-  --                         another adviser already holds it
+  /*
+     Slug policy:
+     * existing account  -> keep the slug they already have, so client links
+     that have been shared out keep working
+     * new account       -> use the requested slug (the on_auth_user_created
+     trigger will have assigned a random one), unless
+     another adviser already holds it
+   */
   select adviser_slug into v_existing from public.profiles where id = v_id;
 
   if not v_is_new and v_existing is not null then
@@ -94,8 +98,10 @@ begin
     v_slug := public.generate_adviser_slug();
   end if;
 
-  -- The on_auth_user_created trigger normally writes this row; upsert so the
-  -- script also works when the profile is missing or needs promoting.
+  /*
+     The on_auth_user_created trigger normally writes this row; upsert so the
+     script also works when the profile is missing or needs promoting.
+   */
   insert into public.profiles (
     id, name, company_name, email, phone, role, status, adviser_slug, approved_at
   )
@@ -114,13 +120,13 @@ begin
         rejected_at  = null,
         rejection_reason = null;
 
-  -- Provision the four unique FactFind links (no-op if they already exist).
+  /* Provision the four unique FactFind links (no-op if they already exist). */
   perform public.provision_factfind_forms(v_id);
 
   raise notice 'Ready: % is an approved admin with slug %', v_email, v_slug;
 end $$;
 
--- Confirm the result and show the four client links.
+/* Confirm the result and show the four client links. */
 select p.email, p.name, p.role, p.status, p.adviser_slug
   from public.profiles p
  where lower(p.email) = 'terry@terry-blackburn.com';

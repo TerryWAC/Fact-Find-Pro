@@ -1,52 +1,60 @@
--- ############################################################################
--- FactFind Pro — complete database setup
--- Wealthy Advisors Club
--- ############################################################################
---
--- HOW TO RUN
---   Supabase dashboard -> SQL Editor -> New query -> paste this whole file -> Run.
---   Takes a few seconds. Safe to run more than once.
---
--- WHAT IT CREATES
---   Tables      profiles, factfind_forms, factfind_submissions,
---               email_templates, email_log, activity_log
---   Security    Row Level Security on every table, so an adviser can only ever
---               read their own submissions and only admins see everything
---   Automation  a signup creates a pending profile; approving an adviser
---               provisions their four unique client FactFind links
---   Public API  resolve_factfind_form() and submit_factfind(), the only way the
---               public client-facing pages touch the database
---   Storage     branding and submission-upload buckets
---
--- AFTERWARDS
---   Run supabase/create-test-user.sql to create your admin login.
---   Optionally run supabase/seed.sql for demo advisers and submissions
---   (development only — it contains plaintext demo passwords).
---
--- This file is the three files in supabase/migrations concatenated in order.
--- If you use the Supabase CLI, prefer `supabase db push` over this file.
--- ############################################################################
+/*
+   ==========================================================================
+   FactFind Pro  complete database setup
+   Wealthy Advisors Club
+   ==========================================================================
+
+   HOW TO RUN
+     Supabase dashboard -> SQL Editor -> New query -> paste this whole file
+     -> Run. Takes a few seconds. Safe to run more than once.
+
+   WHAT IT CREATES
+     Tables      profiles, factfind_forms, factfind_submissions,
+                 email_templates, email_log, activity_log
+     Security    Row Level Security on every table, so an adviser can only
+                 read their own submissions and only admins see everything
+     Automation  a signup creates a pending profile; approving an adviser
+                 provisions their four unique client FactFind links
+     Public API  resolve_factfind_form() and submit_factfind(), the only way
+                 the public client-facing pages touch the database
+     Storage     branding and submission-upload buckets
+
+   AFTERWARDS
+     Run create-test-user.sql to create your admin login.
+     Optionally run seed.sql for demo data (development only, it contains
+     plaintext demo passwords).
+
+   NOTE ON COMMENTS
+     This file deliberately uses block comments only. Some editors mangle the
+     double-hyphen used for SQL line comments when text is pasted, which makes
+     a comment parse as SQL and fail.
+
+   This file is the three files in supabase/migrations concatenated in order.
+   If you use the Supabase CLI, prefer `supabase db push`.
+   ==========================================================================
+*/
 
 
--- ############################################################################
--- PART 1 of 3 — Schema, RLS, triggers and public RPCs
--- source: supabase/migrations/20250101000000_init.sql
--- ############################################################################
+/* ======================= PART 1 of 3  Schema, RLS, triggers and public RPCs ======================= */
 
--- =============================================================================
--- FactFind Pro — initial schema
--- Wealthy Advisors Club | UK Mortgage & Protection Brokers
--- =============================================================================
--- Creates: enums, profiles (users), factfind_forms, factfind_submissions,
--- email_templates, email_log, activity_log, plus RLS policies, triggers and
--- the SECURITY DEFINER RPCs used by the public (anon) client FactFind pages.
--- =============================================================================
+/*
+   =============================================================================
+   FactFind Pro — initial schema
+   Wealthy Advisors Club | UK Mortgage & Protection Brokers
+   =============================================================================
+   Creates: enums, profiles (users), factfind_forms, factfind_submissions,
+   email_templates, email_log, activity_log, plus RLS policies, triggers and
+   the SECURITY DEFINER RPCs used by the public (anon) client FactFind pages.
+   =============================================================================
+ */
 
 create extension if not exists "pgcrypto" with schema extensions;
 
--- -----------------------------------------------------------------------------
--- Enums
--- -----------------------------------------------------------------------------
+/*
+   =============================================================================
+   Enums
+   =============================================================================
+ */
 do $$ begin
   create type public.user_role as enum ('admin', 'adviser');
 exception when duplicate_object then null; end $$;
@@ -63,9 +71,11 @@ do $$ begin
   create type public.submission_status as enum ('new', 'in_review', 'completed', 'archived');
 exception when duplicate_object then null; end $$;
 
--- -----------------------------------------------------------------------------
--- profiles — the application "Users" table (1:1 with auth.users)
--- -----------------------------------------------------------------------------
+/*
+   =============================================================================
+   profiles — the application "Users" table (1:1 with auth.users)
+   =============================================================================
+ */
 create table if not exists public.profiles (
   id               uuid primary key references auth.users (id) on delete cascade,
   name             text not null default '',
@@ -94,9 +104,11 @@ create index if not exists profiles_created_at_idx on public.profiles (created_a
 comment on table public.profiles is 'Application users. Advisers must be approved by an admin before they can sign in.';
 comment on column public.profiles.adviser_slug is 'Unique public identifier used in client FactFind URLs, e.g. /f/mortgage/{adviser_slug}.';
 
--- -----------------------------------------------------------------------------
--- factfind_forms — the four unique client links owned by each adviser
--- -----------------------------------------------------------------------------
+/*
+   =============================================================================
+   factfind_forms — the four unique client links owned by each adviser
+   =============================================================================
+ */
 create table if not exists public.factfind_forms (
   id           uuid primary key default gen_random_uuid(),
   adviser_id   uuid not null references public.profiles (id) on delete cascade,
@@ -113,9 +125,11 @@ create index if not exists factfind_forms_slug_idx    on public.factfind_forms (
 
 comment on table public.factfind_forms is 'One row per adviser per FactFind type. unique_slug is the adviser identifier in the public URL.';
 
--- -----------------------------------------------------------------------------
--- factfind_submissions — completed client FactFinds
--- -----------------------------------------------------------------------------
+/*
+   =============================================================================
+   factfind_submissions — completed client FactFinds
+   =============================================================================
+ */
 create table if not exists public.factfind_submissions (
   id              uuid primary key default gen_random_uuid(),
   form_id         uuid references public.factfind_forms (id) on delete set null,
@@ -139,9 +153,11 @@ create index if not exists submissions_client_email_idx on public.factfind_submi
 
 comment on table public.factfind_submissions is 'Client submissions. Always bound to the adviser who owns the link that was used.';
 
--- -----------------------------------------------------------------------------
--- email_templates — configurable notification templates
--- -----------------------------------------------------------------------------
+/*
+   =============================================================================
+   email_templates — configurable notification templates
+   =============================================================================
+ */
 create table if not exists public.email_templates (
   id          uuid primary key default gen_random_uuid(),
   key         text not null unique,
@@ -154,9 +170,11 @@ create table if not exists public.email_templates (
   updated_at  timestamptz not null default now()
 );
 
--- -----------------------------------------------------------------------------
--- email_log — delivery audit trail (also acts as the outbox in dev)
--- -----------------------------------------------------------------------------
+/*
+   =============================================================================
+   email_log — delivery audit trail (also acts as the outbox in dev)
+   =============================================================================
+ */
 create table if not exists public.email_log (
   id           uuid primary key default gen_random_uuid(),
   template_key text,
@@ -171,9 +189,11 @@ create table if not exists public.email_log (
 
 create index if not exists email_log_created_at_idx on public.email_log (created_at desc);
 
--- -----------------------------------------------------------------------------
--- activity_log — powers the "Recent Activity" panels
--- -----------------------------------------------------------------------------
+/*
+   =============================================================================
+   activity_log — powers the "Recent Activity" panels
+   =============================================================================
+ */
 create table if not exists public.activity_log (
   id          uuid primary key default gen_random_uuid(),
   adviser_id  uuid references public.profiles (id) on delete cascade,
@@ -188,12 +208,16 @@ create table if not exists public.activity_log (
 create index if not exists activity_log_adviser_idx    on public.activity_log (adviser_id);
 create index if not exists activity_log_created_at_idx on public.activity_log (created_at desc);
 
--- =============================================================================
--- Helper functions
--- =============================================================================
+/*
+   =============================================================================
+   Helper functions
+   =============================================================================
+ */
 
--- Returns true when the calling user is an approved admin.
--- SECURITY DEFINER so that policies on `profiles` do not recurse into themselves.
+/*
+   Returns true when the calling user is an approved admin.
+   SECURITY DEFINER so that policies on `profiles` do not recurse into themselves.
+ */
 create or replace function public.is_admin()
 returns boolean
 language sql
@@ -209,7 +233,7 @@ as $$
   );
 $$;
 
--- Returns true when the calling user is an approved account of any role.
+/* Returns true when the calling user is an approved account of any role. */
 create or replace function public.is_approved()
 returns boolean
 language sql
@@ -223,7 +247,7 @@ as $$
   );
 $$;
 
--- Collision-safe short public identifier for adviser links (e.g. "a7f3k92p").
+/* Collision-safe short public identifier for adviser links (e.g. "a7f3k92p"). */
 create or replace function public.generate_adviser_slug()
 returns text
 language plpgsql
@@ -232,7 +256,7 @@ security definer
 set search_path = public
 as $$
 declare
-  alphabet constant text := 'abcdefghijkmnopqrstuvwxyz23456789'; -- no l/1/0/o
+  alphabet constant text := 'abcdefghijkmnopqrstuvwxyz23456789';  /* no l/1/0/o */
   candidate text;
   i int;
 begin
@@ -247,7 +271,7 @@ begin
 end;
 $$;
 
--- Sequential, human-friendly submission reference: FF-000123
+/* Sequential, human-friendly submission reference: FF-000123 */
 create sequence if not exists public.submission_reference_seq start 1000;
 
 create or replace function public.generate_submission_reference()
@@ -258,7 +282,7 @@ as $$
   select 'FF-' || lpad(nextval('public.submission_reference_seq')::text, 6, '0');
 $$;
 
--- keep updated_at fresh
+/* keep updated_at fresh */
 create or replace function public.touch_updated_at()
 returns trigger
 language plpgsql
@@ -279,9 +303,11 @@ create trigger email_templates_touch_updated_at
   before update on public.email_templates
   for each row execute function public.touch_updated_at();
 
--- =============================================================================
--- Signup: mirror auth.users into public.profiles
--- =============================================================================
+/*
+   =============================================================================
+   Signup: mirror auth.users into public.profiles
+   =============================================================================
+ */
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
@@ -317,9 +343,11 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
 
--- =============================================================================
--- Approval: provision the four unique FactFind links
--- =============================================================================
+/*
+   =============================================================================
+   Approval: provision the four unique FactFind links
+   =============================================================================
+ */
 create or replace function public.provision_factfind_forms(p_adviser_id uuid)
 returns void
 language plpgsql
@@ -376,11 +404,13 @@ create trigger on_profile_status_change
   after update of status on public.profiles
   for each row execute function public.handle_profile_status_change();
 
--- =============================================================================
--- Public (anon) RPCs used by the client-facing FactFind pages
--- =============================================================================
+/*
+   =============================================================================
+   Public (anon) RPCs used by the client-facing FactFind pages
+   =============================================================================
+ */
 
--- Resolve /f/{type}/{slug} to the owning adviser without exposing the tables.
+/* Resolve /f/{type}/{slug} to the owning adviser without exposing the tables. */
 create or replace function public.resolve_factfind_form(
   p_form_type public.factfind_type,
   p_slug      text
@@ -410,7 +440,7 @@ as $$
   limit 1;
 $$;
 
--- Accept a client submission and bind it to the adviser who owns the link.
+/* Accept a client submission and bind it to the adviser who owns the link. */
 create or replace function public.submit_factfind(
   p_form_type       public.factfind_type,
   p_slug            text,
@@ -481,9 +511,11 @@ begin
 end;
 $$;
 
--- =============================================================================
--- Row Level Security
--- =============================================================================
+/*
+   =============================================================================
+   Row Level Security
+   =============================================================================
+ */
 alter table public.profiles             enable row level security;
 alter table public.factfind_forms       enable row level security;
 alter table public.factfind_submissions enable row level security;
@@ -491,7 +523,7 @@ alter table public.email_templates      enable row level security;
 alter table public.email_log            enable row level security;
 alter table public.activity_log         enable row level security;
 
--- profiles ---------------------------------------------------------------
+/* profiles =============================================================== */
 drop policy if exists "profiles_select_own"   on public.profiles;
 drop policy if exists "profiles_select_admin" on public.profiles;
 drop policy if exists "profiles_update_own"   on public.profiles;
@@ -507,7 +539,7 @@ create policy "profiles_select_admin" on public.profiles
 create policy "profiles_insert_self" on public.profiles
   for insert with check (id = auth.uid());
 
--- Advisers may edit their own details but never their role or status.
+/* Advisers may edit their own details but never their role or status. */
 create policy "profiles_update_own" on public.profiles
   for update using (id = auth.uid())
   with check (
@@ -519,7 +551,7 @@ create policy "profiles_update_own" on public.profiles
 create policy "profiles_update_admin" on public.profiles
   for update using (public.is_admin()) with check (public.is_admin());
 
--- factfind_forms ---------------------------------------------------------
+/* factfind_forms ========================================================= */
 drop policy if exists "forms_select_own"   on public.factfind_forms;
 drop policy if exists "forms_select_admin" on public.factfind_forms;
 drop policy if exists "forms_update_admin" on public.factfind_forms;
@@ -533,7 +565,7 @@ create policy "forms_select_admin" on public.factfind_forms
 create policy "forms_update_admin" on public.factfind_forms
   for all using (public.is_admin()) with check (public.is_admin());
 
--- factfind_submissions ---------------------------------------------------
+/* factfind_submissions =================================================== */
 drop policy if exists "submissions_select_own"   on public.factfind_submissions;
 drop policy if exists "submissions_select_admin" on public.factfind_submissions;
 drop policy if exists "submissions_update_own"   on public.factfind_submissions;
@@ -549,10 +581,12 @@ create policy "submissions_update_own" on public.factfind_submissions
 create policy "submissions_admin_all" on public.factfind_submissions
   for all using (public.is_admin()) with check (public.is_admin());
 
--- Note: there is deliberately no INSERT policy for anon/authenticated.
--- Client submissions arrive exclusively through public.submit_factfind().
+/*
+   Note: there is deliberately no INSERT policy for anon/authenticated.
+   Client submissions arrive exclusively through public.submit_factfind().
+ */
 
--- email_templates --------------------------------------------------------
+/* email_templates ======================================================== */
 drop policy if exists "templates_admin_all" on public.email_templates;
 drop policy if exists "templates_read_approved" on public.email_templates;
 
@@ -562,13 +596,13 @@ create policy "templates_admin_all" on public.email_templates
 create policy "templates_read_approved" on public.email_templates
   for select using (public.is_approved());
 
--- email_log --------------------------------------------------------------
+/* email_log ============================================================== */
 drop policy if exists "email_log_admin_all" on public.email_log;
 
 create policy "email_log_admin_all" on public.email_log
   for all using (public.is_admin()) with check (public.is_admin());
 
--- activity_log -----------------------------------------------------------
+/* activity_log =========================================================== */
 drop policy if exists "activity_select_own"   on public.activity_log;
 drop policy if exists "activity_select_admin" on public.activity_log;
 
@@ -578,19 +612,23 @@ create policy "activity_select_own" on public.activity_log
 create policy "activity_select_admin" on public.activity_log
   for select using (public.is_admin());
 
--- =============================================================================
--- Grants
--- =============================================================================
--- Supabase projects normally carry default privileges that grant these
--- automatically, but granting explicitly keeps the migration self-contained
--- (and correct on self-hosted Postgres). RLS still gates every row.
+/*
+   =============================================================================
+   Grants
+   =============================================================================
+   Supabase projects normally carry default privileges that grant these
+   automatically, but granting explicitly keeps the migration self-contained
+   (and correct on self-hosted Postgres). RLS still gates every row.
+ */
 grant usage on schema public to anon, authenticated, service_role;
 
 grant select, insert, update, delete on all tables in schema public to authenticated, service_role;
 grant usage, select on all sequences in schema public to authenticated, service_role;
 
--- `anon` gets no table access at all: the public FactFind pages reach the data
--- exclusively through the SECURITY DEFINER functions granted below.
+/*
+   `anon` gets no table access at all: the public FactFind pages reach the data
+   exclusively through the SECURITY DEFINER functions granted below.
+ */
 
 revoke all on function public.resolve_factfind_form(public.factfind_type, text) from public;
 revoke all on function public.submit_factfind(public.factfind_type, text, text, text, text, jsonb, jsonb) from public;
@@ -601,17 +639,16 @@ grant execute on function public.is_admin() to authenticated;
 grant execute on function public.is_approved() to authenticated;
 
 
--- ############################################################################
--- PART 2 of 3 — Default notification email templates
--- source: supabase/migrations/20250101000001_email_templates.sql
--- ############################################################################
+/* ======================= PART 2 of 3  Default notification email templates ======================= */
 
--- =============================================================================
--- FactFind Pro — default configurable email templates
--- =============================================================================
--- Templates use {{double_brace}} placeholders resolved at send time by
--- src/lib/email/render.ts. Editing a row here changes the live email.
--- =============================================================================
+/*
+   =============================================================================
+   FactFind Pro — default configurable email templates
+   =============================================================================
+   Templates use {{double_brace}} placeholders resolved at send time by
+   src/lib/email/render.ts. Editing a row here changes the live email.
+   =============================================================================
+ */
 
 insert into public.email_templates (key, name, description, subject, body_html, body_text)
 values
@@ -687,17 +724,16 @@ values
 on conflict (key) do nothing;
 
 
--- ############################################################################
--- PART 3 of 3 — Storage buckets and their policies
--- source: supabase/migrations/20250101000002_storage.sql
--- ############################################################################
+/* ======================= PART 3 of 3  Storage buckets and their policies ======================= */
 
--- =============================================================================
--- FactFind Pro — storage buckets
--- =============================================================================
--- `branding` holds adviser logos (future custom-branding feature).
--- `submission-uploads` is reserved for client document uploads.
--- =============================================================================
+/*
+   =============================================================================
+   FactFind Pro — storage buckets
+   =============================================================================
+   `branding` holds adviser logos (future custom-branding feature).
+   `submission-uploads` is reserved for client document uploads.
+   =============================================================================
+ */
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values
@@ -705,7 +741,7 @@ values
   ('submission-uploads', 'submission-uploads', false, 10485760, null)
 on conflict (id) do nothing;
 
--- branding: anyone can read, an adviser may manage only their own folder (<uid>/...)
+/* branding: anyone can read, an adviser may manage only their own folder (<uid>/...) */
 drop policy if exists "branding_public_read"  on storage.objects;
 drop policy if exists "branding_owner_write"  on storage.objects;
 drop policy if exists "branding_owner_update" on storage.objects;
@@ -726,7 +762,7 @@ create policy "branding_owner_delete" on storage.objects
   for delete to authenticated
   using (bucket_id = 'branding' and (storage.foldername(name))[1] = auth.uid()::text);
 
--- submission uploads: adviser-scoped read, admins see everything
+/* submission uploads: adviser-scoped read, admins see everything */
 drop policy if exists "submission_uploads_owner_read" on storage.objects;
 drop policy if exists "submission_uploads_admin_all"  on storage.objects;
 
@@ -740,9 +776,7 @@ create policy "submission_uploads_admin_all" on storage.objects
   with check (bucket_id = 'submission-uploads' and public.is_admin());
 
 
--- ############################################################################
--- Done. Quick check that everything landed:
--- ############################################################################
+/* Done. This lists the tables so you can confirm it worked: */
 select table_name
   from information_schema.tables
  where table_schema = 'public'
