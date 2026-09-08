@@ -76,6 +76,7 @@ Sign in as an admin, approve Daniel, and his four FactFind links are provisioned
 | `supabase/setup.sql` | **First — always** | Whole schema in one paste: tables, RLS, triggers, RPCs, storage, email templates. Re-runnable. |
 | `supabase/create-test-user.sql` | **Second** | Creates your admin login. Re-runnable — resets the password if the account exists. |
 
+| `supabase/approve-user.sql` | When needed | Approves one account by email, provisions its links and confirms the address. Edit the email at the top. Re-runnable. |
 | `supabase/seed.sql` | Optional, dev only | Demo advisers and submissions. Contains plaintext demo passwords, so never run it on production. |
 | `supabase/migrations/*.sql` | CLI users | What `supabase db push` applies. `setup.sql` is these three concatenated. |
 
