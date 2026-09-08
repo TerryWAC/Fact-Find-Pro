@@ -3284,7 +3284,7 @@
         {
           "id": "sp1_heading",
           "type": "heading",
-          "label": "Sick Pay Info",
+          "label": "Applicant 1",
           "colSpan": 2,
           "source": "0720bb95-4674-4e0a-9dd4-18691af8b39e"
         },
@@ -3338,7 +3338,7 @@
         {
           "id": "sp2_heading",
           "type": "heading",
-          "label": "Sick Pay Info applicant 2",
+          "label": "Applicant 2",
           "colSpan": 2,
           "source": "dfcfbbf9-07b8-4bc7-8f07-1f2d960042ed",
           "visibleWhen": {

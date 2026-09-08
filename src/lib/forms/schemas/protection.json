@@ -1,0 +1,1219 @@
+{
+  "type": "protection",
+  "version": "1.0.0-typeform-a4Gp3Csc",
+  "title": "Protection FactFind",
+  "subtitle": "A few sections so your adviser can find the right mortgage and protection for you.",
+  "intro": "Your answers are saved when you submit and go straight to your adviser. Sections that do not apply to you are skipped automatically.",
+  "estimatedMinutes": 20,
+  "placeholder": false,
+  "submitLabel": "Submit FactFind",
+  "successTitle": "Thank you — your FactFind has been submitted",
+  "successMessage": "Thank you for completing this questionaire, your adviser will be in touch shortly to discuss the next steps.",
+  "steps": [
+    {
+      "id": "s1_introduction",
+      "title": "Introduction",
+      "fields": [
+        {
+          "id": "who_completing",
+          "label": "Who is completing this form?",
+          "source": "cf3c3666-af5c-4aa1-9aba-9220240ef916",
+          "options": [
+            {
+              "value": "adviser",
+              "label": "Adviser"
+            },
+            {
+              "value": "client",
+              "label": "Client"
+            }
+          ],
+          "type": "radio",
+          "colSpan": 2,
+          "defaultValue": "client",
+          "helpText": "Choose \"Adviser\" to unlock the internal sections."
+        }
+      ]
+    },
+    {
+      "id": "s2_adviser_details",
+      "title": "Adviser Details",
+      "fields": [
+        {
+          "id": "adviser_name",
+          "label": "Adviser Name",
+          "source": "eb7ff301-1258-423e-91d1-0f4f64ba10d0",
+          "type": "text",
+          "colSpan": 2
+        },
+        {
+          "id": "date_of_appointment",
+          "label": "Date of Appointment",
+          "source": "85bed86e-7881-4b86-8122-427537179854",
+          "type": "date",
+          "colSpan": 2
+        }
+      ],
+      "description": "Adviser use only — not shown to clients.",
+      "visibleWhen": {
+        "field": "who_completing",
+        "operator": "eq",
+        "value": "adviser"
+      }
+    },
+    {
+      "id": "s3_client_source",
+      "title": "Client Source",
+      "fields": [
+        {
+          "id": "source",
+          "label": "Source",
+          "source": "7ff9e10d-442d-436f-9c4b-2f32ed0d215c",
+          "options": [
+            {
+              "value": "existing_client",
+              "label": "Existing Client"
+            },
+            {
+              "value": "referral",
+              "label": "Referral"
+            },
+            {
+              "value": "social_media",
+              "label": "Social media"
+            },
+            {
+              "value": "event",
+              "label": "Event"
+            },
+            {
+              "value": "family",
+              "label": "Family"
+            },
+            {
+              "value": "cold_call",
+              "label": "Cold Call"
+            },
+            {
+              "value": "company_lead",
+              "label": "Company Lead"
+            },
+            {
+              "value": "other",
+              "label": "Other"
+            }
+          ],
+          "type": "select",
+          "colSpan": 2
+        },
+        {
+          "id": "if_other_please_specify_source_details",
+          "label": "If 'Other', please specify source details",
+          "source": "9c37ad96-1541-43e9-8558-cfddb8c9f63c",
+          "type": "text",
+          "colSpan": 2
+        }
+      ],
+      "description": "Adviser use only — not shown to clients.",
+      "visibleWhen": {
+        "field": "who_completing",
+        "operator": "eq",
+        "value": "adviser"
+      }
+    },
+    {
+      "id": "s4_applicant_1_details",
+      "title": "Applicant 1 Details",
+      "fields": [
+        {
+          "id": "a1_heading",
+          "type": "heading",
+          "label": "Applicant 1 details",
+          "colSpan": 2,
+          "source": "2c5ae3d6-3577-47ab-971f-aba125ccc3ae"
+        },
+        {
+          "id": "a1_title",
+          "label": "Title",
+          "source": "9d5aa651-1405-4990-84ae-1766c20563db",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "client_name",
+          "label": "Full Name",
+          "source": "d14d6746-63af-471e-a27f-0e59656de688",
+          "type": "text",
+          "colSpan": 1,
+          "identity": "client_name",
+          "required": true
+        },
+        {
+          "id": "a1_date_of_birth",
+          "label": "Date of Birth",
+          "source": "8992ba69-2abf-4716-bfae-c28e26ed63f5",
+          "type": "date",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_gender",
+          "label": "Gender",
+          "source": "9a04d88d-b9ad-42f4-8b44-61139e8e863a",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "client_phone",
+          "label": "Phone Number",
+          "source": "744402b6-3ea1-438d-ba80-a5fc07252bbe",
+          "type": "tel",
+          "colSpan": 1,
+          "identity": "client_phone"
+        },
+        {
+          "id": "client_email",
+          "label": "Email",
+          "source": "6b5a6b0a-0961-43ba-9759-5ea6519ff6eb",
+          "type": "email",
+          "colSpan": 1,
+          "identity": "client_email",
+          "required": true
+        },
+        {
+          "id": "a1_address",
+          "label": "Address",
+          "source": "78d2f25c-dcdc-45bc-b64b-a04aeef84521",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_marital_status",
+          "label": "Marital Status",
+          "source": "82715da2-a108-4f8d-abaf-d66e991b75b4",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_health_heading",
+          "type": "heading",
+          "label": "Applicant 1 Health Details",
+          "colSpan": 2,
+          "source": "65fbfdf8-7d7a-4ebd-8e72-e10e1b022ca1"
+        },
+        {
+          "id": "a1_health_smoker_vaper_status_include_amount_vape",
+          "label": "Smoker/Vaper status (include amount/vape)",
+          "source": "8b5bf429-f437-4890-806f-8720436dd3ae",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_health_height",
+          "label": "Height",
+          "source": "1e8f132f-3c67-472a-9446-91ea4d56a3df",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_health_weight",
+          "label": "Weight",
+          "source": "ea631859-99c9-4d60-8403-78d40aa425f7",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_health_have_you_had_any_serious_health_issues_in_the_pa",
+          "label": "Have you had any serious health issues in the past which may stop you from getting insurance? (Cancer, Heart Attack, Stroke, M.S, etc)",
+          "source": "71c3ff76-35c0-4f8a-884d-47a3e30855f1",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_health_nationality",
+          "label": "Nationality",
+          "source": "baa22df7-0ccf-42d7-81aa-29a2316fa8b9",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "joint_case",
+          "label": "Is this a joint case?",
+          "source": "2772f172-e77f-498a-98ac-c325f22b0c84",
+          "type": "yesno",
+          "colSpan": 2
+        }
+      ]
+    },
+    {
+      "id": "s5_applicant_2_details",
+      "title": "Applicant 2 Details",
+      "fields": [
+        {
+          "id": "a2_heading",
+          "type": "heading",
+          "label": "Applicant 2 Details",
+          "colSpan": 2,
+          "source": "9351b6a8-d0b9-4f69-965b-45b7fce8267c"
+        },
+        {
+          "id": "a2_title",
+          "label": "Title",
+          "source": "de62e4ce-791f-4366-86b2-e7b52f1d2125",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a2_full_name",
+          "label": "Full Name",
+          "source": "40defd5c-7db2-40b0-a726-f2b918f377c8",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a2_date_of_birth",
+          "label": "Date of Birth",
+          "source": "05049236-45c8-4b0b-ac4c-37ac18482ab3",
+          "type": "date",
+          "colSpan": 1
+        },
+        {
+          "id": "a2_gender",
+          "label": "Gender",
+          "source": "a4be987a-dc61-4321-9167-3f89f26a07ff",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a2_address",
+          "label": "Address",
+          "source": "4166171c-42ed-4806-83c6-e26c7d8ece90",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a2_phone_number",
+          "label": "Phone Number",
+          "source": "ffc28eef-eabb-4e49-bf7e-6b930b9143bd",
+          "type": "tel",
+          "colSpan": 1
+        },
+        {
+          "id": "a2_email",
+          "label": "Email",
+          "source": "5d307b08-5cea-4b55-8aae-6b4d65f84965",
+          "type": "email",
+          "colSpan": 1
+        },
+        {
+          "id": "a2_marital_status",
+          "label": "Marital Status",
+          "source": "540d30c7-959d-47ff-aaf4-b8f72d9a7c9b",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a2_health_heading",
+          "type": "heading",
+          "label": "Applicant 2 Health Details",
+          "colSpan": 2,
+          "source": "0e79a296-398d-4bb8-a6e3-df0d6c97a1fd"
+        },
+        {
+          "id": "a2_health_smoker_vaper_status_include_amount_vape",
+          "label": "Smoker/Vaper status (include amount/vape)",
+          "source": "8bf2cc0e-ed33-400f-b432-95828c85f2d4",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a2_health_height",
+          "label": "Height",
+          "source": "95fa1837-4ad7-4b44-aa09-ed7be20bb2fe",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a2_health_weight",
+          "label": "Weight",
+          "source": "95611eea-7e27-4b0f-bc23-b64036ff85ca",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a2_health_have_you_had_any_serious_health_issues_in_the_pa",
+          "label": "Have you had any serious health issues in the past which may stop you from getting insurance? (Cancer, Heart Attack, Stroke, M.S, etc)",
+          "source": "34dbeb5c-7ae9-4dec-b2a2-61b4abd3dc99",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a2_health_nationality",
+          "label": "Nationality",
+          "source": "566b698a-c3c1-45a4-8be3-11aa7531ad96",
+          "type": "text",
+          "colSpan": 1
+        }
+      ],
+      "visibleWhen": {
+        "field": "joint_case",
+        "operator": "eq",
+        "value": "yes"
+      }
+    },
+    {
+      "id": "s6_dependants",
+      "title": "Dependants",
+      "fields": [
+        {
+          "id": "has_dependants",
+          "label": "Do you have children or dependants?",
+          "source": "3ce63c97-f454-40f6-8de9-031eb984dc57",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "dep_heading",
+          "type": "heading",
+          "label": "Children & Dependent Details",
+          "colSpan": 2,
+          "source": "ce165343-0198-444d-9ded-1e938e4f89e9",
+          "visibleWhen": {
+            "field": "has_dependants",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "dep_child_name",
+          "label": "Child Name",
+          "source": "b2071b18-adfa-47fe-8909-ddb2d97dec9b",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_dependants",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "dep_child_gender",
+          "label": "Child Gender",
+          "source": "d3fe1535-8b0b-4d80-a4d7-8da72c210485",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_dependants",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "dep_relationship_to_client",
+          "label": "Relationship to Client",
+          "source": "d45e2cf2-8ee6-4bf7-aeae-29820044aef1",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_dependants",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "dep_dependent_on_applicant_1_applicant_2_or_both",
+          "label": "Dependent on (Applicant 1, Applicant 2 or Both)",
+          "source": "03959efd-f4ba-47a0-9e1f-388f4fbd58dc",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_dependants",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "dep_your_children_will_be_dependant_on_you_until_wha",
+          "label": "Your children will be dependant on you until what age?",
+          "source": "46836821-2fd5-4ec1-9460-8626ffa93219",
+          "type": "number",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_dependants",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "if_you_have_any_more_children_please_provide_det",
+          "label": "If you have any more children, please provide details below for ALL children.",
+          "source": "7f479f50-73ee-4077-9a0b-cdfacb7fc475",
+          "helpText": "Child name, Gender, Relationship to client(s), D.O.B, Dependant until what age",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3,
+          "visibleWhen": {
+            "field": "has_dependants",
+            "operator": "eq",
+            "value": "yes"
+          }
+        }
+      ]
+    },
+    {
+      "id": "s7_employment_info",
+      "title": "Employment Info",
+      "fields": [
+        {
+          "id": "a1_emp_heading",
+          "type": "heading",
+          "label": "Applicant 1 Employment Status",
+          "colSpan": 2,
+          "source": "7bbcc6a4-b17d-4ea7-8c15-fd0776fa6cf1"
+        },
+        {
+          "id": "a1_emp_status",
+          "label": "Applicant 1 Employment Status",
+          "source": "862b5102-e00c-4ab0-9027-507f3c6d28d1",
+          "options": [
+            {
+              "value": "employed",
+              "label": "Employed"
+            },
+            {
+              "value": "self_employed",
+              "label": "Self Employed"
+            },
+            {
+              "value": "unemployed",
+              "label": "Unemployed"
+            },
+            {
+              "value": "retired",
+              "label": "Retired"
+            }
+          ],
+          "type": "select",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_emp_applicant_1_occupation",
+          "label": "Applicant 1 Occupation",
+          "source": "5f70feba-8632-4505-a277-3d3eca042083",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_emp_applicant_1_employer_name",
+          "label": "Applicant 1 Employer Name",
+          "source": "68e7d428-97d6-4c23-a9d5-42089cd29333",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_emp_applicant_1_full_time_or_part_time",
+          "label": "Applicant 1 Full time or part time?",
+          "source": "0b2a713d-96c9-49fc-9317-8e42730aa9a1",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_emp_applicant_1_start_of_employment_date_or_company_",
+          "label": "Applicant 1 Start of employment date (or company setup date for self employed)",
+          "source": "a69525e2-f1cd-4147-8562-f28e811adee8",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "if_you_have_worked_there_less_than_2_years_pleas",
+          "label": "If you have worked there less than 2 years please enter previous employers details below",
+          "source": "f060617e-6c71-4fe5-b256-6c6f0f645468",
+          "helpText": "Company name, Job title, Start and end date, Income/salary",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3
+        },
+        {
+          "id": "a1_pay_heading",
+          "type": "heading",
+          "label": "Applicant 1 Employment Info",
+          "colSpan": 2,
+          "source": "77a90254-d5bd-40e0-b3d8-82eddef62d73"
+        },
+        {
+          "id": "a1_pay_applicant_1_gross_annual_pay",
+          "label": "Applicant 1 Gross Annual Pay",
+          "source": "c8eecb7a-0d8d-4dd0-ac59-87a11976b1a0",
+          "type": "currency",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_pay_applicant_1_net_monthly_pay",
+          "label": "Applicant 1 Net Monthly Pay",
+          "source": "760b997d-c444-4180-a8f4-5e53a1753df6",
+          "type": "currency",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_pay_applicant_1_benefits_received",
+          "label": "Applicant 1 Benefits received",
+          "source": "76c91928-3deb-41ba-964b-0eaa956d1bc1",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_pay_applicant_1_anticipated_retirement_age",
+          "label": "Applicant 1 Anticipated Retirement Age",
+          "source": "b90ddec8-0efb-44e2-aba3-b72bb8d636f3",
+          "type": "number",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_pay_applicant_1_any_additional_income_please_state_b",
+          "label": "Applicant 1 Any additional income please state below.",
+          "source": "7d371f91-2ad4-4257-afd3-b2276c0f17dc",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a2_emp_heading",
+          "type": "heading",
+          "label": "Applicant 2 Employment Status",
+          "colSpan": 2,
+          "source": "2ef544ac-5381-41a3-acbc-2d89f52da8c0",
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "a2_emp_applicant_2_employment_status",
+          "label": "Applicant 2 Employment Status",
+          "source": "ccb7ec79-f464-4721-9a58-dad205958576",
+          "options": [
+            {
+              "value": "employed",
+              "label": "Employed"
+            },
+            {
+              "value": "self_employed",
+              "label": "Self Employed"
+            },
+            {
+              "value": "unemployed",
+              "label": "Unemployed"
+            },
+            {
+              "value": "retired",
+              "label": "Retired"
+            }
+          ],
+          "type": "select",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "a2_emp_applicant_2_occupation",
+          "label": "Applicant 2 Occupation",
+          "source": "4a188241-7270-4d0c-9bf9-12501dc693f0",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "a2_emp_applicant_2_employer_name",
+          "label": "Applicant 2 Employer Name",
+          "source": "4ac2541e-1e1c-4db6-9497-13a4698b88c5",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "a2_emp_applicant_2_full_time_or_part_time",
+          "label": "Applicant 2 Full time or part time?",
+          "source": "d4301991-c1e0-44ad-b565-613fcbdf1839",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "a2_emp_applicant_2_start_of_employment_date_or_company_",
+          "label": "Applicant 2 Start of employment date (or company setup date for self employed)",
+          "source": "950d5f2d-0211-48be-9ed5-191e20a0f470",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "if_you_have_worked_there_less_than_2_years_pleas_2",
+          "label": "If you have worked there less than 2 years please enter previous employers details below",
+          "source": "e791c1ed-5eb8-45ea-8bde-b07c527e44ad",
+          "helpText": "Company name\nJob title\nStart and end date\nIncome/salary",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "a2_pay_heading",
+          "type": "heading",
+          "label": "Applicant 2 Employment Info",
+          "colSpan": 2,
+          "source": "dbd869fa-1956-4dbc-a08f-673bb7c919ef",
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "a2_pay_applicant_2_gross_annual_pay",
+          "label": "Applicant 2 Gross Annual Pay",
+          "source": "9ab7b402-31b3-4802-af32-4cbca7ac5adc",
+          "type": "currency",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "a2_pay_applicant_2_net_monthly_pay",
+          "label": "Applicant 2 Net Monthly Pay",
+          "source": "96d7bd9e-9870-4f57-9453-bc2d8f691eca",
+          "type": "currency",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "a2_pay_applicant_2_benefits_received",
+          "label": "Applicant 2 Benefits received",
+          "source": "8a10e121-99c3-49bb-9fba-c7da4bfe32ff",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "a2_pay_applicant_2_anticipated_retirement_age",
+          "label": "Applicant 2 Anticipated Retirement Age",
+          "source": "a3a042f4-2588-40e1-b550-a752af2a9c1a",
+          "type": "number",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "a2_pay_applicant_2_any_additional_income_please_state_b",
+          "label": "Applicant 2 Any additional income please state below.",
+          "source": "74e72641-448f-4dcb-a52c-5cf630d936ba",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        }
+      ]
+    },
+    {
+      "id": "s8_monthly_expenditure",
+      "title": "Monthly Expenditure",
+      "fields": [
+        {
+          "id": "exp_heading",
+          "type": "heading",
+          "label": "Monthly Expenses",
+          "colSpan": 2,
+          "source": "5cb03f8e-1266-48a2-868d-208e5f92460c"
+        },
+        {
+          "id": "exp_housing_costs_rent_mortgage",
+          "label": "Housing Costs (Rent/Mortgage)",
+          "source": "13d128ef-a93a-4f61-a77f-ca974f514d99",
+          "type": "currency",
+          "colSpan": 1
+        },
+        {
+          "id": "exp_utilities_monthly",
+          "label": "Utilities (monthly)",
+          "source": "ea658fdf-84d2-4bf9-ab4b-10f5322d4838",
+          "type": "currency",
+          "colSpan": 1
+        },
+        {
+          "id": "exp_food_and_clothing_monthly",
+          "label": "Food and Clothing (monthly)",
+          "source": "2347bf5b-ef5b-43fb-ba97-d90f5d15463b",
+          "type": "currency",
+          "colSpan": 1
+        },
+        {
+          "id": "exp_council_tax_monthly",
+          "label": "Council Tax (monthly)",
+          "source": "9b44c65e-bae6-481c-a624-82eaccd3414d",
+          "type": "currency",
+          "colSpan": 1
+        },
+        {
+          "id": "exp_other_insurances_monthly",
+          "label": "Other Insurances (monthly)",
+          "source": "69a22d5c-0f9b-4c44-bf02-87bd0a876800",
+          "type": "currency",
+          "colSpan": 1
+        },
+        {
+          "id": "exp_child_maintenance_monthly",
+          "label": "Child maintenance (monthly)",
+          "source": "5b5a9e57-bdb2-472a-9c91-6474b3d81cf0",
+          "type": "currency",
+          "colSpan": 1
+        },
+        {
+          "id": "exp_mobile_monthly",
+          "label": "Mobile (monthly)",
+          "source": "1c50a91e-bc81-4e8e-8ab9-a66d19c1af1e",
+          "type": "currency",
+          "colSpan": 1
+        },
+        {
+          "id": "exp_motoring_monthly",
+          "label": "Motoring (monthly)",
+          "source": "80eea8ec-1a22-4878-a0ad-d9283b41fb8a",
+          "type": "currency",
+          "colSpan": 1
+        },
+        {
+          "id": "exp_loans_monthly",
+          "label": "Loans (monthly)",
+          "source": "f13e839a-910e-4554-860c-04e5924fb703",
+          "type": "currency",
+          "colSpan": 1
+        },
+        {
+          "id": "exp_credit_cards_monthly",
+          "label": "Credit cards (monthly)",
+          "source": "e6f9bc77-2eb4-4ba9-8946-bd1a528ef273",
+          "type": "currency",
+          "colSpan": 1
+        },
+        {
+          "id": "exp_other_expenditure_monthly",
+          "label": "Other Expenditure (monthly)",
+          "source": "360b3eee-e54a-4ea6-a6c2-870e51ef6b51",
+          "type": "currency",
+          "colSpan": 1
+        },
+        {
+          "id": "exp_approx_total_monthly_expenditure",
+          "label": "Approx Total Monthly Expenditure",
+          "source": "9a83c909-96bd-44e1-b8e6-93a9bf2ecb87",
+          "type": "currency",
+          "colSpan": 1
+        }
+      ]
+    },
+    {
+      "id": "s9_sick_pay_info",
+      "title": "Sick Pay Info",
+      "fields": [
+        {
+          "id": "sp1_heading",
+          "type": "heading",
+          "label": "Applicant 1",
+          "colSpan": 2,
+          "source": "dfcfbbf9-07b8-4bc7-8f07-1f2d960042ed"
+        },
+        {
+          "id": "sp1_do_you_receive_any_sick_pay",
+          "label": "Do you receive any sick pay?",
+          "source": "6ead8dc9-6e20-4bba-8615-fe26aa1c2341",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "sp1_if_yes_how_much_sick_pay_do_you_receive",
+          "label": "If yes, How much sick pay do you receive?",
+          "source": "97bf9b15-4b7e-4bdc-bfb1-79784f0671af",
+          "helpText": "Monetary amount",
+          "type": "currency",
+          "colSpan": 1
+        },
+        {
+          "id": "sp1_how_long_is_sick_pay_received_for",
+          "label": "How long is sick pay received for?",
+          "source": "d2f8e270-fadf-46cb-9805-10fc56f758dd",
+          "helpText": "Duration in months",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "sp1_do_you_have_any_savings_or_other_income_that_wou",
+          "label": "Do you have any savings or other income that would help you pay your monthly bills?",
+          "source": "8e00a699-751b-4283-8a89-10b526396cd0",
+          "helpText": "Duration in months",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "sp1_if_your_income_stopped_but_your_bills_continued_",
+          "label": "If your income stopped but your bills continued. How long would you be able to pay your monthly bills for?",
+          "source": "40ff2361-f3f1-4a9b-bd87-2461dfbb3b2c",
+          "helpText": "Duration in months",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "sp1_after_your_savings_have_run_out_how_long_could_y",
+          "label": "After your savings have run out, how long could you continue to pay your bills for, after this?",
+          "source": "a2538608-e855-4594-ad18-cdb3b2a6a596",
+          "helpText": "Duration in months",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "sp2_heading",
+          "type": "heading",
+          "label": "Applicant 2",
+          "colSpan": 2,
+          "source": "240e46b5-5996-4b10-a3c5-5c72a58e29ae",
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "sp2_do_you_receive_any_sick_pay",
+          "label": "Do you receive any sick pay?",
+          "source": "9a154d30-9e10-4cf6-af30-5d6db279241f",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "sp2_if_yes_how_much_sick_pay_do_you_receive",
+          "label": "If yes, How much sick pay do you receive?",
+          "source": "0fd777d0-e5be-4289-a5fa-827298c2ade9",
+          "helpText": "Monetary amount",
+          "type": "currency",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "sp2_how_long_is_sick_pay_received_for",
+          "label": "How long is sick pay received for?",
+          "source": "1fb90270-1c77-40a0-b2a0-ce0daa18850c",
+          "helpText": "Duration in months",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "sp2_do_you_have_any_savings_or_other_income_that_wou",
+          "label": "Do you have any savings or other income that would help you pay your monthly bills?",
+          "source": "e0d0f938-6d7b-476b-9c27-924957e93eb8",
+          "helpText": "Duration in months",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "sp2_if_your_income_stopped_but_your_bills_continued_",
+          "label": "If your income stopped but your bills continued. How long would you be able to pay your monthly bills for?",
+          "source": "14ae1259-b088-4db3-8f58-904d8adbbb05",
+          "helpText": "Duration in months",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "sp2_after_your_savings_have_run_out_how_long_could_y",
+          "label": "After your savings have run out, how long could you continue to pay your bills for, after this?",
+          "source": "51c48dc8-ce15-464d-9282-8bf7d5c5b1d0",
+          "helpText": "Duration in months",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        }
+      ]
+    },
+    {
+      "id": "s10_current_protection",
+      "title": "Current Protection",
+      "fields": [
+        {
+          "id": "prot_heading",
+          "type": "heading",
+          "label": "Current protection",
+          "colSpan": 2,
+          "source": "90f48f3c-3f7f-4f44-97c3-dabb7e2576c2"
+        },
+        {
+          "id": "prot_do_you_have_anything_that_pays_out_a_lump_sum_to",
+          "label": "Do you have anything that pays out a lump sum to your family upon death?",
+          "source": "dcd71d4a-600d-4303-aaa5-32fa282653ed",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "prot_do_you_have_anything_that_pays_out_a_lump_sum_up",
+          "label": "Do you have anything that pays out a lump sum upon diagnosis of cancer, heart attack, stroke, M.S etc",
+          "source": "34658e91-9bd5-4a73-bde6-b43d45140ecb",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "prot_do_you_have_anything_that_pays_off_your_mortgage",
+          "label": "Do you have anything that pays off your mortgage if either applicant was to die or get ill?",
+          "source": "a979fd62-81e8-4614-80c1-36805c343fdd",
+          "options": [
+            {
+              "value": "yes",
+              "label": "Yes"
+            },
+            {
+              "value": "no",
+              "label": "No"
+            },
+            {
+              "value": "i_don_t_have_a_mortgage",
+              "label": "I don't have a mortgage"
+            }
+          ],
+          "type": "radio",
+          "colSpan": 2
+        },
+        {
+          "id": "prot_do_you_have_anything_in_place_that_pays_your_wag",
+          "label": "Do you have anything in place that pays your wage if your income stops?",
+          "source": "fe94570c-3a3e-43ab-8d4d-1208f6a43e7f",
+          "options": [
+            {
+              "value": "yes",
+              "label": "Yes"
+            },
+            {
+              "value": "no",
+              "label": "No"
+            }
+          ],
+          "type": "radio",
+          "colSpan": 1
+        },
+        {
+          "id": "enter_details_of_any_existing_policies_you_have",
+          "label": "Enter details of any existing policies you have.",
+          "source": "c74e921c-2396-4bd1-8151-8a7818b0e136",
+          "helpText": "Insurance company, payout, term and monthly premium. If more than one enter all below.",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3
+        }
+      ]
+    },
+    {
+      "id": "s11_additional_services",
+      "title": "Additional Services",
+      "fields": [
+        {
+          "id": "pension_heading",
+          "type": "heading",
+          "label": "Pension information",
+          "colSpan": 2,
+          "source": "2b56a5eb-e511-4d05-a21d-1ad35591b45e"
+        },
+        {
+          "id": "pension_do_you_have_pensions_or_investments",
+          "label": "Do you have pensions or investments?",
+          "source": "b4ae0ff1-3bac-4c4e-989e-46c3002b49ac",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "pension_have_your_pensions_investments_been_reviewed",
+          "label": "Have your pensions/investments been reviewed?",
+          "source": "9b885d5a-7ef8-4994-9984-51517918a1cb",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "pension_are_you_happy_with_your_pensions_investments",
+          "label": "Are you happy with your pensions/investments?",
+          "source": "d9f74a72-14c2-4ae2-af3a-b2739d174746",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "pension_has_will",
+          "label": "Do you have a will?",
+          "source": "361f54d4-5991-48ed-92f3-660f43cc8a85",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "pension_do_you_understand_the_consequences_if_you_don_t_",
+          "label": "Do you understand the consequences if you don't have a will?",
+          "source": "af32757d-08b0-4644-8fbc-b94f9599a116",
+          "type": "yesno",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "pension_has_will",
+            "operator": "eq",
+            "value": "no"
+          }
+        },
+        {
+          "id": "pension_are_you_concerned_about_care_fees",
+          "label": "Are you concerned about care fees?",
+          "source": "0b99a5c7-4cb3-4669-b197-b19d7b92f0eb",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "is_there_anything_specific_that_you_would_like_y",
+          "label": "Is there anything specific that you would like your adviser to look at to protect you and your family?",
+          "source": "65c5c695-42e2-40ed-b5c4-57a5de6ae3f3",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3
+        },
+        {
+          "id": "please_ensure_that_all_information_you_have_prov",
+          "label": "Please ensure that all information you have provided is true, accurate, and complete. Providing incorrect or incomplete information may affect your protection insurance recommendations. Ultimately, it could prevent your insurance from paying out, so it is essential that all details are correct. — I understand",
+          "source": "01404e5d-41e4-4547-827d-179234d97819",
+          "required": true,
+          "type": "checkbox",
+          "colSpan": 2
+        }
+      ]
+    },
+    {
+      "id": "s12_admin_notes",
+      "title": "Admin Notes",
+      "fields": [
+        {
+          "id": "admin_heading",
+          "type": "heading",
+          "label": "Adviser notes for admin",
+          "colSpan": 2,
+          "source": "bcba0806-9d26-4de5-8073-b223849dd702"
+        },
+        {
+          "id": "admin_what_is_the_reason_for_this_meeting_tell_the_sto",
+          "label": "What is the reason for this meeting? (Tell the story)",
+          "source": "f81dc490-aabc-411a-8037-c72cf374e202",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3
+        },
+        {
+          "id": "admin_reason_for_recommended_protection_sum_assured",
+          "label": "Reason for recommended protection sum assured",
+          "source": "0ddf6614-70b4-40ba-a5fb-f62f4f36a9a5",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3
+        },
+        {
+          "id": "admin_what_is_the_protection_product_recommended_and_w",
+          "label": "What is the protection product recommended and why?",
+          "source": "d11eb674-9a19-4b69-86d7-8cd246273d33",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3
+        },
+        {
+          "id": "admin_reason_for_protection_term_length",
+          "label": "Reason for protection term length",
+          "source": "f4e5ef3b-a9e2-4089-ac4a-4287868896d0",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3
+        },
+        {
+          "id": "admin_reason_for_provider_choice",
+          "label": "Reason for provider choice",
+          "source": "f921e425-8633-4834-ae1a-e741da27ab91",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3
+        },
+        {
+          "id": "admin_additional_internal_notes",
+          "label": "Additional internal notes",
+          "source": "1c7d42a2-e8f6-46de-84e5-c592a0ba288b",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3
+        }
+      ],
+      "description": "Adviser use only — not shown to clients.",
+      "visibleWhen": {
+        "field": "who_completing",
+        "operator": "eq",
+        "value": "adviser"
+      }
+    }
+  ]
+}

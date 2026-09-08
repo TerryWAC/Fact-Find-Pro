@@ -262,21 +262,30 @@ The engine gives you, for free:
 
 ### Importing from Typeform
 
-The Mortgage FactFind is imported from the Wealthy Advisers Club Typeform template — 13 sections, 219
-questions and all of its branching — by `scripts/import-typeform.mjs`:
+The Mortgage and Protection FactFinds are imported from the Wealthy Advisers Club Typeform templates
+(Mortgage: 13 sections, 219 questions; Protection: 12 sections, 104 questions), branching included, by
+`scripts/import-typeform.mjs`:
 
 ```bash
 # Full definition from the Create API (the UI export is lossy — it drops group contents and refs)
 curl -s https://api.typeform.com/forms/<FORM_ID> -H "Authorization: Bearer <TOKEN>" > export.json
-npm run import:typeform -- export.json mortgage      # writes src/lib/forms/schemas/mortgage.json
+npm run import:typeform -- export.json protection   # writes src/lib/forms/schemas/protection.json
+npm run verify:typeform -- export.json src/lib/forms/schemas/protection.json
 ```
 
 The converter splits sections into steps, turns groups into sub-headed blocks, upgrades free-text fields to
 date / currency / number / email / tel where the title makes it unambiguous (every upgrade is printed), marks
 Applicant 1's name, email and phone as the client identity, and applies the branching as step- and
 field-level `visibleWhen` rules. Typeform expresses branching as *jumps*; the engine as *visibility*, so the
-rules are declared as intent in the script rather than translated mechanically — which also let two authoring
-slips in the source template be left out rather than reproduced.
+rules are declared per template in the script's `LOGIC` map rather than translated mechanically — which also
+lets authoring slips in the source be left out rather than reproduced.
+
+`verify:typeform` then proves the import is complete. It matches every Typeform question, group and note to
+a schema field by ref (nothing missing, nothing invented), checks every choice list label for label, checks
+required flags and help text, and simulates **every combination of answers** to the fields the jump rules
+depend on through both Typeform's rules and the schema's visibility, failing on any difference that is not
+in its documented-deviation list (and failing if a documented deviation is never observed, so the list
+cannot go stale). Run it after every re-import; it exits non-zero on problems.
 
 Conditions compose: `{ all: [...] }` / `{ any: [...] }`, and a whole step can carry `visibleWhen` (e.g. the
 Applicant 2 section on a joint application). Skipped steps never appear in the progress bar or the payload.

@@ -79,7 +79,7 @@ function upgradeType(tfType, title) {
     if (/^email$/.test(t)) return 'email'
     if (/^phone number$/.test(t)) return 'tel'
     if (/how many|number of (bedrooms|bathrooms)|months missed|year of build|retirement age|until what age/.test(t)) return 'number'
-    if (/gross annual pay|net monthly pay|\(monthly\)|purchase amount|estimated value|outstanding loan|ccj amount|rental income|total monthly expenditure|how much sick pay/.test(t)) return 'currency'
+    if (/gross annual pay|net monthly pay|\(monthly\)|housing costs|purchase amount|estimated value|outstanding loan|ccj amount|rental income|total monthly expenditure|how much sick pay/.test(t)) return 'currency'
     if (/interest rate/.test(t)) return 'percent'
   }
   return null
@@ -197,7 +197,9 @@ for (let i = 0; i < top.length; i++) {
   } else if (tf.type === 'inline_group') {
     const prefix = groupPrefix(tf.title)
     const heading = tf.title.replace(/^Section \d+:\s*/i, '').replace(/^Please enter (information about your |)/i, '').trim()
-    const headingLabel = heading.charAt(0).toUpperCase() + heading.slice(1)
+    const headingLabel = /sick pay info applicant 2/i.test(tf.title) ? 'Applicant 2'
+      : /sick pay info/i.test(tf.title) ? 'Applicant 1'
+      : heading.charAt(0).toUpperCase() + heading.slice(1)
     current.fields.push({ id: uniqueId(`${prefix}_heading`), type: 'heading', label: headingLabel, colSpan: 2, source: tf.ref, _top: i })
     for (const child of tf.properties.fields) {
       const f = convertField(child, { prefix })
@@ -236,81 +238,107 @@ const gates = {
   btlCount: findByLabel(/^If yes, how many\?$/),
   will: findByLabel(/^Do you have a will\?$/),
 }
-for (const [k, v] of Object.entries(gates)) if (!v) throw new Error(`gate not found: ${k}`)
-rename(gates.who, 'who_completing'); rename(gates.joint, 'joint_case'); rename(gates.children, 'has_dependants')
-rename(gates.ccj, 'has_ccj'); rename(gates.bankrupt, 'has_bankruptcy'); rename(gates.mortgageType, 'mortgage_type')
-rename(gates.btl, 'has_btl'); rename(gates.btlCount, 'btl_count'); rename(gates.will, 'pension_has_will')
+const GATE_IDS = { who: 'who_completing', joint: 'joint_case', children: 'has_dependants', ccj: 'has_ccj',
+  bankrupt: 'has_bankruptcy', mortgageType: 'mortgage_type', btl: 'has_btl', btlCount: 'btl_count', will: 'pension_has_will' }
+for (const [k, f] of Object.entries(gates)) if (f) rename(f, GATE_IDS[k])
+const need = (k) => { if (!gates[k]) throw new Error(`this form has no "${k}" gate but its logic needs one`); return GATE_IDS[k] }
 
-// Source-data repairs — both are flaws in the Typeform template itself.
+if (gates.who) {
+  // A client-facing link defaults to "Client"; an adviser filling it in switches.
+  gates.who.defaultValue = 'client'
+  gates.who.helpText = 'Choose "Adviser" to unlock the internal sections.'
+}
+if (gates.btlCount) {
+  // "How many buy-to-lets" drives which property blocks appear — make it a pick.
+  gates.btlCount.type = 'select'
+  gates.btlCount.options = [{ value: '1', label: '1' }, { value: '2', label: '2' }, { value: '3', label: '3' }]
+  gates.btlCount.colSpan = 1
+}
+
+// Applicant 1 identity — the submission is bound to the client through these.
+const a1GroupIdx = top.findIndex((f) => f.type === 'inline_group' && /^applicant 1 details$/i.test(f.title))
+const a1Name = findByLabel(/^Full Name$/, a1GroupIdx), a1Email = findByLabel(/^Email$/, a1GroupIdx), a1Phone = findByLabel(/^Phone Number$/, a1GroupIdx)
+rename(a1Name, 'client_name'); a1Name.identity = 'client_name'; a1Name.required = true
+rename(a1Email, 'client_email'); a1Email.identity = 'client_email'; a1Email.type = 'email'; a1Email.required = true
+rename(a1Phone, 'client_phone'); a1Phone.identity = 'client_phone'; a1Phone.type = 'tel'
+audit.required.push('client_name, client_email (were optional in Typeform; a submission must identify the client)')
+
+// Source-data repairs — flaws in the Typeform templates themselves.
 // 1. Applicant 1's employment-status dropdown is titled literally "..." in
 //    Typeform (Applicant 2's is titled properly). Give it its real name.
 const a1Status = all.find((f) => f.label === '...' && f.type === 'select')
 if (a1Status) { rename(a1Status, 'a1_emp_status'); a1Status.label = 'Applicant 1 Employment Status'; audit.repairs.push('a1_emp_status: label was "..." in Typeform') }
-// 2. Every property block asks "Property type" twice: once for the building
+// 2. Property blocks ask "Property type" twice: once for the building
 //    (Detached, Flat…) and once for Freehold/Leasehold. The second is tenure.
 for (const f of all) {
   const labels = (f.options ?? []).map((o) => o.label).join(',')
   if (/^property type$/i.test(f.label ?? '') && labels === 'Freehold,Leasehold') { f.label = 'Tenure'; audit.repairs.push(`${f.id}: "Property Type" (Freehold/Leasehold) relabelled "Tenure"`) }
 }
 
-// A client-facing link defaults to "Client"; an adviser filling it in switches.
-gates.who.defaultValue = 'client'
-gates.who.helpText = 'Choose "Adviser" to unlock the internal sections.'
-
-// "How many buy-to-lets" drives which property blocks appear — make it a pick.
-gates.btlCount.type = 'select'
-gates.btlCount.options = [{ value: '1', label: '1' }, { value: '2', label: '2' }, { value: '3', label: '3' }]
-gates.btlCount.colSpan = 1
-
-// Applicant 1 identity — the submission is bound to the client through these.
-const a1Name = findByLabel(/^Full Name$/, 11), a1Email = findByLabel(/^Email$/, 11), a1Phone = findByLabel(/^Phone Number$/, 11)
-rename(a1Name, 'client_name'); a1Name.identity = 'client_name'; a1Name.required = true
-rename(a1Email, 'client_email'); a1Email.identity = 'client_email'; a1Email.type = 'email'; a1Email.required = true
-rename(a1Phone, 'client_phone'); a1Phone.identity = 'client_phone'; a1Phone.type = 'tel'
-audit.required.push('client_name, client_email (were optional in Typeform; a submission must identify the client)')
-
 // ---------------------------------------------------------------------------
-// Branching — declared as intent, derived from the Typeform jump rules.
+// Branching — declared as intent per template, derived from its jump rules.
+// Rules address fields by title so they survive reordering in Typeform.
 // ---------------------------------------------------------------------------
 const eq = (field, value) => ({ field, operator: 'eq', value })
 const yes = (field) => eq(field, 'yes')
-const IS_ADVISER = eq('who_completing', 'adviser')
 
-const stepByN = (n) => steps.find((s) => s._n === n)
-function stepVisible(n, cond, why) { stepByN(n).visibleWhen = cond; audit.visibility.push(`step ${n} "${stepByN(n).title}": ${why}`) }
+const stepByTitle = (re) => { const st = steps.find((x) => re.test(x.title)); if (!st) throw new Error(`no step matching ${re}`); return st }
+const topByTitle = (re, nth = 0) => { const hits = top.map((f, i) => (re.test(f.title) ? i : -1)).filter((i) => i >= 0); if (hits.length <= nth) throw new Error(`no top-level field #${nth} matching ${re}`); return hits[nth] }
+function stepVisible(re, cond, why) { const st = stepByTitle(re); st.visibleWhen = cond; audit.visibility.push(`step "${st.title}": ${why}`) }
 function topVisible(i, cond, why) {
   const fs = byTop(i); if (!fs.length) throw new Error(`no fields for top #${i}`)
   for (const f of fs) f.visibleWhen = cond
   audit.visibility.push(`#${i} ${top[i].title.slice(0, 40)}: ${why}`)
 }
+const internalSteps = () => steps.filter((st) => st._internal)
 
-// Rule "Who is completing?": Client → jump past sections 2–3.
-stepVisible(2, IS_ADVISER, 'adviser only'); stepVisible(3, IS_ADVISER, 'adviser only')
-// Section 13 has no jump rule in the source but is labelled (Internal) — treated the same.
-stepVisible(13, IS_ADVISER, 'adviser only (labelled Internal)')
-// Rule "joint case": No → jump past Section 5; and past Applicant 2 employment; and past Applicant 2 sick pay.
-stepVisible(5, yes('joint_case'), 'joint applications only')
-for (const i of [25, 26, 27]) topVisible(i, yes('joint_case'), 'joint applications only')
-topVisible(45, yes('joint_case'), 'joint applications only')
-// Rule "children": No → jump to Section 7.
-for (const i of [19, 20]) topVisible(i, yes('has_dependants'), 'has dependants')
-// Rule "CCJ": Yes → CCJ details. (Source's No-branch jumps *past* the bankruptcy
-// question — an authoring slip; the question is kept.)
-topVisible(31, yes('has_ccj'), 'has a CCJ')
-// Rule "bankrupt": Yes → bankruptcy details.
-topVisible(33, yes('has_bankruptcy'), 'has been bankrupt')
-// Rule "purchase or remortgage". (Source's fallback loops back to the section
-// header when unanswered — not reproduced.)
-topVisible(36, eq('mortgage_type', 'purchase'), 'purchase'); topVisible(37, eq('mortgage_type', 'remortgage'), 'remortgage')
-// Buy-to-let: count gates the property blocks. No jump rule in the source —
-// the blocks were always shown; gating them on the count is the evident intent.
-topVisible(39, yes('has_btl'), 'has BTL')
-topVisible(40, { all: [yes('has_btl'), { field: 'btl_count', operator: 'in', value: ['1', '2', '3'] }] }, 'BTL count ≥ 1')
-topVisible(41, { all: [yes('has_btl'), { field: 'btl_count', operator: 'in', value: ['2', '3'] }] }, 'BTL count ≥ 2')
-topVisible(42, { all: [yes('has_btl'), { field: 'btl_count', operator: 'in', value: ['3'] }] }, 'BTL count = 3')
-// Rule in Pension group: has a will → skip "do you understand the consequences".
-const consequences = findByLabel(/consequences if you don't have a will/i)
-consequences.visibleWhen = eq('pension_has_will', 'no'); audit.visibility.push(`${consequences.id}: only when no will`)
+/** Shared by every template: internal sections, joint-case, dependants, will. */
+function applyCommonLogic() {
+  const who = need('who'), joint = need('joint')
+  // "Who is completing?" Client → jump past the (Internal) sections.
+  for (const st of internalSteps()) { st.visibleWhen = eq(who, 'adviser'); audit.visibility.push(`step "${st.title}": adviser only`) }
+  // Joint case: No → past Section 5, and past Applicant 2 employment.
+  stepVisible(/^Applicant 2 Details$/i, yes(joint), 'joint applications only')
+  topVisible(topByTitle(/^Applicant 2 Employment Status$/i), yes(joint), 'joint applications only')
+  topVisible(topByTitle(/worked there less than 2 years/i, 1), yes(joint), 'joint applications only')
+  topVisible(topByTitle(/^Applicant 2 Employment Info$/i), yes(joint), 'joint applications only')
+  // Applicant 2 sick pay. Mortgage gates it on joint; Protection's source has
+  // no rule (always shown) — the joint gate is the evident intent for both.
+  topVisible(topByTitle(/sick pay info applicant 2/i), yes(joint), 'joint applications only')
+  // Dependants: No → jump to Employment.
+  if (gates.children) { const c = need('children')
+    topVisible(topByTitle(/^Children & Dependent Details$/i), yes(c), 'has dependants')
+    topVisible(topByTitle(/any more children/i), yes(c), 'has dependants') }
+  // Pension: has a will → skip the "consequences" question.
+  if (gates.will) { const w = need('will'); const q = findByLabel(/consequences if you don't have a will/i)
+    q.visibleWhen = eq(w, 'no'); audit.visibility.push(`${q.id}: only when no will`) }
+}
+
+const LOGIC = {
+  mortgage() {
+    applyCommonLogic()
+    // CCJ: Yes → details. (Source's No-branch jumps *past* the bankruptcy
+    // question — an authoring slip; the question is kept.)
+    topVisible(topByTitle(/^Please enter CCJ information/i), yes(need('ccj')), 'has a CCJ')
+    topVisible(topByTitle(/^Bankruptcy info$/i), yes(need('bankrupt')), 'has been bankrupt')
+    // Purchase or remortgage. (Source's fallback loops to its own header when
+    // unanswered — not reproduced.)
+    const mt = need('mortgageType')
+    topVisible(topByTitle(/about your mortgage purchase/i), eq(mt, 'purchase'), 'purchase')
+    topVisible(topByTitle(/about your remortgage/i), eq(mt, 'remortgage'), 'remortgage')
+    // Buy-to-let: no jump rule in the source (blocks always shown); gating
+    // them on the count is the evident intent.
+    const btl = need('btl'), n = need('btlCount')
+    topVisible(topByTitle(/^If yes, how many\?$/), yes(btl), 'has BTL')
+    for (const k of [1, 2, 3]) topVisible(topByTitle(new RegExp(`^Buy-to-let property ${k}$`, 'i')),
+      { all: [yes(btl), { field: n, operator: 'in', value: ['1', '2', '3'].slice(k - 1) }] }, `BTL count ≥ ${k}`)
+  },
+  protection() {
+    applyCommonLogic()
+  },
+}
+if (!LOGIC[formType]) throw new Error(`no branching rules defined for form type "${formType}"`)
+LOGIC[formType]()
 
 // ---------------------------------------------------------------------------
 // Emit

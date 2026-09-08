@@ -1,11 +1,11 @@
-import { createPlaceholderSchema } from '../placeholder'
 import type { FormSchema } from '../types'
+import protectionJson from './protection.json'
 
 /**
  * Protection FactFind schema.
  *
- * Currently a placeholder. To go live, replace the export below with a literal
- * `FormSchema` (or JSON import) containing the real steps and fields — nothing
- * else in the application needs to change.
+ * Generated from the Typeform template by `npm run import:typeform` — see
+ * scripts/import-typeform.mjs. Edit the Typeform and re-run the import (then
+ * `npm run verify:typeform`) rather than editing the JSON by hand.
  */
-export const protectionSchema: FormSchema = createPlaceholderSchema('protection')
+export const protectionSchema = protectionJson as FormSchema

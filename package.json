@@ -14,7 +14,8 @@
     "db:reset": "supabase db reset",
     "db:push": "supabase db push",
     "db:seed": "supabase db reset --no-seed=false",
-    "import:typeform": "node scripts/import-typeform.mjs"
+    "import:typeform": "node scripts/import-typeform.mjs",
+    "verify:typeform": "node scripts/verify-typeform-import.mjs"
   },
   "dependencies": {
     "@eslint/eslintrc": "^3.3.7",
