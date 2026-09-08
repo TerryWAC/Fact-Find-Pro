@@ -70,7 +70,7 @@ export function SidebarNav({ isAdmin, onNavigate }: SidebarNavProps) {
 
       <div className="shrink-0 border-t border-sidebar-border px-5 py-4">
         <p className="text-[11px] leading-relaxed text-sidebar-muted">
-          Wealthy Advisors Club
+          Wealthy Advisers Club
           <br />
           FactFind Pro · MVP
         </p>

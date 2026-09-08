@@ -1,6 +1,6 @@
 # FactFind Pro
 
-Client fact-finding SaaS for UK mortgage &amp; protection advisers, under the **Wealthy Advisors Club** brand.
+Client fact-finding SaaS for UK mortgage &amp; protection advisers, under the **Wealthy Advisers Club** brand.
 
 Advisers register, wait for admin approval, then receive four unique client-facing FactFind links
 (Mortgage, Protection, Medical, Home). Every client submission is bound to the adviser whose link was used,
@@ -376,4 +376,4 @@ Deliberately stubbed, with the structure already in place:
 
 ---
 
-© Wealthy Advisors Club. All rights reserved.
+© Wealthy Advisers Club. All rights reserved.

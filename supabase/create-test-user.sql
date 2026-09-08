@@ -26,7 +26,7 @@ declare
   v_email    text := 'terry@terry-blackburn.com';
   v_password text := 'Terry@098!';
   v_name     text := 'Terry Blackburn';
-  v_company  text := 'Wealthy Advisors Club';
+  v_company  text := 'Wealthy Advisers Club';
   v_phone    text := '+44 7700 900001';
   v_slug     text := 'terrywac';
   v_id       uuid;

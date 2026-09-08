@@ -2,7 +2,7 @@ import type { FactFindType, SubmissionStatus, UserStatus } from '@/lib/supabase/
 
 export const BRAND = {
   product: 'FactFind Pro',
-  organisation: 'Wealthy Advisors Club',
+  organisation: 'Wealthy Advisers Club',
   tagline: 'Client fact-finding for UK mortgage & protection advisers',
   supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? 'support@wealthyadvisorsclub.co.uk',
 } as const

@@ -153,7 +153,7 @@ const SECTION_COPY: Record<FactFindType, { title: string; subtitle: string; sect
 }
 
 const PLACEHOLDER_NOTE =
-  'This section is a placeholder. The full question set is being finalised by the Wealthy Advisors Club team and will appear here shortly.'
+  'This section is a placeholder. The full question set is being finalised by the Wealthy Advisers Club team and will appear here shortly.'
 
 /** Builds the shipped placeholder schema for a FactFind type. */
 export function createPlaceholderSchema(type: FactFindType): FormSchema {

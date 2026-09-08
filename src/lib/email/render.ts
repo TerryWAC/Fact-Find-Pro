@@ -16,7 +16,7 @@ function escapeHtml(value: string): string {
     .replace(/"/g, '&quot;')
 }
 
-/** Wraps rendered template HTML in the Wealthy Advisors Club shell. */
+/** Wraps rendered template HTML in the Wealthy Advisers Club shell. */
 export function wrapHtml(innerHtml: string, previewText?: string): string {
   return `<!doctype html>
 <html lang="en">

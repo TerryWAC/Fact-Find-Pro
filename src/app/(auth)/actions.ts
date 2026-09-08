@@ -75,15 +75,15 @@ export async function signInAction(_prev: ActionState, formData: FormData): Prom
     if (status === 'rejected') {
       return {
         error:
-          'Your registration was not approved. Please contact the Wealthy Advisors Club team if you think this is a mistake.',
+          'Your registration was not approved. Please contact the Wealthy Advisers Club team if you think this is a mistake.',
       }
     }
     if (status === 'suspended') {
-      return { error: 'Your account has been suspended. Please contact the Wealthy Advisors Club team.' }
+      return { error: 'Your account has been suspended. Please contact the Wealthy Advisers Club team.' }
     }
     return {
       error:
-        'Your account is still awaiting approval from the Wealthy Advisors Club team. We will email you as soon as it is approved.',
+        'Your account is still awaiting approval from the Wealthy Advisers Club team. We will email you as soon as it is approved.',
     }
   }
 

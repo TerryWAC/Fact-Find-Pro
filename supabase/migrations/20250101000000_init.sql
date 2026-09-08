@@ -1,6 +1,6 @@
 -- =============================================================================
 -- FactFind Pro — initial schema
--- Wealthy Advisors Club | UK Mortgage & Protection Brokers
+-- Wealthy Advisers Club | UK Mortgage & Protection Brokers
 -- =============================================================================
 -- Creates: enums, profiles (users), factfind_forms, factfind_submissions,
 -- email_templates, email_log, activity_log, plus RLS policies, triggers and

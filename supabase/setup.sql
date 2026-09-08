@@ -48,7 +48,7 @@
 /*
    =============================================================================
    FactFind Pro — initial schema
-   Wealthy Advisors Club | UK Mortgage & Protection Brokers
+   Wealthy Advisers Club | UK Mortgage & Protection Brokers
    =============================================================================
    Creates: enums, profiles (users), factfind_forms, factfind_submissions,
    email_templates, email_log, activity_log, plus RLS policies, triggers and
@@ -663,7 +663,7 @@ values
   (
     'new_registration',
     'New registration (to admin)',
-    'Sent to the Wealthy Advisors Club admin inbox when an adviser signs up.',
+    'Sent to the Wealthy Advisers Club admin inbox when an adviser signs up.',
     'New FactFind Pro registration — {{name}}',
     '<h2>New adviser registration</h2>'
     '<p>A new adviser has registered for FactFind Pro and is awaiting approval.</p>'
@@ -687,8 +687,8 @@ values
     '<p>Your FactFind Pro account has been approved.</p>'
     '<p>You can now sign in and share your four unique client FactFind links — Mortgage, Protection, Medical and Home.</p>'
     '<p><a href="{{login_url}}">Sign in to FactFind Pro</a></p>'
-    '<p>— The Wealthy Advisors Club team</p>',
-    'Hi {{name}},\n\nYour FactFind Pro account has been approved. Sign in at {{login_url}}\n\n— The Wealthy Advisors Club team'
+    '<p>— The Wealthy Advisers Club team</p>',
+    'Hi {{name}},\n\nYour FactFind Pro account has been approved. Sign in at {{login_url}}\n\n— The Wealthy Advisers Club team'
   ),
   (
     'rejection',
@@ -699,7 +699,7 @@ values
     '<p>Hi {{name}},</p>'
     '<p>Thank you for your interest in FactFind Pro. Unfortunately we are unable to approve your account at this time.</p>'
     '<p>{{reason}}</p>'
-    '<p>If you believe this is a mistake, reply to this email and the Wealthy Advisors Club team will take another look.</p>',
+    '<p>If you believe this is a mistake, reply to this email and the Wealthy Advisers Club team will take another look.</p>',
     'Hi {{name}},\n\nWe are unable to approve your FactFind Pro account at this time.\n\n{{reason}}\n\nReply to this email if you believe this is a mistake.'
   ),
   (

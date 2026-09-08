@@ -21,7 +21,7 @@ export function SignupForm() {
       <div className="space-y-2">
         <h1 className="text-2xl font-semibold tracking-tight">Register your practice</h1>
         <p className="text-sm text-muted-foreground">
-          Create your FactFind Pro account. Registrations are reviewed by the Wealthy Advisors Club team
+          Create your FactFind Pro account. Registrations are reviewed by the Wealthy Advisers Club team
           before access is granted.
         </p>
       </div>
@@ -133,7 +133,7 @@ export function SignupForm() {
             <Checkbox id="terms" name="terms" className="mt-0.5" required />
             <Label htmlFor="terms" className="text-sm font-normal leading-relaxed text-muted-foreground">
               I confirm I am an FCA-authorised adviser (or work under an authorised firm) and accept the
-              Wealthy Advisors Club terms of use and privacy policy.
+              Wealthy Advisers Club terms of use and privacy policy.
             </Label>
           </div>
           <FieldError message={state.fieldErrors?.terms} />

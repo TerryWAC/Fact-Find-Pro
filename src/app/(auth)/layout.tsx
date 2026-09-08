@@ -8,7 +8,7 @@ const HIGHLIGHTS = [
   'Four unique client FactFind links per adviser',
   'Every submission tied to the adviser who owns the link',
   'Search, filter and export your client submissions',
-  'Approved by the Wealthy Advisors Club team',
+  'Approved by the Wealthy Advisers Club team',
 ]
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {

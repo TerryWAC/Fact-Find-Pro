@@ -145,7 +145,7 @@ export default async function SettingsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="text-sm leading-relaxed text-muted-foreground">
-              The Wealthy Advisors Club team is on hand if you need anything changed on your account.
+              The Wealthy Advisers Club team is on hand if you need anything changed on your account.
             </CardContent>
           </Card>
         </div>

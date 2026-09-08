@@ -25,7 +25,7 @@ export const DEFAULT_EMAIL_TEMPLATES: Record<EmailTemplateKey, EmailTemplateDefi
   new_registration: {
     key: 'new_registration',
     name: 'New registration (to admin)',
-    description: 'Sent to the Wealthy Advisors Club admin inbox when an adviser signs up.',
+    description: 'Sent to the Wealthy Advisers Club admin inbox when an adviser signs up.',
     subject: 'New FactFind Pro registration — {{name}}',
     bodyHtml: `<h2>New adviser registration</h2>
 <p>A new adviser has registered for FactFind Pro and is awaiting approval.</p>
@@ -58,12 +58,12 @@ Review: {{approvals_url}}`,
 <p>Your FactFind Pro account has been approved.</p>
 <p>You can now sign in and share your four unique client FactFind links — Mortgage, Protection, Medical and Home.</p>
 <p><a href="{{login_url}}">Sign in to FactFind Pro</a></p>
-<p>— The Wealthy Advisors Club team</p>`,
+<p>— The Wealthy Advisers Club team</p>`,
     bodyText: `Hi {{name}},
 
 Your FactFind Pro account has been approved. Sign in at {{login_url}}
 
-— The Wealthy Advisors Club team`,
+— The Wealthy Advisers Club team`,
     variables: ['name', 'company_name', 'login_url'],
   },
   rejection: {
@@ -75,7 +75,7 @@ Your FactFind Pro account has been approved. Sign in at {{login_url}}
 <p>Hi {{name}},</p>
 <p>Thank you for your interest in FactFind Pro. Unfortunately we are unable to approve your account at this time.</p>
 <p>{{reason}}</p>
-<p>If you believe this is a mistake, reply to this email and the Wealthy Advisors Club team will take another look.</p>`,
+<p>If you believe this is a mistake, reply to this email and the Wealthy Advisers Club team will take another look.</p>`,
     bodyText: `Hi {{name}},
 
 We are unable to approve your FactFind Pro account at this time.

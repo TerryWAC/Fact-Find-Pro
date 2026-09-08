@@ -19,7 +19,7 @@ const STEPS = [
   {
     icon: Clock,
     title: 'Awaiting approval',
-    body: 'The Wealthy Advisors Club team reviews new registrations, usually within one working day.',
+    body: 'The Wealthy Advisers Club team reviews new registrations, usually within one working day.',
     done: false,
   },
   {
@@ -50,7 +50,7 @@ export default async function PendingPage({
         <p className="text-sm leading-relaxed text-muted-foreground">
           {status === 'rejected'
             ? `Your FactFind Pro registration was not approved. Contact the ${BRAND.organisation} team if you believe this is a mistake.`
-            : 'Your account has been created and is awaiting approval from the Wealthy Advisors Club team.'}
+            : 'Your account has been created and is awaiting approval from the Wealthy Advisers Club team.'}
         </p>
       </div>
 

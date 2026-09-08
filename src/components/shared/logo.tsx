@@ -10,7 +10,7 @@ interface LogoProps {
   showOrganisation?: boolean
 }
 
-/** Wealthy Advisors Club / FactFind Pro lockup — black, gold and white. */
+/** Wealthy Advisers Club / FactFind Pro lockup — black, gold and white. */
 export function Logo({ className, variant = 'dark', href = '/', showOrganisation = true }: LogoProps) {
   const content = (
     <span className={cn('flex items-center gap-2.5', className)}>

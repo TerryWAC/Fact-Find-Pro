@@ -77,7 +77,7 @@ export function ProfileForm({
         <Label htmlFor="email">Email address</Label>
         <Input id="email" value={email} disabled readOnly />
         <p className="text-xs text-muted-foreground">
-          Contact the Wealthy Advisors Club team to change the email on your account.
+          Contact the Wealthy Advisers Club team to change the email on your account.
         </p>
       </div>
 
