@@ -179,11 +179,13 @@ src/
 | `email_log` | Delivery audit trail (and the outbox when no provider is configured) |
 | `activity_log` | Powers the "Recent activity" panels |
 | `team_members` | Team roster captured during onboarding (not sign-ins — see `linked_profile_id`) |
+| `admin_allowlist` | Emails that become approved admins automatically at signup — bootstraps the first admin |
 
 Key database behaviour:
 
 - **`on_auth_user_created`** → mirrors a new signup into `profiles` with `status = 'pending'` and a unique
-  `adviser_slug`.
+  `adviser_slug` — unless the email is in `admin_allowlist`, in which case it is created as an approved
+  admin with its four links provisioned immediately.
 - **`on_profile_status_change`** → when status flips to `approved`, provisions the four `factfind_forms`
   rows automatically.
 - **`resolve_factfind_form(type, slug)`** and **`submit_factfind(...)`** are `SECURITY DEFINER` functions
@@ -290,13 +292,14 @@ notification all adapt automatically.
    - Redirect URLs: `https://your-domain.com/auth/callback`
 4. **Auth → Providers → Email**: enable email confirmations for production.
 5. **Project Settings → API**: copy the project URL, `anon` key and `service_role` key.
-6. Create your first admin:
+6. **Your first admin is automatic.** `terry@terry-blackburn.com` is on the admin allowlist, so signing up
+   through the app with that address creates an approved admin straight away — no one has to approve it. To
+   allowlist another address:
    ```sql
-   -- after signing up through the app with your own email
-   update public.profiles
-      set role = 'admin', status = 'approved', approved_at = now()
-    where email = 'you@yourdomain.co.uk';
+   insert into public.admin_allowlist (email) values ('someone@yourfirm.co.uk');
    ```
+   If email confirmation is switched on in Supabase Auth, the confirmation link still has to be clicked
+   before the first sign-in.
 
 ### 2. Vercel
 

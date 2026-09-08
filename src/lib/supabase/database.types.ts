@@ -203,6 +203,18 @@ type TeamMemberInsert = {
   created_at?: string
 }
 
+type AdminAllowlistRow = {
+  email: string
+  note: string | null
+  created_at: string
+}
+
+type AdminAllowlistInsert = {
+  email: string
+  note?: string | null
+  created_at?: string
+}
+
 type ActivityLogRow = {
   id: string
   adviser_id: string | null
@@ -272,6 +284,12 @@ export type Database = {
         Update: Partial<TeamMemberInsert>
         Relationships: []
       }
+      admin_allowlist: {
+        Row: AdminAllowlistRow
+        Insert: AdminAllowlistInsert
+        Update: Partial<AdminAllowlistInsert>
+        Relationships: []
+      }
       activity_log: {
         Row: ActivityLogRow
         Insert: ActivityLogInsert
@@ -285,6 +303,7 @@ export type Database = {
     Functions: {
       is_admin: { Args: Record<PropertyKey, never>; Returns: boolean }
       is_approved: { Args: Record<PropertyKey, never>; Returns: boolean }
+      is_allowlisted_admin: { Args: { p_email: string }; Returns: boolean }
       provision_factfind_forms: { Args: { p_adviser_id: string }; Returns: undefined }
       resolve_factfind_form: {
         Args: { p_form_type: FactFindType; p_slug: string }

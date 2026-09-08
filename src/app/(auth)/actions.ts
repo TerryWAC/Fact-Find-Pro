@@ -139,6 +139,21 @@ export async function signUpAction(_prev: ActionState, formData: FormData): Prom
     return { error: error.message }
   }
 
+  // An allowlisted admin is approved by the signup trigger itself. Send them
+  // straight into setup rather than to the waiting-room screen.
+  if (data.session) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('status')
+      .eq('id', data.user?.id ?? '')
+      .maybeSingle()
+
+    if (profile?.status === 'approved') {
+      revalidatePath('/', 'layout')
+      redirect('/onboarding')
+    }
+  }
+
   // Notify the admin team that there is someone to approve.
   const recipients = await getAdminRecipients()
   if (recipients.length > 0) {
