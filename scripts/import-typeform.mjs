@@ -69,7 +69,7 @@ function groupPrefix(title) {
   return slug(title).slice(0, 12)
 }
 
-const audit = { upgrades: [], required: [], dropped: [], visibility: [] }
+const audit = { upgrades: [], required: [], dropped: [], visibility: [], repairs: [] }
 
 /** Free-text fields whose title makes a stronger input type unambiguous. */
 function upgradeType(tfType, title) {
@@ -241,6 +241,18 @@ rename(gates.who, 'who_completing'); rename(gates.joint, 'joint_case'); rename(g
 rename(gates.ccj, 'has_ccj'); rename(gates.bankrupt, 'has_bankruptcy'); rename(gates.mortgageType, 'mortgage_type')
 rename(gates.btl, 'has_btl'); rename(gates.btlCount, 'btl_count'); rename(gates.will, 'pension_has_will')
 
+// Source-data repairs — both are flaws in the Typeform template itself.
+// 1. Applicant 1's employment-status dropdown is titled literally "..." in
+//    Typeform (Applicant 2's is titled properly). Give it its real name.
+const a1Status = all.find((f) => f.label === '...' && f.type === 'select')
+if (a1Status) { rename(a1Status, 'a1_emp_status'); a1Status.label = 'Applicant 1 Employment Status'; audit.repairs.push('a1_emp_status: label was "..." in Typeform') }
+// 2. Every property block asks "Property type" twice: once for the building
+//    (Detached, Flat…) and once for Freehold/Leasehold. The second is tenure.
+for (const f of all) {
+  const labels = (f.options ?? []).map((o) => o.label).join(',')
+  if (/^property type$/i.test(f.label ?? '') && labels === 'Freehold,Leasehold') { f.label = 'Tenure'; audit.repairs.push(`${f.id}: "Property Type" (Freehold/Leasehold) relabelled "Tenure"`) }
+}
+
 // A client-facing link defaults to "Client"; an adviser filling it in switches.
 gates.who.defaultValue = 'client'
 gates.who.helpText = 'Choose "Adviser" to unlock the internal sections.'
@@ -330,3 +342,4 @@ console.log(`\nType upgrades (${audit.upgrades.length}):`); audit.upgrades.forEa
 console.log(`\nRequired overrides:`); audit.required.forEach((l) => console.log('  ' + l))
 console.log(`\nDropped (${audit.dropped.length}):`); audit.dropped.forEach((l) => console.log('  ' + l))
 console.log(`\nVisibility rules (${audit.visibility.length}):`); audit.visibility.forEach((l) => console.log('  ' + l))
+console.log(`\nSource repairs (${audit.repairs.length}):`); audit.repairs.forEach((l) => console.log('  ' + l))

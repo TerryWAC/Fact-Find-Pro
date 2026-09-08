@@ -658,8 +658,8 @@
           "source": "7bbcc6a4-b17d-4ea7-8c15-fd0776fa6cf1"
         },
         {
-          "id": "a1_emp_",
-          "label": "...",
+          "id": "a1_emp_status",
+          "label": "Applicant 1 Employment Status",
           "source": "862b5102-e00c-4ab0-9027-507f3c6d28d1",
           "options": [
             {
@@ -1266,7 +1266,7 @@
         },
         {
           "id": "purchase_property_type_2",
-          "label": "Property Type",
+          "label": "Tenure",
           "source": "ef1d9316-9550-4e1e-bf05-8f84c0abb98f",
           "options": [
             {
@@ -1541,7 +1541,7 @@
         },
         {
           "id": "remortgage_property_type_2",
-          "label": "Property Type",
+          "label": "Tenure",
           "source": "0a477473-93c0-49ac-a868-57ae34a8c481",
           "options": [
             {
@@ -1952,7 +1952,7 @@
         },
         {
           "id": "btl1_property_type_2",
-          "label": "Property Type",
+          "label": "Tenure",
           "source": "fbf67122-4d95-4e86-9761-a201cf1d2ff5",
           "options": [
             {
@@ -2497,7 +2497,7 @@
         },
         {
           "id": "btl2_property_type_2",
-          "label": "Property Type",
+          "label": "Tenure",
           "source": "cbced12f-70fe-46db-990c-5e4130aeec6f",
           "options": [
             {
@@ -3022,7 +3022,7 @@
         },
         {
           "id": "btl3_property_type_2",
-          "label": "Property Type",
+          "label": "Tenure",
           "source": "8ec12003-08cc-48b1-85b5-f5afb455f7d1",
           "options": [
             {
