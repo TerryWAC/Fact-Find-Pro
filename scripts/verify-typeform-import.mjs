@@ -52,6 +52,13 @@ const KNOWN_DEVIATIONS = {
     { title: /^If yes, how many\?$/, source: 'shown', engine: 'hidden', why: 'engine gates the count on "background BTL = Yes"; source always shows it' },
     { title: /^Buy-to-let property \d$/, source: 'shown', engine: 'hidden', why: 'engine shows property blocks up to the count; source always shows all three' },
   ],
+  medical: [
+    { title: /^GP info$/, source: 'hidden', engine: 'shown',
+      why: 'source: "30 days abroad = No" jumps past the whole GP block (authoring slip); engine always asks for GP details' },
+    { title: /^If no, at what age did they pass away\?$/, source: 'shown', engine: 'hidden',
+      why: 'source has no rule (always shown); engine asks it only when a parent has died' },
+  ],
+  home: [],
   protection: [
     { title: /^Adviser notes for admin$/, source: 'shown', engine: 'hidden',
       why: 'source shows the "(Internal)" Admin Notes section to clients too (no rule skips it); engine keeps it adviser-only' },
@@ -65,27 +72,40 @@ const KNOWN_DEVIATIONS = {
 // ---------------------------------------------------------------------------
 const top = src.fields
 const sectionRe = /^Section\s+(\d+)\s*:\s*(.+)$/i
+const INTRO_RE = /^(My name is|We're delighted)/i
+const GROUP_TYPES = new Set(['inline_group', 'group', 'contact_info'])
+const isHeader = (tf) => tf.type === 'statement' && !INTRO_RE.test(tf.title)
+const headerless = !top.some(isHeader)
+const ADDITIONS = { 'factfind-pro:client_email': 'client_email' } // fields the platform adds when the template lacks them
 /** ref → { tf, topIdx, parent, childIdx } for every top-level field and group child. */
 const srcByRef = new Map()
 top.forEach((tf, i) => {
   srcByRef.set(tf.ref, { tf, topIdx: i })
   ;(tf.properties?.fields ?? []).forEach((c, k) => srcByRef.set(c.ref, { tf: c, topIdx: i, parent: tf, childIdx: k }))
 })
-const firstSection = top.findIndex((f) => f.type === 'statement' && sectionRe.test(f.title))
 
 const schemaFields = schema.steps.flatMap((st) => st.fields.map((f) => ({ f, step: st })))
 const schemaBySource = new Map()
+const additions = []
 for (const e of schemaFields) {
   if (!e.f.source) { fail(`schema field ${e.f.id} has no source ref`); continue }
   if (schemaBySource.has(e.f.source)) fail(`schema has two fields for source ${e.f.source} (${schemaBySource.get(e.f.source).f.id}, ${e.f.id})`)
   schemaBySource.set(e.f.source, e)
+  if (e.f.source in ADDITIONS) { if (e.f.id !== ADDITIONS[e.f.source]) fail(`unexpected addition ${e.f.id}`); additions.push(e.f.id); continue }
   if (!srcByRef.has(e.f.source)) fail(`schema field ${e.f.id} points at a ref that is not in the export`)
+}
+const stepBySource = new Map()
+for (const st of schema.steps) {
+  if (!st.source) { fail(`step "${st.title}" has no source ref`); continue }
+  if (stepBySource.has(st.source)) fail(`two steps share source ${st.source}`)
+  stepBySource.set(st.source, st)
+  if (!srcByRef.has(st.source)) fail(`step "${st.title}" points at a ref that is not in the export`)
 }
 const PRESENTATIONAL = new Set(['heading', 'paragraph', 'divider'])
 const TYPE_MAP = {
   short_text: ['text', 'date', 'email', 'tel', 'number', 'currency', 'percent', 'select'],
   long_text: ['textarea', 'text', 'date', 'email', 'tel', 'number', 'currency', 'percent'],
-  date: ['date'], yes_no: ['yesno'], number: ['number'], email: ['email'], phone_number: ['tel'],
+  date: ['date'], yes_no: ['yesno'], number: ['number', 'currency'], email: ['email'], phone_number: ['tel'],
   multiple_choice: ['radio', 'select', 'checkbox-group'], dropdown: ['select', 'radio', 'checkbox-group'],
   checkbox: ['checkbox', 'checkbox-group'],
 }
@@ -93,40 +113,52 @@ const TYPE_MAP = {
 // ---------------------------------------------------------------------------
 // 1–5: presence, steps, choices, required, help, labels
 // ---------------------------------------------------------------------------
-const stats = { questions: 0, groups: 0, statements: 0, dropped: 0, sections: 0, choiceLists: 0, required: 0, help: 0, repairs: [] }
-const stepTitles = schema.steps.map((s) => s.title)
+const stats = { requiredExtra: [], questions: 0, groups: 0, statements: 0, dropped: 0, sections: 0, choiceLists: 0, required: 0, help: 0, repairs: [] }
 
 for (const [ref, { tf, topIdx, parent }] of srcByRef) {
-  const m = tf.type === 'statement' && !parent ? tf.title.match(sectionRe) : null
-  if (m) {
+  if (tf.type === 'statement' && !parent) {
+    if (INTRO_RE.test(tf.title)) { // adviser intro copy is dropped on purpose
+      if (schemaBySource.has(ref) || stepBySource.has(ref)) fail(`intro statement "${tf.title}" was expected to be dropped`)
+      stats.dropped++; continue
+    }
     stats.sections++
-    const title = m[2].replace(/\s*\(internal\)\s*/i, '').trim()
-    if (!stepTitles.includes(title)) fail(`section "${tf.title}" has no step`)
-    continue
-  }
-  if (topIdx < firstSection) { // intro statements before Section 1 are dropped on purpose
-    if (schemaBySource.has(ref)) fail(`pre-section field "${tf.title}" was expected to be dropped`)
-    stats.dropped++
+    const m = tf.title.match(sectionRe)
+    const title = (m ? m[2] : tf.title).replace(/\s*\(internal\)\s*/i, '').trim()
+    const st = stepBySource.get(ref)
+    if (!st) fail(`header "${tf.title}" has no step`)
+    else if (st.title !== title) fail(`step for "${tf.title}" is titled "${st.title}"`)
     continue
   }
   const e = schemaBySource.get(ref)
-  if (!e) { fail(`missing: #${topIdx}${parent ? ' (in "' + parent.title + '")' : ''} ${tf.type} "${tf.title}"`); continue }
-  const f = e.f
 
-  if (tf.type === 'statement') { stats.statements++; if (f.type !== 'paragraph' || f.label !== tf.title) fail(`statement "${tf.title}" not carried verbatim as a paragraph`); continue }
-  if (tf.type === 'inline_group') {
+  if (GROUP_TYPES.has(tf.type)) {
     stats.groups++
-    if (f.type !== 'heading') fail(`group "${tf.title}" is not a heading`)
-    for (const c of tf.properties.fields) if (schemaBySource.get(c.ref)?.step !== e.step) fail(`group "${tf.title}": child "${c.title}" is not in the same step as its heading`)
+    const st = stepBySource.get(ref)
+    if (headerless) { // the group is a step
+      if (!st) { fail(`group "${tf.title}" has no step`); continue }
+      if (st.title !== tf.title.trim()) fail(`step for group "${tf.title}" is titled "${st.title}"`)
+      stats.sections++
+      for (const c of tf.properties.fields) if (schemaBySource.get(c.ref)?.step !== st) fail(`group "${tf.title}": child "${c.title}" is not in its step`)
+    } else {
+      if (!e) { fail(`missing: group "${tf.title}"`); continue }
+      if (e.f.type !== 'heading') fail(`group "${tf.title}" is not a heading`)
+      for (const c of tf.properties.fields) if (schemaBySource.get(c.ref)?.step !== e.step) fail(`group "${tf.title}": child "${c.title}" is not in the same step as its heading`)
+    }
     continue
   }
+
+  if (!e) { fail(`missing: #${topIdx}${parent ? ' (in "' + parent.title + '")' : ''} ${tf.type} "${tf.title}"`); continue }
+  const f = e.f
+  if (tf.type === 'statement') { stats.statements++; if (f.type !== 'paragraph' || f.label !== tf.title) fail(`statement "${tf.title}" not carried verbatim as a paragraph`); continue }
 
   stats.questions++
   if (PRESENTATIONAL.has(f.type)) fail(`"${tf.title}" became presentational (${f.type})`)
   if (!(TYPE_MAP[tf.type] ?? []).includes(f.type)) fail(`"${tf.title}": Typeform ${tf.type} → engine ${f.type} is not an allowed mapping`)
 
   // label
-  const title = tf.title.trim()
+  let title = tf.title.trim()
+  const numbered = title.match(/^\d+[a-z]\.\s+(.*)$/)
+  if (numbered && f.label === numbered[1]) { stats.repairs.push(`"${title}" → "${numbered[1]}" (outline number dropped)`); title = numbered[1] }
   if (f.label !== title) {
     const srcLabels = (tf.properties?.choices ?? []).map((c) => c.label).join(',')
     if (title === '...' && f.label === 'Applicant 1 Employment Status') stats.repairs.push(`"${title}" → "${f.label}"`)
@@ -149,7 +181,8 @@ for (const [ref, { tf, topIdx, parent }] of srcByRef) {
   const srcReq = Boolean(tf.validations?.required), req = Boolean(f.required)
   if (srcReq) stats.required++
   if (srcReq && !req) fail(`"${title}" is required in Typeform but not in the schema`)
-  if (!srcReq && req && !['client_name', 'client_email'].includes(f.id)) fail(`"${title}" (${f.id}) is required in the schema but not in Typeform`)
+  if (!srcReq && req) stats.requiredExtra.push(f.id)
+  if (!srcReq && req && !['client_name', 'client_first_name', 'client_last_name', 'client_email'].includes(f.id)) fail(`"${title}" (${f.id}) is required in the schema but not in Typeform`)
 
   // help text
   const desc = tf.properties?.description?.trim()
@@ -157,6 +190,7 @@ for (const [ref, { tf, topIdx, parent }] of srcByRef) {
   else if (f.helpText && f.id !== 'who_completing') fail(`${f.id} has help text the source does not`)
 }
 if (stats.sections !== schema.steps.length) fail(`export has ${stats.sections} sections but schema has ${schema.steps.length} steps`)
+if (headerless) stats.groups = 0 // groups are the steps; nothing separate to count
 
 // ---------------------------------------------------------------------------
 // 6: branching simulation
@@ -210,22 +244,27 @@ function typeformShown(tfAns) {
     if (c.op === 'always') return true
     const [a, b] = c.vars
     const actual = tfAns.get(a.value)
-    const expected = b.type === 'constant' ? b.value : b.value
-    if (c.op === 'is') return actual === expected
-    if (c.op === 'is_not') return actual !== expected
+    if (c.op === 'is') return actual === b.value
+    if (c.op === 'is_not') return actual !== b.value
     throw new Error(`unsupported condition op ${c.op}`)
+  }
+  /** First matching action of the rule on `ref`, or null. */
+  const fire = (ref) => {
+    const l = logicByRef.get(ref); if (!l) return null
+    for (const a of l.actions) if (evalCond(a.condition)) { if (a.action !== 'jump') throw new Error(`unsupported action ${a.action}`); return srcByRef.get(a.details.to.value) ?? (() => { throw new Error('jump to unknown ref') })() }
+    return null
   }
   let i = 0, fromChild = null, guard = 0
   while (i < top.length) {
-    if (++guard > 500) throw new Error('jump loop')
+    if (++guard > 1000) throw new Error('jump loop')
     const tf = top[i]
-    const children = tf.properties?.fields
-    if (children) {
-      let start = fromChild ?? 0
-      // A rule on the group may jump to a later child of the same group: the
-      // children between the condition's field and the target are skipped.
-      const l = logicByRef.get(tf.ref)
+    let next = i + 1, nextChild = null
+    if (GROUP_TYPES.has(tf.type)) {
+      const children = tf.properties.fields
+      // A rule on the group itself may skip some of its own children (Pension:
+      // "has a will" → past the consequences question).
       let skipFrom = -1, skipTo = -1
+      const l = logicByRef.get(tf.ref)
       if (l) for (const a of l.actions) {
         const tgt = srcByRef.get(a.details.to.value)
         if (tgt?.parent === tf && evalCond(a.condition)) {
@@ -233,25 +272,28 @@ function typeformShown(tfAns) {
           skipFrom = condIdx + 1; skipTo = tgt.childIdx; break
         }
       }
-      shown.add(tf.ref) // the group itself (its heading in the schema)
-      children.forEach((c, k) => { if (k >= start && !(k >= skipFrom && k < skipTo)) shown.add(c.ref) })
-    } else if (tf.type !== 'statement') shown.add(tf.ref)
-    else if (i >= firstSection && !sectionRe.test(tf.title)) shown.add(tf.ref) // section headers are steps, not fields
-    fromChild = null
-
-    const l = logicByRef.get(tf.ref)
-    let next = i + 1
-    if (l) for (const a of l.actions) {
-      if (!evalCond(a.condition)) continue
-      if (a.action !== 'jump') throw new Error(`unsupported action ${a.action}`)
-      const tgt = srcByRef.get(a.details.to.value)
-      if (!tgt) throw new Error('jump to unknown ref')
-      if (tgt.parent === tf) break // handled above (intra-group skip)
-      next = tgt.topIdx; fromChild = tgt.childIdx ?? null
-      break
+      let k = fromChild ?? 0, jumpedOut = false
+      shown.add(tf.ref) // the group itself (its heading / step in the schema)
+      while (k < children.length) {
+        if (k >= skipFrom && k < skipTo) { k++; continue }
+        const c = children[k]
+        shown.add(c.ref)
+        const tgt = fire(c.ref) // rules on a child (Medical: "Yes → details, No → skip")
+        if (!tgt) { k++; continue }
+        if (tgt.parent === tf) { if (tgt.childIdx <= k) throw new Error(`rule on "${c.title}" jumps backwards`); k = tgt.childIdx; continue }
+        if (tgt.topIdx <= i) throw new Error(`rule on "${c.title}" jumps backwards`)
+        next = tgt.topIdx; nextChild = tgt.childIdx ?? null; jumpedOut = true; break
+      }
+      if (!jumpedOut) { // the group's own outward rule fires once it is complete
+        const tgt = fire(tf.ref)
+        if (tgt && tgt.parent !== tf) { if (tgt.topIdx <= i) throw new Error(`rule on "${tf.title}" jumps backwards`); next = tgt.topIdx; nextChild = tgt.childIdx ?? null }
+      }
+    } else {
+      if (tf.type !== 'statement') shown.add(tf.ref) // headers are steps, not fields
+      const tgt = fire(tf.ref)
+      if (tgt) { if (tgt.topIdx <= i) throw new Error(`rule on "${tf.title}" jumps backwards`); next = tgt.topIdx; nextChild = tgt.childIdx ?? null }
     }
-    if (next <= i) throw new Error(`rule on "${tf.title}" jumps backwards`)
-    i = next
+    i = next; fromChild = nextChild
   }
   return shown
 }
@@ -276,7 +318,8 @@ function engineShown(values) {
   const shown = new Set()
   for (const st of schema.steps) {
     if (!matches(st.visibleWhen, values)) continue
-    for (const f of st.fields) if (matches(f.visibleWhen, values)) shown.add(f.source)
+    if (headerless) shown.add(st.source) // the step *is* the Typeform group
+    for (const f of st.fields) if (matches(f.visibleWhen, values) && !(f.source in ADDITIONS)) shown.add(f.source)
   }
   return shown
 }
@@ -297,7 +340,7 @@ for (const s of scenarios()) {
     const { tf, parent } = srcByRef.get(ref)
     // Compare at the level Typeform authored the rule: a group's children move with the group.
     const owner = parent ?? tf
-    const k = deviations.findIndex((d) => d.title.test(owner.title) && d.source === (inA ? 'shown' : 'hidden') && d.engine === (inB ? 'shown' : 'hidden'))
+    const k = deviations.findIndex((d) => (d.title.test(tf.title) || d.title.test(owner.title)) && d.source === (inA ? 'shown' : 'hidden') && d.engine === (inB ? 'shown' : 'hidden'))
     if (k >= 0) { seen[k]++; continue }
     const key = `${owner.title} · source ${inA ? 'shows' : 'hides'}, engine ${inB ? 'shows' : 'hides'}`
     if (!unexplained.has(key)) unexplained.set(key, describe(s))
@@ -311,11 +354,12 @@ deviations.forEach((d, k) => { if (!seen[k]) fail(`documented deviation never ob
 // ---------------------------------------------------------------------------
 console.log(`${src.title} (${src.id}) ↔ ${schemaPath}`)
 console.log(`  questions      ${stats.questions} matched by ref (0 missing, 0 invented)`)
-console.log(`  groups         ${stats.groups} → headings, children kept together`)
+console.log(headerless ? `  groups         ${schema.steps.length} question groups → steps` : `  groups         ${stats.groups} → headings, children kept together`)
+if (additions.length) console.log(`  added          ${additions.join(', ')} (not in the Typeform template; required by the platform)`)
 console.log(`  statements     ${stats.statements} in-section notes verbatim · ${stats.dropped} intro statements dropped (adviser copy)`)
 console.log(`  sections       ${stats.sections} → ${schema.steps.length} steps`)
 console.log(`  choice lists   ${stats.choiceLists} identical, label for label`)
-console.log(`  required       ${stats.required} carried (+ client_name, client_email)`)
+console.log(`  required       ${stats.required} carried (+ ${stats.requiredExtra.concat(additions).join(', ')})`)
 console.log(`  help texts     ${stats.help} carried`)
 console.log(`  label repairs  ${stats.repairs.length}`); stats.repairs.forEach((r) => console.log(`                 ${r}`))
 console.log(`  branching      ${src.logic?.length ?? 0} jump rules · ${gateRefs.length} source gates + ${engineOnlyGates.length} engine gates · ${scenarioCount} answer combinations simulated`)

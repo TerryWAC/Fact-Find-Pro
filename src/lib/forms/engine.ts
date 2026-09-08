@@ -256,9 +256,19 @@ export function extractClientIdentity(schema: FormSchema, values: FormValues) {
   const nameField = find('client_name')
   const emailField = find('client_email')
   const phoneField = find('client_phone')
+  const text = (id: string) => String(values[id] ?? '').trim()
+
+  // Templates that ask for first and last name separately compose the client name.
+  const firstField = find('client_first_name')
+  const lastField = find('client_last_name')
+  const clientName = nameField
+    ? text(nameField.id)
+    : firstField || lastField
+      ? [firstField && text(firstField.id), lastField && text(lastField.id)].filter(Boolean).join(' ')
+      : text('client_name')
 
   return {
-    client_name: String(values[nameField?.id ?? 'client_name'] ?? '').trim(),
+    client_name: clientName,
     client_email: String(values[emailField?.id ?? 'client_email'] ?? '').trim(),
     client_phone: String(values[phoneField?.id ?? 'client_phone'] ?? '').trim() || null,
   }

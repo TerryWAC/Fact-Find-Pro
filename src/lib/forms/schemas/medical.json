@@ -1,0 +1,621 @@
+{
+  "type": "medical",
+  "version": "1.0.0-typeform-xrjNX2Gg",
+  "title": "Medical FactFind",
+  "subtitle": "Your health and lifestyle details, so your adviser can find the right cover for you.",
+  "intro": "Your answers are saved when you submit and go straight to your adviser. Sections that do not apply to you are skipped automatically.",
+  "estimatedMinutes": 10,
+  "placeholder": false,
+  "submitLabel": "Submit FactFind",
+  "successTitle": "Thank you — your FactFind has been submitted",
+  "successMessage": "Thank you for filling out this questionniare, your adviser will be in touch shortly.",
+  "steps": [
+    {
+      "id": "s1_client_information",
+      "title": "Client Information",
+      "source": "70521e6c-bdec-4537-9d1d-10d1b293fd4c",
+      "fields": [
+        {
+          "id": "client_how_would_you_like_us_to_address_you",
+          "label": "How would you like us to address you?",
+          "source": "890bdb8e-0d89-4692-acfb-2819870f1ef1",
+          "options": [
+            {
+              "value": "mr",
+              "label": "Mr"
+            },
+            {
+              "value": "mrs",
+              "label": "Mrs"
+            },
+            {
+              "value": "miss",
+              "label": "Miss"
+            },
+            {
+              "value": "ms",
+              "label": "Ms"
+            },
+            {
+              "value": "dr",
+              "label": "Dr"
+            },
+            {
+              "value": "prof",
+              "label": "Prof"
+            }
+          ],
+          "type": "select",
+          "colSpan": 1
+        },
+        {
+          "id": "client_first_name",
+          "label": "What is your first name?",
+          "source": "9e554fc9-efd4-4352-ad09-4e6834522471",
+          "type": "text",
+          "colSpan": 1,
+          "identity": "client_first_name",
+          "required": true
+        },
+        {
+          "id": "client_last_name",
+          "label": "What is your surname?",
+          "source": "4175ee47-7ec4-4817-b8ff-1fb86f2edeaf",
+          "type": "text",
+          "colSpan": 1,
+          "identity": "client_last_name",
+          "required": true
+        },
+        {
+          "id": "client_email",
+          "label": "Email address",
+          "type": "email",
+          "colSpan": 1,
+          "required": true,
+          "identity": "client_email",
+          "source": "factfind-pro:client_email"
+        },
+        {
+          "id": "client_what_is_your_date_of_birth",
+          "label": "What is your date of birth?",
+          "source": "9aeea245-bd92-46ed-b88b-1b91094b6d75",
+          "type": "date",
+          "colSpan": 1
+        },
+        {
+          "id": "client_which_gender_do_you_identify_with",
+          "label": "Which gender do you identify with?",
+          "source": "68541f07-9321-40ed-b583-23ffd9b34456",
+          "options": [
+            {
+              "value": "him",
+              "label": "Him"
+            },
+            {
+              "value": "her",
+              "label": "Her"
+            }
+          ],
+          "type": "radio",
+          "colSpan": 1
+        },
+        {
+          "id": "client_what_is_your_height_ft_inches_or_cm",
+          "label": "What is your height? (ft/inches or cm)",
+          "source": "97668dc4-e90c-4dbd-97a3-bfea7517e9bf",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "client_what_is_your_weight_stones_lbs_or_kg",
+          "label": "What is your weight? (stones/lbs or kg)",
+          "source": "c9e3bd0a-64f3-4977-a6bc-af0ab4eb7d8a",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "client_what_is_your_dress_waist_size",
+          "label": "What is your dress/waist size?",
+          "source": "bbb4a6ec-be5c-419a-912c-61046d877747",
+          "type": "text",
+          "colSpan": 1
+        }
+      ]
+    },
+    {
+      "id": "s2_client_lifestyle",
+      "title": "Client Lifestyle",
+      "source": "d4ab9aa4-2cb8-4ad4-b676-77d48d96961c",
+      "fields": [
+        {
+          "id": "lifestyle_how_often_do_you_exercise_each_week",
+          "label": "How often do you exercise each week?",
+          "source": "ca4f1d40-8b6e-4257-b9b5-6964a9e0f56d",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "1_2_times",
+              "label": "1-2 times"
+            },
+            {
+              "value": "3_4_times",
+              "label": "3-4 times"
+            },
+            {
+              "value": "5_times",
+              "label": "5+ times"
+            },
+            {
+              "value": "daily",
+              "label": "Daily"
+            }
+          ],
+          "type": "select",
+          "colSpan": 1
+        },
+        {
+          "id": "lifestyle_how_much_alcohol_do_you_consume_weekly",
+          "label": "How much alcohol do you consume weekly?",
+          "source": "13529457-1f4a-4888-8f9d-99ae41aa519a",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "1_5_units",
+              "label": "1-5 units"
+            },
+            {
+              "value": "6_14_units",
+              "label": "6-14 units"
+            },
+            {
+              "value": "15_25_units",
+              "label": "15-25 units"
+            },
+            {
+              "value": "25_units",
+              "label": "25+ units"
+            }
+          ],
+          "type": "select",
+          "colSpan": 1
+        },
+        {
+          "id": "lifestyle_have_you_been_advised_to_lower_your_alcohol_inta",
+          "label": "Have you been advised to lower your alcohol intake by a doctor?",
+          "source": "114972ac-c320-421c-b0a9-2d736145973a",
+          "helpText": "If yes please state the date you were told this.",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "lifestyle_do_you_currently_smoke",
+          "label": "Do you currently smoke?",
+          "source": "bae63ab2-8c29-4bc3-9aa3-041984e24f2c",
+          "options": [
+            {
+              "value": "yes",
+              "label": "Yes"
+            },
+            {
+              "value": "no",
+              "label": "No"
+            }
+          ],
+          "type": "radio",
+          "colSpan": 1
+        },
+        {
+          "id": "lifestyle_do_you_currently_smoke_details",
+          "label": "Please enter all relevant info below:",
+          "source": "21c7c576-3c9e-4628-92ac-fb22c9026627",
+          "helpText": "How much do you smoke per day/week?",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3,
+          "visibleWhen": {
+            "field": "lifestyle_do_you_currently_smoke",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "lifestyle_do_you_use_recreational_drugs",
+          "label": "Do you use recreational drugs?",
+          "source": "92dfa0d8-18e7-4e8b-817a-52d91f570e3f",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "lifestyle_do_you_use_recreational_drugs_details",
+          "label": "Please enter all relevant info below:",
+          "source": "60d5c981-a180-4d86-b992-eb3c17c520c6",
+          "helpText": "Type of drug, Quantity, Date last taken, How long did you take them for, Are you still taking them plus any other relevant information.",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3,
+          "visibleWhen": {
+            "field": "lifestyle_do_you_use_recreational_drugs",
+            "operator": "eq",
+            "value": "yes"
+          }
+        }
+      ]
+    },
+    {
+      "id": "s3_family_health",
+      "title": "Family Health",
+      "source": "28cedbee-0563-456a-8d84-47217a9c48e9",
+      "fields": [
+        {
+          "id": "family_before_age_66_have_any_of_your_parents_or_siblin",
+          "label": "Before age 66, have any of your parents or siblings ever had heart disease, heart attack, diabetes, cancer, muscular dystrophy, Huntington's, motor neurone disease, MS, Parkinson's, Alzheimer's, kidney/bowel disease, or other hereditary disorders?",
+          "source": "8bb1fc2c-e0e4-4c10-9805-96ad63290572",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "family_before_age_66_have_any_of_your_parents_or_siblin_details",
+          "label": "Please provide details: which relation(s), age at diagnosis, type, and if hereditary testing has been offered to you.",
+          "source": "98be399c-02d0-40b0-a91e-d996f5f7cea4",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3,
+          "visibleWhen": {
+            "field": "family_before_age_66_have_any_of_your_parents_or_siblin",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "family_parents_alive",
+          "label": "Are both of your parents still alive?",
+          "source": "3729a5b7-d189-4bd6-9b83-65738a4338a8",
+          "options": [
+            {
+              "value": "yes",
+              "label": "Yes"
+            },
+            {
+              "value": "no",
+              "label": "No"
+            },
+            {
+              "value": "one_deceased",
+              "label": "One Deceased"
+            }
+          ],
+          "type": "radio",
+          "colSpan": 2
+        },
+        {
+          "id": "family_if_no_at_what_age_did_they_pass_away",
+          "label": "If no, at what age did they pass away?",
+          "source": "ee1819ed-8d9c-4389-add0-9159d18fa657",
+          "helpText": "e.g., Father, 72, Heart Disease",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3,
+          "visibleWhen": {
+            "field": "family_parents_alive",
+            "operator": "in",
+            "value": [
+              "no",
+              "one_deceased"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "s4_your_health",
+      "title": "Your Health",
+      "source": "9aa5513b-f004-4047-9358-62f231619ca0",
+      "fields": [
+        {
+          "id": "health_have_you_ever_had_or_do_you_currently_have_any_o",
+          "label": "Have you ever had, or do you currently have, any of the following: cancer, tumours, heart or artery issues, stroke, brain problems, MS, epilepsy, Parkinson's or other neurological problems, tested positive for HIV or hepatitis, or mental health concerns requiring treatment?",
+          "source": "f1e5511e-3cc4-4bdc-b65f-c2c689fd0b8c",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "health_have_you_ever_had_or_do_you_currently_have_any_o_details",
+          "label": "If yes, please provide details of the condition(s), date diagnosed, type/severity, frequency of symptoms, most recent symptoms, treatment, medication, time off work, hospitalisations, or complications.",
+          "source": "fd51bc49-8b25-49b3-b6c6-af6eb3f82573",
+          "helpText": "If more than 1 condition enter all of them below",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3,
+          "visibleWhen": {
+            "field": "health_have_you_ever_had_or_do_you_currently_have_any_o",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "health_in_the_last_five_years_have_you_had_raised_blood",
+          "label": "In the last five years, have you had: raised blood pressure/cholesterol, chest pain, diabetes, raised blood sugar, anaemia, blood clot, blood disorders, growths, lumps, cysts, polyps, asthma, bronchitis, sleep apnoea, lung/breathing issues, Crohn's disease, colitis, IBS, digestive issues, urinary infection, kidney/bladder issues, abnormal smear tests, liver/pancreas issues, back/neck issues, joint/muscle pain, injuries, numbness, muscle weakness, fainting, ear/eye issues, CFS, depression, stress or anxiety?",
+          "source": "7e1d45b4-0af3-428c-bccc-e668172f3003",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "health_in_the_last_five_years_have_you_had_raised_blood_details",
+          "label": "If yes, provide details of conditions, dates, treatment, and current status.",
+          "source": "af6cf0c5-588c-4b13-abc5-7db76dbdef37",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3,
+          "visibleWhen": {
+            "field": "health_in_the_last_five_years_have_you_had_raised_blood",
+            "operator": "eq",
+            "value": "yes"
+          }
+        }
+      ]
+    },
+    {
+      "id": "s5_your_health_continued_last_5_years",
+      "title": "Your Health Continued (Last 5 Years)",
+      "source": "5f7ddc8b-a676-4d0e-91e2-ea789dbdb117",
+      "fields": [
+        {
+          "id": "health5_have_you_visited_your_gp_hospital_or_clinic_for",
+          "label": "Have you visited your GP, hospital or clinic for any medical advice, treatments, or tests in the last 5 years for any reason at all?",
+          "source": "2381b7ec-76d7-4b82-90be-e69379e556cf",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "health5_have_you_visited_your_gp_hospital_or_clinic_for_details",
+          "label": "If yes, please provide information here",
+          "source": "49430b7a-dbe7-4936-b7b3-c3eeff8e7e65",
+          "helpText": "Conditions, Dates, Treatment (is it still ongoing?)",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3,
+          "visibleWhen": {
+            "field": "health5_have_you_visited_your_gp_hospital_or_clinic_for",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "health5_have_you_been_prescribed_medication_or_treatment",
+          "label": "Have you been prescribed medication or treatment for two weeks or more in the last 2 years?",
+          "source": "3dc14a2b-a26e-4d5d-a319-62df38c6c36c",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "health5_have_you_been_prescribed_medication_or_treatment_details",
+          "label": "If yes, please provide information here",
+          "source": "04c59a11-e319-447d-81f0-7a00e47cf7a8",
+          "helpText": "Reason for medication, Medication name, Time taking it, Frequency, Dosage",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3,
+          "visibleWhen": {
+            "field": "health5_have_you_been_prescribed_medication_or_treatment",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "health5_have_you_been_referred_to_any_counselling_or_the",
+          "label": "Have you been referred to any counselling or therapy?",
+          "source": "3ada98e4-da41-4611-be21-e8c1facf0c0a",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "health5_have_you_been_referred_to_any_counselling_or_the_details",
+          "label": "If yes, please provide information here",
+          "source": "6a133370-f99a-48b5-b83e-130126179175",
+          "helpText": "Date when started, Duration, Is it still ongoing?",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3,
+          "visibleWhen": {
+            "field": "health5_have_you_been_referred_to_any_counselling_or_the",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "health5_have_you_been_asked_to_attend_a_follow_up_or_reg",
+          "label": "Have you been asked to attend a follow-up or regular review with a doctor, hospital or clinic in the last 2 years?",
+          "source": "92ab9012-a526-4fcd-b1c9-f1100fa13080",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "health5_have_you_been_asked_to_attend_a_follow_up_or_reg_details",
+          "label": "If yes, please provide information here",
+          "source": "37022161-06bc-49c1-b4a0-dc9a872522e3",
+          "helpText": "Condition, Last review, Current status if ongoing",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3,
+          "visibleWhen": {
+            "field": "health5_have_you_been_asked_to_attend_a_follow_up_or_reg",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "health5_have_you_been_referred_to_or_consulted_a_special",
+          "label": "Have you been referred to or consulted a specialist in the last 5 years?",
+          "source": "970eec27-769a-4c6a-9b58-e46553227ced",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "health5_have_you_been_referred_to_or_consulted_a_special_details",
+          "label": "If yes, please provide information here",
+          "source": "1ae7fae5-2313-45d1-acc6-c7f7083b6096",
+          "helpText": "Condition, Reason for referral, Any other relevant info",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3,
+          "visibleWhen": {
+            "field": "health5_have_you_been_referred_to_or_consulted_a_special",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "health5_in_the_last_five_years_have_you_had_any_other_me",
+          "label": "In the last five years, have you had any other medical conditions or symptoms not already disclosed?",
+          "source": "21632cd6-508e-4c2c-b894-a739d1861e41",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "health5_in_the_last_five_years_have_you_had_any_other_me_details",
+          "label": "If yes, please provide information here",
+          "source": "d1a27619-ab39-4615-9f1d-ad8c33419493",
+          "helpText": "Condition, Medication, Treatment, Dates, Any other relevant information",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3,
+          "visibleWhen": {
+            "field": "health5_in_the_last_five_years_have_you_had_any_other_me",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "health5_have_you_suffered_any_symptoms_or_tested_positiv",
+          "label": "Have you suffered any symptoms or tested positive for Covid in the last three months?",
+          "source": "c60658dd-a8f1-4c8b-a8b2-64f98291d47e",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "health5_have_you_suffered_any_symptoms_or_tested_positiv_details",
+          "label": "If yes, please provide information here",
+          "source": "4a8d539f-555a-4216-a544-398b831b64fb",
+          "helpText": "Dates, Symptoms, Is it still ongoing?",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3,
+          "visibleWhen": {
+            "field": "health5_have_you_suffered_any_symptoms_or_tested_positiv",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "health5_in_the_last_five_years_have_you_been_banned_from",
+          "label": "In the last five years, have you been banned from driving for any reason?",
+          "source": "4eecb380-41b3-4db0-b3fd-123891683587",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "health5_in_the_last_five_years_have_you_been_banned_from_details",
+          "label": "If yes, please provide information here",
+          "source": "a6982089-e8e1-4a2d-8298-fd415fa479de",
+          "helpText": "Dates & Reason for ban",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3,
+          "visibleWhen": {
+            "field": "health5_in_the_last_five_years_have_you_been_banned_from",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "health5_in_the_last_five_years_have_you_spent_more_than",
+          "label": "In the last five years, have you spent more than 30 days outside the UK or EU at once, in one calendar year?",
+          "source": "adcbee78-a3d8-4925-89e0-51b57e528ded",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "health5_in_the_last_five_years_have_you_spent_more_than_details",
+          "label": "If yes, please provide information here",
+          "source": "2b20a22b-7edf-4985-87e3-3500f2808ac9",
+          "helpText": "Which country/countries, Duration, Reason for trip",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3,
+          "visibleWhen": {
+            "field": "health5_in_the_last_five_years_have_you_spent_more_than",
+            "operator": "eq",
+            "value": "yes"
+          }
+        }
+      ]
+    },
+    {
+      "id": "s6_gp_info",
+      "title": "GP info",
+      "source": "cd91ee1e-f782-4c45-be2e-83e75779d50e",
+      "fields": [
+        {
+          "id": "gp_what_is_your_gp_s_name",
+          "label": "What is your GP's name?",
+          "source": "c2292798-5799-4452-8939-96b708a649e8",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "gp_surgery_phone_number",
+          "label": "Surgery phone number",
+          "source": "8da024e1-00ca-4529-adca-4b24fe6199c0",
+          "type": "tel",
+          "colSpan": 1
+        },
+        {
+          "id": "gp_surgery_full_address",
+          "label": "Surgery full address",
+          "source": "c0d4ba10-4ef2-4dab-a7b2-93b8fcf1f3c3",
+          "helpText": "Including postcode",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3
+        },
+        {
+          "id": "gp_what_is_the_name_of_your_surgery",
+          "label": "What is the name of your surgery?",
+          "source": "0e581e62-0c43-4baa-8ea8-3c9c5a9a35a5",
+          "type": "text",
+          "colSpan": 1
+        }
+      ]
+    },
+    {
+      "id": "s7_additional_information",
+      "title": "Additional Information",
+      "source": "94306f51-e2c2-403b-869b-e5fb1e4ec776",
+      "fields": [
+        {
+          "id": "additional_is_there_anything_else_about_your_medical_histor",
+          "label": "Is there anything else about your medical history past or present you haven't shared above? Please include any doctor's appointments, diagnoses, injuries, or illnesses, even minor ones.",
+          "source": "f9de5845-5904-4756-ae8b-f9ec53db6ee3",
+          "helpText": "Condition, Dates, Treatment, All relevant info",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3
+        },
+        {
+          "id": "additional_please_ensure_that_all_information_you_have_prov",
+          "label": "Please ensure that all information you have provided is true, accurate, and complete. Providing incorrect or incomplete information may affect your insurance application. Ultimately, it could prevent you from obtaining coverage or the most suitable product for you, so it is essential that all details are correct. — I understand",
+          "source": "60ad0961-4e45-4762-81f1-499d4147a59c",
+          "required": true,
+          "type": "checkbox",
+          "colSpan": 2
+        }
+      ]
+    }
+  ]
+}

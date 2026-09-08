@@ -13,6 +13,7 @@
     {
       "id": "s1_introduction",
       "title": "Introduction",
+      "source": "6833d90f-d525-46fb-9234-1529b55b8ac1",
       "fields": [
         {
           "id": "who_completing",
@@ -38,6 +39,7 @@
     {
       "id": "s2_adviser_details",
       "title": "Adviser Details",
+      "source": "4416e02e-5abb-4474-a0de-79e97f2f3ce6",
       "fields": [
         {
           "id": "adviser_name",
@@ -64,6 +66,7 @@
     {
       "id": "s3_client_source",
       "title": "Client Source",
+      "source": "5d6b4924-d44a-4fd6-ab05-52c4f6a40cf1",
       "fields": [
         {
           "id": "source",
@@ -124,6 +127,7 @@
     {
       "id": "s4_applicant_1_details",
       "title": "Applicant 1 Details",
+      "source": "47ff05c0-0005-4a51-838a-d84ad850e7e2",
       "fields": [
         {
           "id": "a1_heading",
@@ -334,6 +338,7 @@
     {
       "id": "s5_applicant_2_details",
       "title": "Applicant 2 Details",
+      "source": "851545be-d123-49a0-a246-dfc1e988501b",
       "fields": [
         {
           "id": "a2_heading",
@@ -537,6 +542,7 @@
     {
       "id": "s6_dependants",
       "title": "Dependants",
+      "source": "0bd614c2-c7e1-447e-a4d8-9970d8ab730d",
       "fields": [
         {
           "id": "has_dependants",
@@ -649,6 +655,7 @@
     {
       "id": "s7_employment_info",
       "title": "Employment Info",
+      "source": "7e090540-f29d-4021-9627-336aac5e2d8a",
       "fields": [
         {
           "id": "a1_emp_heading",
@@ -712,7 +719,7 @@
           "colSpan": 1
         },
         {
-          "id": "a1_emp_applicant_1_start_of_employment_date_or_company_",
+          "id": "a1_emp_applicant_1_start_of_employment_date_or_company",
           "label": "Applicant 1 Start of employment date (or company setup date for self employed)",
           "source": "a69525e2-f1cd-4147-8562-f28e811adee8",
           "type": "text",
@@ -861,7 +868,7 @@
           }
         },
         {
-          "id": "a2_emp_applicant_2_start_of_employment_date_or_company_",
+          "id": "a2_emp_applicant_2_start_of_employment_date_or_company",
           "label": "Applicant 2 Start of employment date (or company setup date for self employed)",
           "source": "950d5f2d-0211-48be-9ed5-191e20a0f470",
           "type": "text",
@@ -963,6 +970,7 @@
     {
       "id": "s8_monthly_expenditure",
       "title": "Monthly Expenditure",
+      "source": "66cbb164-62fb-491e-a4c3-62b5d5602dc7",
       "fields": [
         {
           "id": "exp_heading",
@@ -1156,6 +1164,7 @@
     {
       "id": "s9_mortgage_info",
       "title": "Mortgage Info",
+      "source": "1a82c43c-d998-42f5-879b-874879d3869c",
       "fields": [
         {
           "id": "mortgage_type",
@@ -3280,6 +3289,7 @@
     {
       "id": "s10_sick_pay_info",
       "title": "Sick Pay Info",
+      "source": "9a07724b-0314-46f6-9373-fcc42584c84a",
       "fields": [
         {
           "id": "sp1_heading",
@@ -3320,7 +3330,7 @@
           "colSpan": 1
         },
         {
-          "id": "sp1_if_your_income_stopped_but_your_bills_continued_",
+          "id": "sp1_if_your_income_stopped_but_your_bills_continued",
           "label": "If your income stopped but your bills continued. How long would you be able to pay your monthly bills for?",
           "source": "36d9b5bb-e034-4d33-8c55-52b03e8f6a8c",
           "helpText": "Duration in months",
@@ -3399,7 +3409,7 @@
           }
         },
         {
-          "id": "sp2_if_your_income_stopped_but_your_bills_continued_",
+          "id": "sp2_if_your_income_stopped_but_your_bills_continued",
           "label": "If your income stopped but your bills continued. How long would you be able to pay your monthly bills for?",
           "source": "40ff2361-f3f1-4a9b-bd87-2461dfbb3b2c",
           "helpText": "Duration in months",
@@ -3429,6 +3439,7 @@
     {
       "id": "s11_current_protection",
       "title": "Current Protection",
+      "source": "fa128c7f-1b4c-4120-a9be-dede9496e118",
       "fields": [
         {
           "id": "prot_heading",
@@ -3490,7 +3501,7 @@
           "colSpan": 1
         },
         {
-          "id": "enter_details_of_any_existing_policies_you_have",
+          "id": "prot_do_you_have_anything_in_place_that_pays_your_wag_details",
           "label": "Enter details of any existing policies you have.",
           "source": "c74e921c-2396-4bd1-8151-8a7818b0e136",
           "helpText": "Insurance company, payout, term and monthly premium. If more than one enter all below.",
@@ -3534,7 +3545,7 @@
           "colSpan": 2
         },
         {
-          "id": "pension_do_you_understand_the_consequences_if_you_don_t_",
+          "id": "pension_do_you_understand_the_consequences_if_you_don_t",
           "label": "Do you understand the consequences if you don't have a will?",
           "source": "af32757d-08b0-4644-8fbc-b94f9599a116",
           "type": "yesno",
@@ -3557,6 +3568,7 @@
     {
       "id": "s12_additional_services",
       "title": "Additional Services",
+      "source": "544ccd7a-813a-4dd4-8c51-1429461c6967",
       "fields": [
         {
           "id": "is_there_anything_specific_that_you_would_like_y",
@@ -3579,6 +3591,7 @@
     {
       "id": "s13_admin_notes",
       "title": "Admin Notes",
+      "source": "b9ae61ba-166c-4b55-812b-0721ae2f1ce2",
       "fields": [
         {
           "id": "admin_heading",

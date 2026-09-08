@@ -74,7 +74,7 @@ export interface FormField {
   validation?: FieldValidation
   visibleWhen?: FieldCondition
   /** Marks the field as a reserved client-identity field. */
-  identity?: 'client_name' | 'client_email' | 'client_phone'
+  identity?: 'client_name' | 'client_first_name' | 'client_last_name' | 'client_email' | 'client_phone'
   /** Where the field came from when imported (e.g. a Typeform ref). */
   source?: string
 }
@@ -86,6 +86,8 @@ export interface FormStep {
   fields: FormField[]
   /** Skip the whole step unless this holds — e.g. an "Applicant 2" section on a sole application. */
   visibleWhen?: FieldCondition
+  /** Provenance of an imported step (the Typeform ref of its header or group). */
+  source?: string
 }
 
 export interface FormSchema {

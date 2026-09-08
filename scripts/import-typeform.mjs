@@ -10,17 +10,21 @@
  * lossy "export" from the Typeform UI is not enough.
  *
  * What it does
- *   • Splits the form into steps at each "Section N:" statement.
+ *   • Splits the form into steps at each header statement ("Section N: …" or
+ *     a bare title such as "Property Details"). Forms with no statements at
+ *     all (Medical) use their Typeform question groups as steps.
  *   • Groups become a sub-heading plus their fields; statements become copy.
  *   • Maps every Typeform type to an engine field type, upgrading free-text
  *     fields to date / currency / number / email / tel where the title makes
  *     the intent unambiguous. Every upgrade is printed so it can be audited.
- *   • Marks Applicant 1's name, email and phone as the client identity.
+ *   • Marks the client's name, email and phone as the client identity.
  *   • Applies branching. Typeform expresses it as jump rules; the engine as
- *     visibility. The rules for this template are declared in LOGIC below —
- *     derived from the jump rules, but written as intent, because two of the
- *     source rules are authoring slips (see comments) that should not be
- *     reproduced.
+ *     visibility. "Yes → details, No → skip" rules are translated
+ *     mechanically; template-wide rules (adviser-only sections, joint case…)
+ *     are declared per template in LOGIC below, as intent, because a few of
+ *     the source rules are authoring slips that should not be reproduced.
+ *
+ * Run scripts/verify-typeform-import.mjs afterwards — it proves the result.
  */
 import fs from 'node:fs'
 
@@ -35,7 +39,7 @@ const src = JSON.parse(fs.readFileSync(input, 'utf8'))
 // helpers
 // ---------------------------------------------------------------------------
 const slug = (s) =>
-  s.toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 48)
+  s.toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 48).replace(/_+$/g, '')
 
 const usedIds = new Set()
 function uniqueId(base) {
@@ -66,31 +70,50 @@ function groupPrefix(title) {
   if (t.includes('protection')) return 'prot'
   if (t.includes('pension')) return 'pension'
   if (t.includes('admin')) return 'admin'
+  if (t.includes('contact')) return 'contact'
+  if (t.includes('client information')) return 'client'
+  if (t.includes('lifestyle')) return 'lifestyle'
+  if (t.includes('family health')) return 'family'
+  if (t.includes('health continued')) return 'health5'
+  if (t.includes('your health')) return 'health'
+  if (t.startsWith('gp')) return 'gp'
+  if (t.includes('additional')) return 'additional'
   return slug(title).slice(0, 12)
 }
 
-const audit = { upgrades: [], required: [], dropped: [], visibility: [], repairs: [] }
+/** Adviser intro copy at the top of every template — the platform shows the adviser's own branding instead. */
+const INTRO_RE = /^(My name is|We're delighted)/i
+/** "Yes → details" follow-ups; their id is derived from the question they follow. */
+const DETAILS_RE = /^(if yes,? )?(please )?(provide|enter) (details|information|all relevant info)/i
+
+const audit = { upgrades: [], required: [], dropped: [], added: [], visibility: [], repairs: [] }
 
 /** Free-text fields whose title makes a stronger input type unambiguous. */
 function upgradeType(tfType, title) {
   const t = title.toLowerCase()
   if (tfType === 'short_text' || tfType === 'long_text') {
     if (/dd\/mm\/yyyy|date of birth|\bd\.o\.b\b|^date /.test(t) && !/and when|and discharge/.test(t)) return 'date'
-    if (/^email$/.test(t)) return 'email'
+    if (/^email( address)?$/.test(t)) return 'email'
     if (/^phone number$/.test(t)) return 'tel'
-    if (/how many|number of (bedrooms|bathrooms)|months missed|year of build|retirement age|until what age/.test(t)) return 'number'
+    if (/how many|number of (bedrooms|bathrooms)|months missed|year (of build|built)|retirement age|until what age/.test(t)) return 'number'
     if (/gross annual pay|net monthly pay|\(monthly\)|housing costs|purchase amount|estimated value|outstanding loan|ccj amount|rental income|total monthly expenditure|how much sick pay/.test(t)) return 'currency'
     if (/interest rate/.test(t)) return 'percent'
   }
+  if (tfType === 'number' && /sum insured/.test(t)) return 'currency'
   return null
 }
 
-function convertField(tf, { prefix, colSpanDefault = 1 } = {}) {
-  const title = tf.title.trim()
+function convertField(tf, { prefix, colSpanDefault = 1, prev } = {}) {
+  let title = tf.title.trim()
+  // Stray outline numbering in the source ("2d. Do you currently smoke?").
+  const numbered = title.match(/^\d+[a-z]\.\s+(.*)$/)
+  if (numbered) { title = numbered[1]; audit.repairs.push(`"${tf.title.trim()}" → "${title}" (outline number dropped)`) }
   const tfType = tf.type
   const required = Boolean(tf.validations?.required)
   const help = tf.properties?.description?.trim() || undefined
-  const base = prefix ? `${prefix}_${slug(title)}` : slug(title)
+  const base = DETAILS_RE.test(title) && prev && ['yesno', 'radio', 'select'].includes(prev.type)
+    ? `${prev.id}_details`
+    : prefix ? `${prefix}_${slug(title)}` : slug(title)
   const id = uniqueId(base)
   const f = { id, label: title, source: tf.ref }
   if (help) f.helpText = help
@@ -141,7 +164,7 @@ function convertField(tf, { prefix, colSpanDefault = 1 } = {}) {
       break
     }
     case 'number':
-      f.type = 'number'
+      f.type = upgraded ?? 'number'
       f.colSpan = colSpanDefault
       break
     case 'email':
@@ -159,55 +182,77 @@ function convertField(tf, { prefix, colSpanDefault = 1 } = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// Steps: split at "Section N:" statements
+// Steps
+//   • Every statement that is not adviser intro copy is a step header
+//     ("Section 4: Applicant 1 Details" or just "Property Details").
+//   • A form with no header statements (Medical) uses its top-level question
+//     groups as steps instead.
 // ---------------------------------------------------------------------------
 const top = src.fields
 const sectionRe = /^Section\s+(\d+)\s*:\s*(.+)$/i
+const GROUP_TYPES = new Set(['inline_group', 'group', 'contact_info'])
+const isHeader = (tf) => tf.type === 'statement' && !INTRO_RE.test(tf.title)
+const headerless = !top.some(isHeader)
 
 const steps = []
 let current = null
 const topIndexToStep = new Map()
+const titleCase = (s) => s.charAt(0).toUpperCase() + s.slice(1)
+
+function openStep(tf, rawTitle, n) {
+  const internal = /\(internal\)/i.test(rawTitle)
+  const title = rawTitle.replace(/\s*\(internal\)\s*/i, '').trim()
+  current = { id: `s${n}_${slug(title)}`, title, source: tf.ref, fields: [], _internal: internal }
+  if (internal) current.description = 'Adviser use only — not shown to clients.'
+  steps.push(current)
+}
 
 for (let i = 0; i < top.length; i++) {
   const tf = top[i]
-  const m = tf.type === 'statement' ? tf.title.match(sectionRe) : null
 
-  if (m) {
-    const rawTitle = m[2].trim()
-    const internal = /\(internal\)/i.test(rawTitle)
-    const title = rawTitle.replace(/\s*\(internal\)\s*/i, '').trim()
-    current = { id: `s${m[1]}_${slug(title)}`, title, fields: [], _internal: internal, _n: Number(m[1]) }
-    if (internal) current.description = 'Adviser use only — not shown to clients.'
-    steps.push(current)
+  if (tf.type === 'statement') {
+    if (INTRO_RE.test(tf.title)) { audit.dropped.push(`#${i} ${tf.type}: ${tf.title.slice(0, 60)}`); continue }
+    const m = tf.title.match(sectionRe)
+    openStep(tf, m ? m[2].trim() : tf.title.trim(), m ? Number(m[1]) : steps.length + 1)
     topIndexToStep.set(i, current)
     continue
   }
 
-  if (!current) {
-    // Adviser-specific intro statements before Section 1 — the platform
-    // already shows the adviser's name and branding in the page header.
-    audit.dropped.push(`#${i} ${tf.type}: ${tf.title.slice(0, 60)}`)
+  if (headerless && GROUP_TYPES.has(tf.type)) {
+    // The group is the step; its questions sit directly in it.
+    openStep(tf, tf.title.trim(), steps.length + 1)
+    topIndexToStep.set(i, current)
+    const prefix = groupPrefix(tf.title)
+    let prev = null
+    for (const child of tf.properties.fields) {
+      const f = convertField(child, { prefix, prev })
+      f._top = i
+      current.fields.push(f)
+      prev = f
+    }
     continue
   }
 
+  if (!current) throw new Error(`question "${tf.title}" appears before the first section header`)
   topIndexToStep.set(i, current)
 
-  if (tf.type === 'statement') {
-    current.fields.push({ id: uniqueId(`${current.id}_note`), type: 'paragraph', label: tf.title, colSpan: 2, source: tf.ref, _top: i })
-  } else if (tf.type === 'inline_group') {
+  if (GROUP_TYPES.has(tf.type)) {
     const prefix = groupPrefix(tf.title)
     const heading = tf.title.replace(/^Section \d+:\s*/i, '').replace(/^Please enter (information about your |)/i, '').trim()
     const headingLabel = /sick pay info applicant 2/i.test(tf.title) ? 'Applicant 2'
       : /sick pay info/i.test(tf.title) ? 'Applicant 1'
-      : heading.charAt(0).toUpperCase() + heading.slice(1)
+      : titleCase(heading)
     current.fields.push({ id: uniqueId(`${prefix}_heading`), type: 'heading', label: headingLabel, colSpan: 2, source: tf.ref, _top: i })
+    let prev = null
     for (const child of tf.properties.fields) {
-      const f = convertField(child, { prefix })
+      const f = convertField(child, { prefix, prev })
       f._top = i
       current.fields.push(f)
+      prev = f
     }
   } else {
-    const f = convertField(tf, { colSpanDefault: 2 })
+    const prevField = current.fields[current.fields.length - 1]
+    const f = convertField(tf, { colSpanDefault: 2, prev: prevField })
     f._top = i
     current.fields.push(f)
   }
@@ -237,9 +282,11 @@ const gates = {
   btl: findByLabel(/background buy-to-let/i),
   btlCount: findByLabel(/^If yes, how many\?$/),
   will: findByLabel(/^Do you have a will\?$/),
+  parents: findByLabel(/^Are both of your parents still alive\?$/),
 }
 const GATE_IDS = { who: 'who_completing', joint: 'joint_case', children: 'has_dependants', ccj: 'has_ccj',
-  bankrupt: 'has_bankruptcy', mortgageType: 'mortgage_type', btl: 'has_btl', btlCount: 'btl_count', will: 'pension_has_will' }
+  bankrupt: 'has_bankruptcy', mortgageType: 'mortgage_type', btl: 'has_btl', btlCount: 'btl_count', will: 'pension_has_will',
+  parents: 'family_parents_alive' }
 for (const [k, f] of Object.entries(gates)) if (f) rename(f, GATE_IDS[k])
 const need = (k) => { if (!gates[k]) throw new Error(`this form has no "${k}" gate but its logic needs one`); return GATE_IDS[k] }
 
@@ -255,13 +302,36 @@ if (gates.btlCount) {
   gates.btlCount.colSpan = 1
 }
 
-// Applicant 1 identity — the submission is bound to the client through these.
-const a1GroupIdx = top.findIndex((f) => f.type === 'inline_group' && /^applicant 1 details$/i.test(f.title))
-const a1Name = findByLabel(/^Full Name$/, a1GroupIdx), a1Email = findByLabel(/^Email$/, a1GroupIdx), a1Phone = findByLabel(/^Phone Number$/, a1GroupIdx)
-rename(a1Name, 'client_name'); a1Name.identity = 'client_name'; a1Name.required = true
-rename(a1Email, 'client_email'); a1Email.identity = 'client_email'; a1Email.type = 'email'; a1Email.required = true
-rename(a1Phone, 'client_phone'); a1Phone.identity = 'client_phone'; a1Phone.type = 'tel'
-audit.required.push('client_name, client_email (were optional in Typeform; a submission must identify the client)')
+// Client identity — the submission is bound to the client through these. The
+// first matching field in document order is the client's (Applicant 1's).
+const idName = findByLabel(/^Full Name$/)
+const idFirst = findByLabel(/^(First Name|What is your first name\?)$/)
+const idLast = findByLabel(/^(Last Name|What is your surname\?)$/)
+const idEmail = findByLabel(/^(Email|Email Address)$/)
+const idPhone = findByLabel(/^Phone Number$/)
+const requiredOverrides = []
+function markIdentity(f, id, extra = {}) {
+  rename(f, id); f.identity = id; Object.assign(f, extra)
+  if (!f.required) { f.required = true; requiredOverrides.push(id) }
+}
+if (idName) markIdentity(idName, 'client_name')
+else if (idFirst && idLast) { markIdentity(idFirst, 'client_first_name'); markIdentity(idLast, 'client_last_name') }
+else throw new Error('cannot find the client name field(s)')
+if (idEmail) markIdentity(idEmail, 'client_email', { type: 'email' })
+else {
+  // The platform needs an email to deliver the submission and to bind it to
+  // the client. Medical has none in Typeform — add one after the name.
+  const anchor = idLast ?? idName
+  const step = steps.find((s) => s.fields.includes(anchor))
+  const added = { id: 'client_email', label: 'Email address', type: 'email', colSpan: anchor.colSpan ?? 1, required: true,
+    identity: 'client_email', source: 'factfind-pro:client_email', _top: anchor._top }
+  usedIds.add('client_email')
+  step.fields.splice(step.fields.indexOf(anchor) + 1, 0, added)
+  all.splice(all.indexOf(anchor) + 1, 0, added)
+  audit.added.push('client_email: no email question in the Typeform template; the platform needs one to deliver the submission')
+}
+if (idPhone) { rename(idPhone, 'client_phone'); idPhone.identity = 'client_phone'; idPhone.type = 'tel' }
+audit.required.push(`${requiredOverrides.join(', ')} (were optional in Typeform; a submission must identify the client)`)
 
 // Source-data repairs — flaws in the Typeform templates themselves.
 // 1. Applicant 1's employment-status dropdown is titled literally "..." in
@@ -276,8 +346,7 @@ for (const f of all) {
 }
 
 // ---------------------------------------------------------------------------
-// Branching — declared as intent per template, derived from its jump rules.
-// Rules address fields by title so they survive reordering in Typeform.
+// Branching
 // ---------------------------------------------------------------------------
 const eq = (field, value) => ({ field, operator: 'eq', value })
 const yes = (field) => eq(field, 'yes')
@@ -292,7 +361,55 @@ function topVisible(i, cond, why) {
 }
 const internalSteps = () => steps.filter((st) => st._internal)
 
-/** Shared by every template: internal sections, joint-case, dependants, will. */
+/**
+ * Mechanical translation of "Yes → follow-up, No → skip it" rules, which is
+ * how the Medical template phrases all of its branching. A rule on question
+ * G whose positive branch lands on the next question(s) and whose negative
+ * branch lands further on gates everything in between on G = Yes.
+ */
+function applyDetailsGates() {
+  const order = [] // every question in document order, by ref
+  for (const tf of top) { if (GROUP_TYPES.has(tf.type)) for (const c of tf.properties.fields) order.push(c.ref); else order.push(tf.ref) }
+  const bySource = new Map(all.map((f) => [f.source, f]))
+  const pos = (ref) => order.indexOf(ref)
+  let n = 0
+  for (const rule of src.logic ?? []) {
+    const gate = bySource.get(rule.ref)
+    if (!gate || ['heading', 'paragraph'].includes(gate.type)) continue
+    const isYes = (c) => c.op === 'is' && ((c.vars[1].type === 'constant' && c.vars[1].value === true) || (c.vars[1].type === 'choice' && /^yes$/i.test(choiceLabel(rule.ref, c.vars[1].value))))
+    const isNo = (c) => (c.op === 'is_not' && c.vars[1].value === true) || (c.op === 'is' && c.vars[1].value === false)
+    const own = (c) => c.vars?.[0]?.value === rule.ref
+    const yesA = rule.actions.find((a) => own(a.condition) && isYes(a.condition))
+    const noA = rule.actions.find((a) => own(a.condition) && isNo(a.condition))
+    const always = rule.actions.find((a) => a.condition.op === 'always')
+    if (!yesA && !noA) continue // plain "always → next": nothing to gate
+    const yesTo = pos((yesA ?? always).details.to.value), noTo = pos((noA ?? always).details.to.value)
+    const g = pos(rule.ref)
+    if (yesTo !== g + 1) throw new Error(`rule on "${gate.label}": positive branch does not lead to the next question`)
+    if (noTo <= yesTo) throw new Error(`rule on "${gate.label}": negative branch does not skip anything`)
+    // Only the follow-ups in the gate's own group are gated. A negative branch
+    // that also jumps over a later group is an authoring slip in the source
+    // (Medical's "30 days abroad = No" skips the whole GP block) — reported,
+    // not reproduced.
+    const groupOf = (ref) => top.find((tf) => GROUP_TYPES.has(tf.type) && tf.properties.fields.some((c) => c.ref === ref)) ?? top.find((tf) => tf.ref === ref)
+    const home = groupOf(rule.ref)
+    const skipped = order.slice(yesTo, noTo)
+    const inGroup = skipped.filter((r) => groupOf(r) === home)
+    const beyond = skipped.filter((r) => groupOf(r) !== home)
+    const gated = inGroup.map((r) => bySource.get(r))
+    for (const f of gated) f.visibleWhen = yes(gate.id)
+    audit.visibility.push(`${gate.id}: Yes → ${gated.map((f) => `"${f.label.slice(0, 40)}"`).join(', ')}`)
+    if (beyond.length) audit.repairs.push(`${gate.id}: source's "No" branch also skips "${groupOf(beyond[0]).title}" (${beyond.length} questions) — treated as a slip, not reproduced`)
+    n++
+  }
+  return n
+}
+function choiceLabel(fieldRef, choiceRef) {
+  for (const tf of top) for (const q of GROUP_TYPES.has(tf.type) ? tf.properties.fields : [tf]) if (q.ref === fieldRef) return q.properties.choices.find((c) => c.ref === choiceRef)?.label ?? ''
+  return ''
+}
+
+/** Shared by the Mortgage and Protection templates: internal sections, joint case, dependants, will. */
 function applyCommonLogic() {
   const who = need('who'), joint = need('joint')
   // "Who is completing?" Client → jump past the (Internal) sections.
@@ -322,7 +439,8 @@ const LOGIC = {
     topVisible(topByTitle(/^Please enter CCJ information/i), yes(need('ccj')), 'has a CCJ')
     topVisible(topByTitle(/^Bankruptcy info$/i), yes(need('bankrupt')), 'has been bankrupt')
     // Purchase or remortgage. (Source's fallback loops to its own header when
-    // unanswered — not reproduced.)
+    // unanswered — not reproduced. Its purchase branch also jumps past the
+    // buy-to-let questions — treated as a slip; they are asked for both.)
     const mt = need('mortgageType')
     topVisible(topByTitle(/about your mortgage purchase/i), eq(mt, 'purchase'), 'purchase')
     topVisible(topByTitle(/about your remortgage/i), eq(mt, 'remortgage'), 'remortgage')
@@ -336,6 +454,17 @@ const LOGIC = {
   protection() {
     applyCommonLogic()
   },
+  medical() {
+    applyDetailsGates()
+    // "If no, at what age did they pass away?" has no rule in the source
+    // (always shown); asking it only when a parent has died is the evident intent.
+    const p = need('parents'), q = findByLabel(/^If no, at what age did they pass away\?$/)
+    q.visibleWhen = { field: p, operator: 'in', value: ['no', 'one_deceased'] }
+    audit.visibility.push(`${q.id}: only when a parent has died`)
+  },
+  home() {
+    // No branching in the source.
+  },
 }
 if (!LOGIC[formType]) throw new Error(`no branching rules defined for form type "${formType}"`)
 LOGIC[formType]()
@@ -343,16 +472,22 @@ LOGIC[formType]()
 // ---------------------------------------------------------------------------
 // Emit
 // ---------------------------------------------------------------------------
-for (const s of steps) { delete s._internal; delete s._n }
+for (const s of steps) delete s._internal
 for (const f of all) delete f._top
 
+const COPY = {
+  mortgage: { subtitle: 'A few sections so your adviser can find the right mortgage and protection for you.', minutes: 20 },
+  protection: { subtitle: 'A few sections so your adviser can find the right protection for you and your family.', minutes: 15 },
+  medical: { subtitle: 'Your health and lifestyle details, so your adviser can find the right cover for you.', minutes: 10 },
+  home: { subtitle: 'A few details about you and your property, so your adviser can arrange the right home insurance.', minutes: 5 },
+}
 const schema = {
   type: formType,
   version: `1.0.0-typeform-${src.id}`,
-  title: `${formType.charAt(0).toUpperCase() + formType.slice(1)} FactFind`,
-  subtitle: 'A few sections so your adviser can find the right mortgage and protection for you.',
+  title: `${titleCase(formType)} FactFind`,
+  subtitle: COPY[formType].subtitle,
   intro: 'Your answers are saved when you submit and go straight to your adviser. Sections that do not apply to you are skipped automatically.',
-  estimatedMinutes: 20,
+  estimatedMinutes: COPY[formType].minutes,
   placeholder: false,
   submitLabel: 'Submit FactFind',
   successTitle: 'Thank you — your FactFind has been submitted',
@@ -369,5 +504,6 @@ console.log(`  ${steps.length} steps · ${leaf.length} questions · ${all.length
 console.log(`\nType upgrades (${audit.upgrades.length}):`); audit.upgrades.forEach((l) => console.log('  ' + l))
 console.log(`\nRequired overrides:`); audit.required.forEach((l) => console.log('  ' + l))
 console.log(`\nDropped (${audit.dropped.length}):`); audit.dropped.forEach((l) => console.log('  ' + l))
+console.log(`\nAdded (${audit.added.length}):`); audit.added.forEach((l) => console.log('  ' + l))
 console.log(`\nVisibility rules (${audit.visibility.length}):`); audit.visibility.forEach((l) => console.log('  ' + l))
 console.log(`\nSource repairs (${audit.repairs.length}):`); audit.repairs.forEach((l) => console.log('  ' + l))

@@ -1,0 +1,302 @@
+{
+  "type": "home",
+  "version": "1.0.0-typeform-R3CNRtla",
+  "title": "Home FactFind",
+  "subtitle": "A few details about you and your property, so your adviser can arrange the right home insurance.",
+  "intro": "Your answers are saved when you submit and go straight to your adviser. Sections that do not apply to you are skipped automatically.",
+  "estimatedMinutes": 5,
+  "placeholder": false,
+  "submitLabel": "Submit FactFind",
+  "successTitle": "Thank you — your FactFind has been submitted",
+  "successMessage": "Thank you for completing this questionaire, your adviser will be in touch shortly to discuss the next steps.",
+  "steps": [
+    {
+      "id": "s1_about_the_proposer",
+      "title": "About the Proposer",
+      "source": "d8f2c692-aa92-44f5-9b5d-c6b6e73440a8",
+      "fields": [
+        {
+          "id": "contact_heading",
+          "type": "heading",
+          "label": "Your contact details",
+          "colSpan": 2,
+          "source": "16493f54-d3dd-4e96-91e9-892c1b8dec7f"
+        },
+        {
+          "id": "client_first_name",
+          "label": "First Name",
+          "source": "aad0d70f-1ba7-4939-9da1-5717e5b6cae6",
+          "type": "text",
+          "colSpan": 1,
+          "identity": "client_first_name",
+          "required": true
+        },
+        {
+          "id": "client_last_name",
+          "label": "Last Name",
+          "source": "7db00adf-32bf-4a0f-b3ec-318b2a22cb1a",
+          "type": "text",
+          "colSpan": 1,
+          "identity": "client_last_name",
+          "required": true
+        },
+        {
+          "id": "client_email",
+          "label": "Email Address",
+          "source": "1b477e9a-ca24-4636-9c3d-265be8ec497a",
+          "type": "email",
+          "colSpan": 1,
+          "identity": "client_email",
+          "required": true
+        },
+        {
+          "id": "client_phone",
+          "label": "Phone Number",
+          "source": "f8ed5329-959f-4880-b7aa-653e7456f03b",
+          "type": "tel",
+          "colSpan": 1,
+          "identity": "client_phone"
+        },
+        {
+          "id": "contact_company_name",
+          "label": "Company Name",
+          "source": "a8ba8be5-76de-44ae-91fb-9a4f990bbb82",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "when_is_your_date_of_birth",
+          "label": "When is your date of birth?",
+          "source": "1ced2075-d76c-4795-bf5c-02e4fb826d4e",
+          "type": "date",
+          "colSpan": 2
+        },
+        {
+          "id": "what_is_your_occupation",
+          "label": "What is your occupation?",
+          "source": "268d0efd-444e-4fec-b470-5f8f9903df4f",
+          "type": "text",
+          "colSpan": 2
+        },
+        {
+          "id": "what_is_your_marital_status",
+          "label": "What is your marital status?",
+          "source": "74b1fadd-1759-4d92-9c4a-735a5f04cd30",
+          "options": [
+            {
+              "value": "single",
+              "label": "Single"
+            },
+            {
+              "value": "married",
+              "label": "Married"
+            },
+            {
+              "value": "civil_partnership",
+              "label": "Civil partnership"
+            },
+            {
+              "value": "separated",
+              "label": "Separated"
+            },
+            {
+              "value": "divorced",
+              "label": "Divorced"
+            },
+            {
+              "value": "widowed",
+              "label": "Widowed"
+            }
+          ],
+          "type": "select",
+          "colSpan": 2
+        }
+      ]
+    },
+    {
+      "id": "s2_property_details",
+      "title": "Property Details",
+      "source": "be3eb1db-eab9-4c63-a9f5-43460d0e564a",
+      "fields": [
+        {
+          "id": "address_of_the_property",
+          "label": "Address of the property?",
+          "source": "34843f56-adff-4b27-8512-401a5fd0373c",
+          "type": "text",
+          "colSpan": 2
+        },
+        {
+          "id": "type_of_property",
+          "label": "Type of property?",
+          "source": "fff7448f-4310-4fed-b960-68f87a8e3cb6",
+          "type": "text",
+          "colSpan": 2
+        },
+        {
+          "id": "ownership_status",
+          "label": "Ownership status?",
+          "source": "2c7e09c9-d968-4e5e-a343-c78ad99c5769",
+          "type": "text",
+          "colSpan": 2
+        },
+        {
+          "id": "year_built",
+          "label": "Year built?",
+          "source": "59afa8f4-6415-453b-86c9-9d9ec8f06a1c",
+          "type": "number",
+          "colSpan": 2
+        },
+        {
+          "id": "number_of_bedrooms",
+          "label": "Number of bedrooms?",
+          "source": "4cfa95e6-d22d-468e-8d8e-41e813f543eb",
+          "type": "number",
+          "colSpan": 2
+        },
+        {
+          "id": "number_of_bathrooms",
+          "label": "Number of bathrooms?",
+          "source": "74a4a18e-55df-45df-af63-2e0ef0ad6e67",
+          "type": "number",
+          "colSpan": 2
+        },
+        {
+          "id": "wall_and_roof_materials",
+          "label": "Wall and roof materials?",
+          "source": "105f2db3-40b1-436a-a535-57e2cd83a70c",
+          "type": "text",
+          "colSpan": 2
+        },
+        {
+          "id": "history_of_flooding_yes_no",
+          "label": "History of flooding (Yes/No)?",
+          "source": "e17bc29f-f5e5-4449-9140-8e9decf05233",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "history_of_subsidence_yes_no",
+          "label": "History of subsidence (Yes/No)?",
+          "source": "175eb830-1487-4ca8-b5a9-cf322b2f9403",
+          "type": "yesno",
+          "colSpan": 2
+        }
+      ]
+    },
+    {
+      "id": "s3_occupancy_and_security",
+      "title": "Occupancy & Security",
+      "source": "fdd422bd-f9a3-4104-822d-46b5c1c44cae",
+      "fields": [
+        {
+          "id": "who_lives_at_the_property",
+          "label": "Who lives at the property?",
+          "source": "edb60bc1-1c6d-47f4-b3bb-e83e9e95f9a9",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3
+        },
+        {
+          "id": "is_the_property_left_unoccupied_for_more_than_30",
+          "label": "Is the property left unoccupied for more than 30 days in one 12-month period?",
+          "source": "432469b5-1621-41d9-a360-df333e55a76e",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "is_the_property_used_for_business_purposes",
+          "label": "Is the property used for business purposes?",
+          "source": "92297251-3f01-42c5-8a23-912358a1895c",
+          "type": "text",
+          "colSpan": 2
+        },
+        {
+          "id": "type_of_door_and_window_locks",
+          "label": "Type of door and window locks?",
+          "source": "802d7880-316c-464d-a3ef-baa51122eb58",
+          "type": "text",
+          "colSpan": 2
+        },
+        {
+          "id": "alarm_systems_present",
+          "label": "Alarm systems present?",
+          "source": "ee0a3376-174c-4441-856f-9e864a4c9bca",
+          "type": "yesno",
+          "colSpan": 2
+        }
+      ]
+    },
+    {
+      "id": "s4_cover_required",
+      "title": "Cover Required",
+      "source": "30d7909c-36f6-4a97-9e81-e11b6c7a113c",
+      "fields": [
+        {
+          "id": "what_is_the_total_sum_insured_for_buildings",
+          "label": "What is the total sum insured for buildings?",
+          "source": "7c6ff91e-69a1-42f1-8e26-9c6e89df79b2",
+          "type": "currency",
+          "colSpan": 2
+        },
+        {
+          "id": "what_is_the_contents_sum_insured",
+          "label": "What is the contents sum insured?",
+          "source": "8139351d-2f54-4707-966a-d85fcbb0dcd3",
+          "type": "currency",
+          "colSpan": 2
+        },
+        {
+          "id": "do_you_require_accidental_damage_cover",
+          "label": "Do you require accidental damage cover?",
+          "source": "d8d9d21b-f6fa-4f33-bcfd-7bd08fb2b224",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "please_list_any_high_value_personal_possessions",
+          "label": "Please list any high-value personal possessions you want covered away from home.",
+          "source": "48775b34-f7dd-44a0-8f7c-6ac1711c0194",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3
+        }
+      ]
+    },
+    {
+      "id": "s5_history",
+      "title": "History",
+      "source": "dbc22827-0d3e-48cc-9b4b-f81b32ffc654",
+      "fields": [
+        {
+          "id": "have_you_made_any_home_insurance_claims_in_the_p",
+          "label": "Have you made any home insurance claims in the past 5 years?",
+          "source": "a2b3a4fd-4a6a-40df-ac66-eaabafb385d6",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "has_your_insurance_ever_been_cancelled_or_refuse",
+          "label": "Has your insurance ever been cancelled or refused?",
+          "source": "9344c241-d708-4dad-b2a2-75839ca5c889",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "have_you_or_anyone_living_at_the_property_ever_b",
+          "label": "Have you or anyone living at the property ever been convicted of a criminal offence?",
+          "source": "f88a0feb-8588-4155-9e28-92620c28eac6",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "please_ensure_that_all_information_you_have_prov",
+          "label": "Please ensure that all information you have provided is true, accurate, and complete. Providing incorrect or incomplete information may affect your home insurance application. Ultimately, it could invalidate a future claim, so it is essential that all details are correct. — I Agree",
+          "source": "fa5c9ec9-9866-4d64-9472-47e6e5fa7146",
+          "required": true,
+          "type": "checkbox",
+          "colSpan": 2
+        }
+      ]
+    }
+  ]
+}
