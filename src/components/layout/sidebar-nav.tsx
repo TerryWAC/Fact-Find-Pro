@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Logo } from '@/components/shared/logo'
+import { BrandBannerImage } from '@/components/shared/brand-banner-image'
 import { isActive, navForRole } from './nav-config'
 import { cn } from '@/lib/utils'
 
@@ -17,8 +18,15 @@ export function SidebarNav({ isAdmin, onNavigate }: SidebarNavProps) {
 
   return (
     <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
-      <div className="flex h-16 shrink-0 items-center border-b border-sidebar-border px-5">
-        <Logo variant="light" href="/dashboard" />
+      <div className="shrink-0 border-b border-sidebar-border">
+        <BrandBannerImage
+          className="px-3 pt-3 pb-2"
+          fallback={
+            <div className="flex h-16 items-center px-5">
+              <Logo variant="light" href="/dashboard" />
+            </div>
+          }
+        />
       </div>
 
       <nav className="scrollbar-thin flex-1 space-y-6 overflow-y-auto px-3 py-5" aria-label="Main navigation">

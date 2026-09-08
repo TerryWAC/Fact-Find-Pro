@@ -1,4 +1,5 @@
 import { Logo } from '@/components/shared/logo'
+import { BrandBannerImage } from '@/components/shared/brand-banner-image'
 import { ThemeToggle } from '@/components/shared/theme-toggle'
 import { BRAND } from '@/lib/constants'
 
@@ -7,8 +8,8 @@ export default function PublicFactFindLayout({ children }: { children: React.Rea
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <header className="brand-surface">
-        <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between px-6">
-          <Logo variant="light" href={null} />
+        <div className="mx-auto flex min-h-16 w-full max-w-5xl items-center justify-between gap-4 px-6 py-2">
+          <BrandBannerImage className="max-h-20 w-auto" fallback={<Logo variant="light" href={null} />} />
           <ThemeToggle className="text-white hover:bg-white/10 hover:text-white" />
         </div>
         <div className="gold-rule h-1 w-full" />

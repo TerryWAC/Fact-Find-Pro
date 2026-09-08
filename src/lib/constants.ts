@@ -7,6 +7,12 @@ export const BRAND = {
   supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? 'support@wealthyadvisorsclub.co.uk',
 } as const
 
+/**
+ * Path of the brand banner image, or null when no artwork has been added yet.
+ * Resolved at build time in next.config.ts; see public/brand/README.md.
+ */
+export const BRAND_BANNER: string | null = process.env.NEXT_PUBLIC_BRAND_BANNER || null
+
 export const FACTFIND_TYPES = ['mortgage', 'protection', 'medical', 'home'] as const
 
 export interface FactFindTypeMeta {

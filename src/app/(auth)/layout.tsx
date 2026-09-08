@@ -1,5 +1,6 @@
 import { CheckCircle2 } from 'lucide-react'
 import { Logo } from '@/components/shared/logo'
+import { BrandBannerImage } from '@/components/shared/brand-banner-image'
 import { ThemeToggle } from '@/components/shared/theme-toggle'
 import { BRAND } from '@/lib/constants'
 
@@ -15,7 +16,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     <div className="grid min-h-screen lg:grid-cols-[1.05fr_1fr]">
       {/* Brand panel */}
       <aside className="brand-surface relative hidden flex-col justify-between p-10 lg:flex">
-        <Logo variant="light" href="/login" />
+        <BrandBannerImage
+          className="max-w-md rounded-xl"
+          fallback={<Logo variant="light" href="/login" />}
+        />
 
         <div className="max-w-md">
           <h2 className="text-3xl font-semibold leading-tight tracking-tight text-white">
