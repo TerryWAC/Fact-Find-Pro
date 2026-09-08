@@ -35,12 +35,19 @@ export interface FieldOption {
 
 export type ConditionOperator = 'eq' | 'neq' | 'in' | 'not_in' | 'truthy' | 'falsy' | 'gt' | 'lt'
 
-/** Show a field only when another field's answer matches. */
-export interface FieldCondition {
+/** A single test against another field's answer. */
+export interface SimpleCondition {
   field: string
   operator: ConditionOperator
   value?: string | number | boolean | Array<string | number>
 }
+
+/**
+ * Show a field or step only when the condition holds. Conditions compose:
+ *   { all: [...] }  every sub-condition must hold
+ *   { any: [...] }  at least one must hold
+ */
+export type FieldCondition = SimpleCondition | { all: FieldCondition[] } | { any: FieldCondition[] }
 
 export interface FieldValidation {
   min?: number
@@ -68,6 +75,8 @@ export interface FormField {
   visibleWhen?: FieldCondition
   /** Marks the field as a reserved client-identity field. */
   identity?: 'client_name' | 'client_email' | 'client_phone'
+  /** Where the field came from when imported (e.g. a Typeform ref). */
+  source?: string
 }
 
 export interface FormStep {
@@ -75,6 +84,8 @@ export interface FormStep {
   title: string
   description?: string
   fields: FormField[]
+  /** Skip the whole step unless this holds — e.g. an "Applicant 2" section on a sole application. */
+  visibleWhen?: FieldCondition
 }
 
 export interface FormSchema {

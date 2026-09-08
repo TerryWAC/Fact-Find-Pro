@@ -15,6 +15,7 @@ import {
   extractClientIdentity,
   isFieldVisible,
   validateStep,
+  visibleSteps,
 } from '@/lib/forms/engine'
 import type { FormSchema, FormValues } from '@/lib/forms/types'
 import type { FactFindType } from '@/lib/supabase/database.types'
@@ -63,14 +64,20 @@ export function FactFindForm({
   } = useForm<FormValues>({ defaultValues, mode: 'onTouched' })
 
   const values = watch()
-  const totalSteps = schema.steps.length
-  const step = schema.steps[stepIndex]
-  const isLastStep = stepIndex === totalSteps - 1
+
+  // Navigate over the steps that apply to this respondent. An answer can hide
+  // or reveal later steps, so the list is recomputed every render and the
+  // index is clamped to it.
+  const steps = visibleSteps(schema, values)
+  const totalSteps = steps.length
+  const safeIndex = Math.min(stepIndex, totalSteps - 1)
+  const step = steps[safeIndex]
+  const isLastStep = safeIndex === totalSteps - 1
 
   const visibleFields = step.fields.filter((field) => isFieldVisible(field, values))
 
   // Progress reflects completed steps, ticking to 100% on the final submit.
-  const progress = Math.round((stepIndex / totalSteps) * 100)
+  const progress = Math.round((safeIndex / totalSteps) * 100)
 
   function applyErrors(stepErrors: Record<string, string>) {
     clearErrors()
@@ -103,9 +110,9 @@ export function FactFindForm({
   async function handleSubmit() {
     setSubmitError(null)
 
-    // Re-validate every step, not just the last one.
-    for (let index = 0; index < schema.steps.length; index += 1) {
-      const result = validateStep(schema.steps[index], values)
+    // Re-validate every step the respondent passed through, not just the last.
+    for (let index = 0; index < steps.length; index += 1) {
+      const result = validateStep(steps[index], values)
       if (!result.ok) {
         setStepIndex(index)
         applyErrors(result.errors)
@@ -151,12 +158,12 @@ export function FactFindForm({
       <div className="space-y-3">
         <div className="flex items-center justify-between text-xs font-medium">
           <span className="text-muted-foreground">
-            Step {stepIndex + 1} of {totalSteps}
+            Step {safeIndex + 1} of {totalSteps}
           </span>
           <span className="text-accent-strong dark:text-accent">{progress}% complete</span>
         </div>
         <Progress value={progress} aria-label="FactFind progress" />
-        <StepIndicator steps={schema.steps} currentIndex={stepIndex} />
+        <StepIndicator steps={steps} currentIndex={safeIndex} />
       </div>
 
       <Card className="p-6 sm:p-8">
@@ -196,7 +203,7 @@ export function FactFindForm({
               type="button"
               variant="outline"
               onClick={goToPrevious}
-              disabled={stepIndex === 0 || isSubmitting}
+              disabled={safeIndex === 0 || isSubmitting}
             >
               <ArrowLeft className="h-4 w-4" />
               Back

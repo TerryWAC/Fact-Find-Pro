@@ -1,11 +1,9 @@
-import { createPlaceholderSchema } from '../placeholder'
 import type { FormSchema } from '../types'
+import mortgageJson from './mortgage.json'
 
 /**
- * Mortgage FactFind schema.
- *
- * Currently a placeholder. To go live, replace the export below with a literal
- * `FormSchema` (or JSON import) containing the real steps and fields — nothing
- * else in the application needs to change.
+ * Mortgage FactFind — imported from the Typeform template with
+ * scripts/import-typeform.mjs. Re-run the script to regenerate mortgage.json;
+ * do not hand-edit the JSON.
  */
-export const mortgageSchema: FormSchema = createPlaceholderSchema('mortgage')
+export const mortgageSchema = mortgageJson as FormSchema

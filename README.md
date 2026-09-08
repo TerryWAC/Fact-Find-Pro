@@ -260,17 +260,29 @@ The engine gives you, for free:
 - A normalised `submission_data` payload with both a grouped, display-ready view and a flat answers map
 - Automatic client-identity extraction through the `identity` marker
 
-### Adding real questions
+### Importing from Typeform
 
-1. Open `src/lib/forms/schemas/mortgage.ts` (or protection / medical / home).
-2. Replace `createPlaceholderSchema('mortgage')` with a literal `FormSchema` — or `import questions from
-   './mortgage.json'`.
-3. Keep one field marked `identity: 'client_name'` and one `identity: 'client_email'`; the submission is
-   bound to the client through those.
-4. Bump `version` and set `placeholder: false`.
+The Mortgage FactFind is imported from the Wealthy Advisers Club Typeform template — 13 sections, 219
+questions and all of its branching — by `scripts/import-typeform.mjs`:
 
-Nothing else changes. The renderer, validation, progress bar, submission pipeline, detail view and adviser
-notification all adapt automatically.
+```bash
+# Full definition from the Create API (the UI export is lossy — it drops group contents and refs)
+curl -s https://api.typeform.com/forms/<FORM_ID> -H "Authorization: Bearer <TOKEN>" > export.json
+npm run import:typeform -- export.json mortgage      # writes src/lib/forms/schemas/mortgage.json
+```
+
+The converter splits sections into steps, turns groups into sub-headed blocks, upgrades free-text fields to
+date / currency / number / email / tel where the title makes it unambiguous (every upgrade is printed), marks
+Applicant 1's name, email and phone as the client identity, and applies the branching as step- and
+field-level `visibleWhen` rules. Typeform expresses branching as *jumps*; the engine as *visibility*, so the
+rules are declared as intent in the script rather than translated mechanically — which also let two authoring
+slips in the source template be left out rather than reproduced.
+
+Conditions compose: `{ all: [...] }` / `{ any: [...] }`, and a whole step can carry `visibleWhen` (e.g. the
+Applicant 2 section on a joint application). Skipped steps never appear in the progress bar or the payload.
+
+To hand-write a question set instead, replace the schema file with a literal `FormSchema`, keep one field
+marked `identity: 'client_name'` and one `identity: 'client_email'`, and set `placeholder: false`.
 
 ---
 
@@ -368,7 +380,7 @@ written to the server log, prefixed `[factfind]`.
 
 Deliberately stubbed, with the structure already in place:
 
-- Real FactFind question sets (drop into the schema registry)
+- Protection, Medical and Home question sets (Mortgage is imported; run the converter on the other three)
 - PDF / CSV export (the **Export** button currently copies the submission JSON)
 - Adviser logo upload and custom branding (`branding` storage bucket and `profiles.logo_url` exist)
 - In-app email template editing (templates are already database-backed and rendered dynamically)

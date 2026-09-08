@@ -6,6 +6,7 @@ import type {
   FormSchema,
   FormStep,
   FormValues,
+  SimpleCondition,
   SubmissionPayload,
 } from './types'
 import { isPresentational } from './types'
@@ -17,6 +18,12 @@ export function isFieldVisible(field: FormField, values: FormValues): boolean {
 }
 
 export function matchesCondition(condition: FieldCondition, values: FormValues): boolean {
+  if ('all' in condition) return condition.all.every((entry) => matchesCondition(entry, values))
+  if ('any' in condition) return condition.any.some((entry) => matchesCondition(entry, values))
+  return matchesSimple(condition, values)
+}
+
+function matchesSimple(condition: SimpleCondition, values: FormValues): boolean {
   const actual = values[condition.field]
   const { operator, value } = condition
 
@@ -45,6 +52,17 @@ export function matchesCondition(condition: FieldCondition, values: FormValues):
 /** The collectable (non-presentational, currently visible) fields of a step. */
 export function visibleFields(step: FormStep, values: FormValues): FormField[] {
   return step.fields.filter((field) => isFieldVisible(field, values))
+}
+
+/** Whether a whole step should be shown given the answers so far. */
+export function isStepVisible(step: FormStep, values: FormValues): boolean {
+  if (!step.visibleWhen) return true
+  return matchesCondition(step.visibleWhen, values)
+}
+
+/** The steps a respondent will actually pass through, in order. */
+export function visibleSteps(schema: FormSchema, values: FormValues): FormStep[] {
+  return schema.steps.filter((step) => isStepVisible(step, values))
 }
 
 export function answerableFields(schema: FormSchema): FormField[] {
@@ -202,7 +220,7 @@ export function displayValue(field: FormField, value: FieldValue): string {
 export function buildSubmissionPayload(schema: FormSchema, values: FormValues): SubmissionPayload {
   const answers: FormValues = {}
 
-  const steps = schema.steps.map((step) => ({
+  const steps = visibleSteps(schema, values).map((step) => ({
     id: step.id,
     title: step.title,
     answers: step.fields
