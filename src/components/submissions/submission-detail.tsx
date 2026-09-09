@@ -17,6 +17,8 @@ interface SubmissionDetailProps {
   adviser?: { name: string; company_name: string | null; email: string } | null
   backHref: string
   backLabel?: string
+  /** Route that streams the branded PDF. */
+  pdfHref: string
   /** Admins see the owning adviser panel. */
   showAdviser?: boolean
 }
@@ -56,6 +58,7 @@ export function SubmissionDetail({
   adviser,
   backHref,
   backLabel = 'Back to submissions',
+  pdfHref,
   showAdviser = false,
 }: SubmissionDetailProps) {
   const meta = FACTFIND_TYPE_META[submission.form_type]
@@ -75,7 +78,7 @@ export function SubmissionDetail({
         actions={
           <>
             <SubmissionStatusSelect submissionId={submission.id} status={submission.status} />
-            <ExportButton payload={submission.submission_data} reference={submission.reference} />
+            <ExportButton payload={submission.submission_data} reference={submission.reference} pdfHref={pdfHref} />
           </>
         }
       />

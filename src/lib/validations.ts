@@ -107,11 +107,25 @@ export const onboardingDetailsSchema = z.object({
 })
 export type OnboardingDetailsValues = z.infer<typeof onboardingDetailsSchema>
 
-/** Step 3 — Your brand. Images may be uploaded or supplied as a URL. */
-export const onboardingBrandSchema = z.object({
+/** A 6-digit hex colour, or blank for the default. */
+export const brandColour = z
+  .string()
+  .trim()
+  .refine((value) => value === '' || /^#?[0-9a-f]{6}$/i.test(value), 'Enter a colour like #1E3A5F')
+  .transform((value) => (value ? `#${value.replace(/^#/, '').toUpperCase()}` : ''))
+  .optional()
+  .or(z.literal(''))
+
+/** Adviser branding — settings page and onboarding step 3. Images may be uploaded or supplied as a URL. */
+export const brandingSchema = z.object({
   logo_url: optionalUrl,
   avatar_url: optionalUrl,
+  brand_colour: brandColour,
 })
+export type BrandingValues = z.infer<typeof brandingSchema>
+
+/** Step 3 — Your brand. */
+export const onboardingBrandSchema = brandingSchema
 export type OnboardingBrandValues = z.infer<typeof onboardingBrandSchema>
 
 /** Step 4 — Delivery. A webhook URL is required when the webhook is enabled. */

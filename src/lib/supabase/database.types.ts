@@ -313,6 +313,7 @@ export type Database = {
           adviser_name: string
           company_name: string | null
           logo_url: string | null
+          avatar_url: string | null
           brand_colour: string | null
           form_type: FactFindType
           is_active: boolean

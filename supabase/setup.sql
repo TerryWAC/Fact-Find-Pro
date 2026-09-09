@@ -24,6 +24,8 @@
                  the public client-facing pages touch the database
      Onboarding  firm details, delivery preferences and the team roster the
                  six-step setup wizard writes to
+     Branding    logo, photo and brand colour per adviser, used on client
+                 pages and PDFs
      Storage     branding and submission-upload buckets
 
    AFTERWARDS
@@ -42,8 +44,7 @@
    ==========================================================================
 */
 
-
-/* ======================= PART 1 of 5  Schema, RLS, triggers and public RPCs ======================= */
+/* ======================= PART 1 of 6  Schema, RLS, triggers and public RPCs ======================= */
 
 /*
    =============================================================================
@@ -646,8 +647,7 @@ grant execute on function public.submit_factfind(public.factfind_type, text, tex
 grant execute on function public.is_admin() to authenticated;
 grant execute on function public.is_approved() to authenticated;
 
-
-/* ======================= PART 2 of 5  Default notification email templates ======================= */
+/* ======================= PART 2 of 6  Default notification email templates ======================= */
 
 /*
    =============================================================================
@@ -731,8 +731,7 @@ values
   )
 on conflict (key) do nothing;
 
-
-/* ======================= PART 3 of 5  Storage buckets and their policies ======================= */
+/* ======================= PART 3 of 6  Storage buckets and their policies ======================= */
 
 /*
    =============================================================================
@@ -783,8 +782,7 @@ create policy "submission_uploads_admin_all" on storage.objects
   using (bucket_id = 'submission-uploads' and public.is_admin())
   with check (bucket_id = 'submission-uploads' and public.is_admin());
 
-
-/* ======================= PART 4 of 5  Onboarding fields and the team roster ======================= */
+/* ======================= PART 4 of 6  Onboarding fields and the team roster ======================= */
 
 /*
    =============================================================================
@@ -877,8 +875,7 @@ create policy "team_members_admin_all" on public.team_members
 
 grant select, insert, update, delete on public.team_members to authenticated, service_role;
 
-
-/* ======================= PART 5 of 5  Admin allowlist (auto-approves the first admin) ======================= */
+/* ======================= PART 5 of 6  Admin allowlist (auto-approves the first admin) ======================= */
 
 /*
    ==========================================================================
@@ -1010,14 +1007,57 @@ begin
   end loop;
 end $$;
 
+/* ======================= PART 6 of 6  Adviser branding (colour check, adviser photo on public links) ======================= */
 
-/* Done. This lists the tables so you can confirm it worked: */
-select table_name
-  from information_schema.tables
- where table_schema = 'public'
-   and table_name in ('profiles','factfind_forms','factfind_submissions','email_templates',
-                      'email_log','activity_log','team_members','admin_allowlist')
- order by table_name;
+/*
+   =============================================================================
+   FactFind Pro — adviser branding
+   =============================================================================
+   • brand_colour must be a 6-digit hex colour (or null for the default).
+   • resolve_factfind_form() also returns the adviser's photo, so the public
+   FactFind page can show it next to their name.
+   =============================================================================
+ */
 
-/* And the admin allowlist: */
-select email, note from public.admin_allowlist order by email;
+alter table public.profiles
+  drop constraint if exists profiles_brand_colour_hex;
+
+alter table public.profiles
+  add constraint profiles_brand_colour_hex
+  check (brand_colour is null or brand_colour ~ '^#[0-9A-Fa-f]{6}$');
+
+/* The return type changes, so the function has to be dropped and recreated. */
+drop function if exists public.resolve_factfind_form(public.factfind_type, text);
+
+create function public.resolve_factfind_form(
+  p_form_type public.factfind_type,
+  p_slug      text
+)
+returns table (
+  form_id       uuid,
+  adviser_id    uuid,
+  adviser_name  text,
+  company_name  text,
+  logo_url      text,
+  avatar_url    text,
+  brand_colour  text,
+  form_type     public.factfind_type,
+  is_active     boolean
+)
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select f.id, f.adviser_id, p.name, p.company_name, p.logo_url, p.avatar_url, p.brand_colour, f.form_type, f.is_active
+  from public.factfind_forms f
+  join public.profiles p on p.id = f.adviser_id
+  where f.form_type = p_form_type
+    and f.unique_slug = p_slug
+    and f.is_active
+    and p.status = 'approved'
+  limit 1;
+$$;
+
+revoke all on function public.resolve_factfind_form(public.factfind_type, text) from public;
+grant execute on function public.resolve_factfind_form(public.factfind_type, text) to anon, authenticated;

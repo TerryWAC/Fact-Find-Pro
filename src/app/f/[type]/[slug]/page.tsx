@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { FactFindClient } from './factfind-client'
-import { createClient } from '@/lib/supabase/server'
+import { resolvePublicFactFind } from '@/lib/factfind-public'
 import { getFormSchema } from '@/lib/forms/registry'
 import { FACTFIND_TYPE_META, isFactFindType } from '@/lib/constants'
 
@@ -33,13 +33,8 @@ export default async function PublicFactFindPage({
   if (!/^[a-z0-9]{4,32}$/i.test(slug)) notFound()
 
   // Resolves through a SECURITY DEFINER function — the tables stay private.
-  const supabase = await createClient()
-  const { data } = await supabase.rpc('resolve_factfind_form', {
-    p_form_type: type,
-    p_slug: slug,
-  })
-
-  const form = Array.isArray(data) ? data[0] : data
+  // Cached per request, so the branded layout above shares this lookup.
+  const form = await resolvePublicFactFind(type, slug)
   if (!form) notFound()
 
   const schema = getFormSchema(type)
@@ -51,6 +46,7 @@ export default async function PublicFactFindPage({
       slug={slug}
       adviserName={form.adviser_name}
       companyName={form.company_name}
+      adviserPhotoUrl={form.avatar_url}
     />
   )
 }

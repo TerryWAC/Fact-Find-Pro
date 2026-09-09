@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { FieldError } from '@/components/shared/field-error'
 import { ImagePicker } from './image-picker'
+import { BrandColourField } from '@/components/shared/brand-colour-field'
 import { StepFooter } from './step-footer'
 import { StepShell } from './step-shell'
 import { saveBrandAction, type OnboardingActionState } from '@/app/(onboarding)/onboarding/actions'
@@ -20,7 +21,7 @@ export function BrandStep({ profile }: { profile: Profile }) {
   return (
     <StepShell
       title="Your brand"
-      description="Upload your company logo and a picture of yourself. These go on every client link, client copy and PDF. Leave the logo blank and the Wealthy Advisers Club branding is used."
+      description="Upload your company logo, a picture of yourself and pick your brand colour. These go on every client link, client copy and PDF. Leave them blank and the Wealthy Advisers Club branding is used."
     >
       {state.error && (
         <Alert variant="destructive">
@@ -57,6 +58,18 @@ export function BrandStep({ profile }: { profile: Profile }) {
           <p className="text-xs text-muted-foreground">
             PNG, JPG, WEBP or SVG, up to 2MB. Images are stored privately against your account.
           </p>
+
+          <Separator />
+
+          <div className="space-y-2">
+            <BrandColourField
+              name="brand_colour"
+              defaultValue={profile.brand_colour ?? ''}
+              logoUrl={profile.logo_url ?? undefined}
+              companyName={profile.company_name ?? profile.name}
+            />
+            <FieldError message={state.fieldErrors?.brand_colour} />
+          </div>
         </Card>
 
         <StepFooter backTo={2} skipTo={4} />

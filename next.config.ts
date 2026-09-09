@@ -23,6 +23,15 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_BRAND_BANNER: brandBanner ?? '',
   },
+  // Native / filesystem-heavy packages used by the PDF renderer stay outside the bundle.
+  serverExternalPackages: ['@react-pdf/renderer', 'sharp'],
+  // The PDF typeface ships as .ttf files; make sure every route that renders a
+  // PDF carries them into its serverless bundle.
+  outputFileTracingIncludes: {
+    '/submissions/[id]/pdf': ['./src/lib/pdf/fonts/*.ttf'],
+    '/admin/submissions/[id]/pdf': ['./src/lib/pdf/fonts/*.ttf'],
+    '/f/[type]/[slug]': ['./src/lib/pdf/fonts/*.ttf'],
+  },
   eslint: {
     // Lint is run as its own CI step; don't fail production builds on lint.
     ignoreDuringBuilds: true,

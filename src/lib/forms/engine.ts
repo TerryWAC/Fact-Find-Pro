@@ -213,6 +213,12 @@ export function displayValue(field: FormField, value: FieldValue): string {
     if (!Number.isNaN(numeric)) return `${numeric}%`
   }
 
+  // Date inputs store ISO (yyyy-mm-dd); advisers and clients read dd/mm/yyyy.
+  if (field.type === 'date') {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value))
+    if (match) return `${match[3]}/${match[2]}/${match[1]}`
+  }
+
   return String(value)
 }
 

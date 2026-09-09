@@ -304,6 +304,33 @@ marked `identity: 'client_name'` and one `identity: 'client_email'`, and set `pl
 
 ---
 
+## Branding and PDFs
+
+Every adviser can brand their client-facing pages and PDFs from **Settings → Branding** (or step 3 of the
+onboarding wizard):
+
+- **Logo** — uploaded to the `branding` storage bucket (or pasted as a URL) and shown in the header of every
+  client FactFind page and at the top of every PDF. Without one, the Wealthy Advisers Club lion is used.
+- **Photo** — shown next to the adviser's name on the client page and on the PDF.
+- **Brand colour** — a hex colour with presets and a live preview. On the client page it paints the header
+  and re-points the design tokens (primary buttons, accents, focus rings) through CSS variables, so the whole
+  page follows in both light and dark mode; text on the colour switches between black and white
+  automatically. Leave it blank for the black-and-gold house style. Stored as `profiles.brand_colour`
+  (checked as `#RRGGBB` by the database).
+
+The public page reads all of this through `resolve_factfind_form()` — the tables stay private.
+
+**PDF export.** Every submission has a **Download PDF** button (`/submissions/{id}/pdf`, or
+`/admin/submissions/{id}/pdf` for admins) that streams an A4 PDF in the adviser's branding: logo, colour band,
+adviser card with photo, client details, then every section and answer, with page numbers and a confidential
+footer. The same PDF is attached to the adviser's "new submission" notification email when `RESEND_API_KEY`
+is set. Rendering uses `@react-pdf/renderer` (pure JavaScript, no headless browser, so it runs on Vercel
+serverless) with Poppins embedded from `src/lib/pdf/fonts`; `next.config.ts` lists those files in
+`outputFileTracingIncludes` so they ship with the routes that need them. Logos and photos are converted to
+PNG with `sharp` on the way in, so SVG and WEBP uploads work.
+
+---
+
 ## Deployment — Vercel + Supabase
 
 ### 1. Supabase

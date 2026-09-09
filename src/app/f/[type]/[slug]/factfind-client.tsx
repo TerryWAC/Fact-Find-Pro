@@ -16,6 +16,7 @@ interface FactFindClientProps {
   slug: string
   adviserName: string
   companyName: string | null
+  adviserPhotoUrl?: string | null
 }
 
 export function FactFindClient({
@@ -24,6 +25,7 @@ export function FactFindClient({
   slug,
   adviserName,
   companyName,
+  adviserPhotoUrl,
 }: FactFindClientProps) {
   const [reference, setReference] = useState<string | null>(null)
 
@@ -81,6 +83,10 @@ export function FactFindClient({
         </div>
 
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-xl border bg-card p-4 text-sm">
+          {adviserPhotoUrl && (
+            // eslint-disable-next-line @next/next/no-img-element -- adviser-supplied image
+            <img src={adviserPhotoUrl} alt="" className="h-12 w-12 shrink-0 rounded-full border object-cover" data-testid="adviser-photo" />
+          )}
           <div>
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Your adviser</p>
             <p className="mt-0.5 font-medium">{adviserName}</p>

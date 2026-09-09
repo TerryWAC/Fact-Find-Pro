@@ -21,5 +21,5 @@ export default async function SubmissionDetailPage({ params }: { params: Promise
 
   if (!submission) notFound()
 
-  return <SubmissionDetail submission={submission} backHref="/submissions" />
+  return <SubmissionDetail submission={submission} backHref="/submissions" pdfHref={`/submissions/${submission.id}/pdf`} />
 }

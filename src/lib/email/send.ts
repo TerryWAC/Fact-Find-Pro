@@ -8,6 +8,16 @@ import {
   type EmailVariablesMap,
 } from './templates'
 
+export interface EmailAttachment {
+  filename: string
+  /** Raw file contents. */
+  content: Buffer
+}
+
+export interface SendEmailOptions {
+  attachments?: EmailAttachment[]
+}
+
 export interface SendEmailResult {
   ok: boolean
   provider: 'resend' | 'log'
@@ -110,7 +120,9 @@ export async function sendEmail<K extends EmailTemplateKey>(
   key: K,
   to: string | string[],
   variables: EmailVariablesMap[K],
+  options: SendEmailOptions = {},
 ): Promise<SendEmailResult> {
+  const attachments = options.attachments ?? []
   const recipients = (Array.isArray(to) ? to : [to]).filter(Boolean)
   if (recipients.length === 0) {
     return { ok: false, provider: 'log', skipped: true, error: 'No recipients' }
@@ -133,10 +145,12 @@ export async function sendEmail<K extends EmailTemplateKey>(
 
   if (!apiKey) {
     console.info(
-      `\n[email:${key}] (no RESEND_API_KEY — logged only)\n  to: ${recipients.join(', ')}\n  subject: ${rendered.subject}\n  ${rendered.text.replace(/\n/g, '\n  ')}\n`,
+      `\n[email:${key}] (no RESEND_API_KEY — logged only)\n  to: ${recipients.join(', ')}\n  subject: ${rendered.subject}\n  ${rendered.text.replace(/\n/g, '\n  ')}\n` +
+        (attachments.length ? `  attachments: ${attachments.map((a) => `${a.filename} (${a.content.length} bytes)`).join(', ')}\n` : ''),
     )
     await logEmail(key, recipients.join(', '), rendered.subject, 'logged', 'log', undefined, {
       text: rendered.text,
+      attachments: attachments.map((a) => a.filename),
     })
     return { ok: true, provider: 'log' }
   }
@@ -155,6 +169,9 @@ export async function sendEmail<K extends EmailTemplateKey>(
         html: rendered.html,
         text: rendered.text,
         ...(process.env.EMAIL_REPLY_TO ? { reply_to: process.env.EMAIL_REPLY_TO } : {}),
+        ...(attachments.length
+          ? { attachments: attachments.map((a) => ({ filename: a.filename, content: a.content.toString('base64') })) }
+          : {}),
       }),
     })
 

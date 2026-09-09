@@ -1,33 +1,35 @@
 'use client'
 
-import { Download } from 'lucide-react'
+import { Copy, FileDown } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 
 /**
- * Export placeholder.
- *
- * Copies the submission JSON to the clipboard today; the PDF/CSV export
- * pipeline lands once the real question sets are in place.
+ * Download the branded PDF, or copy the raw submission JSON for pasting into
+ * another system.
  */
-export function ExportButton({ payload, reference }: { payload: unknown; reference: string }) {
-  async function handleExport() {
+export function ExportButton({ payload, reference, pdfHref }: { payload: unknown; reference: string; pdfHref: string }) {
+  async function copyJson() {
     try {
       await navigator.clipboard.writeText(JSON.stringify(payload, null, 2))
-      toast.success('Submission JSON copied', {
-        description: `PDF and CSV export for ${reference} arrives with the full question sets.`,
-      })
+      toast.success(`Submission ${reference} copied as JSON`)
     } catch {
-      toast.info('Export coming soon', {
-        description: 'PDF and CSV export will be available in a future release.',
-      })
+      toast.error('Could not copy to the clipboard')
     }
   }
 
   return (
-    <Button variant="outline" onClick={handleExport}>
-      <Download className="h-4 w-4" />
-      Export
-    </Button>
+    <>
+      <Button variant="outline" onClick={copyJson}>
+        <Copy className="h-4 w-4" />
+        Copy JSON
+      </Button>
+      <Button asChild>
+        <a href={pdfHref} download>
+          <FileDown className="h-4 w-4" />
+          Download PDF
+        </a>
+      </Button>
+    </>
   )
 }

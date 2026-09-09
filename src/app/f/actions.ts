@@ -3,7 +3,8 @@
 import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient, hasAdminClient } from '@/lib/supabase/admin'
-import { sendEmail } from '@/lib/email/send'
+import { sendEmail, type EmailAttachment } from '@/lib/email/send'
+import { renderSubmissionPdf, submissionPdfFilename } from '@/lib/pdf/render'
 import { clientIdentitySchema } from '@/lib/validations'
 import { isFactFindType, FACTFIND_TYPE_META } from '@/lib/constants'
 import { getBaseUrl } from '@/lib/utils'
@@ -124,19 +125,38 @@ async function notifyAdviser(params: {
 
   const { data: adviser } = await admin
     .from('profiles')
-    .select('name, email')
+    .select('name, email, company_name, brand_colour, logo_url, avatar_url')
     .eq('id', form.adviser_id)
     .maybeSingle()
 
   if (!adviser) return
 
-  await sendEmail('submission_notification', adviser.email, {
-    name: adviser.name,
-    client_name: params.clientName,
-    client_email: params.clientEmail,
-    form_type: FACTFIND_TYPE_META[params.formType].shortLabel,
-    reference: params.reference,
-    submitted_at: new Date().toLocaleString('en-GB'),
-    submission_url: `${getBaseUrl()}/submissions/${params.submissionId}`,
-  })
+  // Attach the branded PDF. A rendering problem must not cost the notification.
+  const attachments: EmailAttachment[] = []
+  try {
+    const { data: submission } = await admin.from('factfind_submissions').select('*').eq('id', params.submissionId).maybeSingle()
+    if (submission) {
+      attachments.push({
+        filename: submissionPdfFilename(submission),
+        content: await renderSubmissionPdf({ submission, adviser }),
+      })
+    }
+  } catch (error) {
+    console.error('submission PDF for notification failed:', (error as Error).message)
+  }
+
+  await sendEmail(
+    'submission_notification',
+    adviser.email,
+    {
+      name: adviser.name,
+      client_name: params.clientName,
+      client_email: params.clientEmail,
+      form_type: FACTFIND_TYPE_META[params.formType].shortLabel,
+      reference: params.reference,
+      submitted_at: new Date().toLocaleString('en-GB'),
+      submission_url: `${getBaseUrl()}/submissions/${params.submissionId}`,
+    },
+    { attachments },
+  )
 }

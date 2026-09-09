@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { Building2, Image as ImageIcon, Mail, Palette, Wand2 } from 'lucide-react'
+import { Building2, Mail, Wand2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -9,22 +9,13 @@ import { PageHeader } from '@/components/shared/page-header'
 import { UserStatusBadge } from '@/components/shared/status-badge'
 import { ProfileForm } from './profile-form'
 import { PasswordForm } from './password-form'
+import { BrandingForm } from './branding-form'
 import { requireApprovedUser } from '@/lib/auth'
 import { formatDate } from '@/lib/utils'
 
 export const metadata: Metadata = { title: 'Settings' }
 
 const FUTURE_FEATURES = [
-  {
-    icon: ImageIcon,
-    title: 'Logo upload',
-    description: 'Add your firm’s logo to the header of every client FactFind page.',
-  },
-  {
-    icon: Palette,
-    title: 'Custom branding',
-    description: 'Set your brand colour so client-facing pages match your website.',
-  },
   {
     icon: Mail,
     title: 'Email templates',
@@ -65,6 +56,25 @@ export default async function SettingsPage() {
                   phone: profile.phone ?? '',
                 }}
                 email={email}
+              />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Branding</CardTitle>
+              <CardDescription>
+                Your logo, photo and colour on every client FactFind page and PDF.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <BrandingForm
+                defaultValues={{
+                  logo_url: profile.logo_url ?? '',
+                  avatar_url: profile.avatar_url ?? '',
+                  brand_colour: profile.brand_colour ?? '',
+                }}
+                companyName={profile.company_name ?? profile.name}
               />
             </CardContent>
           </Card>
@@ -113,7 +123,7 @@ export default async function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Coming soon</CardTitle>
-              <CardDescription>Branding features on the roadmap.</CardDescription>
+              <CardDescription>On the roadmap.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {FUTURE_FEATURES.map((feature) => (

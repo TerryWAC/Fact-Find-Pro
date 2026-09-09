@@ -35,6 +35,7 @@ export default async function AdminSubmissionDetailPage({
       adviser={adviser}
       backHref="/admin/submissions"
       backLabel="Back to all submissions"
+      pdfHref={`/admin/submissions/${submission.id}/pdf`}
       showAdviser
     />
   )

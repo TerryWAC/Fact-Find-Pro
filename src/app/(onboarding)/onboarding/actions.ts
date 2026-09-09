@@ -129,6 +129,7 @@ export async function saveBrandAction(
   const parsed = onboardingBrandSchema.safeParse({
     logo_url: text(formData, 'logo_url'),
     avatar_url: text(formData, 'avatar_url'),
+    brand_colour: text(formData, 'brand_colour'),
   })
 
   if (!parsed.success) {
@@ -141,6 +142,7 @@ export async function saveBrandAction(
     .update({
       logo_url: emptyToNull(parsed.data.logo_url),
       avatar_url: emptyToNull(parsed.data.avatar_url),
+      brand_colour: emptyToNull(parsed.data.brand_colour),
     })
     .eq('id', session.id)
 
