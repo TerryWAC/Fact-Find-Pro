@@ -19,6 +19,7 @@ TITLES = {
     '20250101000003_onboarding.sql': 'Onboarding fields and the team roster',
     '20250101000004_admin_allowlist.sql': 'Admin allowlist (auto-approves the first admin)',
     '20250101000005_branding.sql': 'Adviser branding (colour check, adviser photo on public links)',
+    '20250101000006_client_copy.sql': 'PDF copy to the client (preference and email template)',
 }
 
 HEADER = """/*
@@ -49,6 +50,7 @@ HEADER = """/*
                  six-step setup wizard writes to
      Branding    logo, photo and brand colour per adviser, used on client
                  pages and PDFs
+     Client copy optional PDF copy emailed to the client on submission
      Storage     branding and submission-upload buckets
 
    AFTERWARDS

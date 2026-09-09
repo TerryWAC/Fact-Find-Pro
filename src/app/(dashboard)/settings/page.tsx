@@ -10,6 +10,7 @@ import { UserStatusBadge } from '@/components/shared/status-badge'
 import { ProfileForm } from './profile-form'
 import { PasswordForm } from './password-form'
 import { BrandingForm } from './branding-form'
+import { DeliveryForm } from './delivery-form'
 import { requireApprovedUser } from '@/lib/auth'
 import { formatDate } from '@/lib/utils'
 
@@ -75,6 +76,23 @@ export default async function SettingsPage() {
                   brand_colour: profile.brand_colour ?? '',
                 }}
                 companyName={profile.company_name ?? profile.name}
+              />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Delivery</CardTitle>
+              <CardDescription>Where completed fact finds go. PDF and CSV downloads are always on.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <DeliveryForm
+                defaultValues={{
+                  delivery_email_copy: profile.delivery_email_copy,
+                  delivery_client_copy: profile.delivery_client_copy,
+                  delivery_webhook_enabled: profile.delivery_webhook_enabled,
+                  delivery_webhook_url: profile.delivery_webhook_url ?? '',
+                }}
               />
             </CardContent>
           </Card>

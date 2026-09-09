@@ -55,22 +55,26 @@ export function DeliveryStep({ profile }: { profile: Profile }) {
    * takes precedence. Local state only tracks changes since the last render.
    */
   const submittedEmailCopy = state.values?.delivery_email_copy as boolean | undefined
+  const submittedClientCopy = state.values?.delivery_client_copy as boolean | undefined
   const submittedWebhook = state.values?.delivery_webhook_enabled as boolean | undefined
 
   const emailCopyDefault = submittedEmailCopy ?? profile.delivery_email_copy
+  const clientCopyDefault = submittedClientCopy ?? profile.delivery_client_copy
   const webhookDefault = submittedWebhook ?? profile.delivery_webhook_enabled
   const webhookUrl =
     (state.values?.delivery_webhook_url as string | undefined) ?? profile.delivery_webhook_url ?? ''
 
   const [emailCopy, setEmailCopy] = useState(emailCopyDefault)
+  const [clientCopy, setClientCopy] = useState(clientCopyDefault)
   const [webhook, setWebhook] = useState(webhookDefault)
 
   // Re-sync after a submit so the toggles reflect what was actually sent,
   // whichever way React reconciles the re-render.
   useEffect(() => {
     if (submittedEmailCopy !== undefined) setEmailCopy(submittedEmailCopy)
+    if (submittedClientCopy !== undefined) setClientCopy(submittedClientCopy)
     if (submittedWebhook !== undefined) setWebhook(submittedWebhook)
-  }, [submittedEmailCopy, submittedWebhook])
+  }, [submittedEmailCopy, submittedClientCopy, submittedWebhook])
 
   // Never hide a field that is carrying an error message.
   const showWebhookUrl = webhook || Boolean(state.fieldErrors?.delivery_webhook_url)
@@ -106,6 +110,28 @@ export function DeliveryStep({ profile }: { profile: Profile }) {
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                   When a fact find is finished you get an email with the full brief. Forward it, or paste it
                   into any CRM. No setup needed.
+                </p>
+              </div>
+            </div>
+          </Option>
+
+          {/* PDF copy to the client */}
+          <Option checked={clientCopy}>
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="delivery_client_copy"
+                checked={clientCopy}
+                onCheckedChange={(value) => setClientCopy(value === true)}
+                className="mt-0.5"
+              />
+              {clientCopy && <input type="hidden" name="delivery_client_copy" value="on" />}
+              <div>
+                <Label htmlFor="delivery_client_copy" className="text-sm font-medium">
+                  Send the client a PDF copy
+                </Label>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                  As soon as they submit, the client gets an email in your branding with their answers
+                  attached as a PDF. Replies come to you. You can also send one by hand from any submission.
                 </p>
               </div>
             </div>

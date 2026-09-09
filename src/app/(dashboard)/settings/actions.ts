@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import { brandingSchema, changePasswordSchema, profileSchema } from '@/lib/validations'
+import { brandingSchema, changePasswordSchema, deliverySchema, profileSchema } from '@/lib/validations'
 
 export interface SettingsActionState {
   ok?: boolean
@@ -135,4 +135,44 @@ export async function updateBrandingAction(
   revalidatePath('/', 'layout')
 
   return { ok: true, message: 'Your branding has been updated. Client pages and PDFs use it from now on.' }
+}
+
+/** Where completed fact finds go: adviser copy, client PDF copy, webhook. */
+export async function updateDeliveryAction(
+  _prev: SettingsActionState,
+  formData: FormData,
+): Promise<SettingsActionState> {
+  const parsed = deliverySchema.safeParse({
+    delivery_email_copy: formData.get('delivery_email_copy') === 'on',
+    delivery_client_copy: formData.get('delivery_client_copy') === 'on',
+    delivery_webhook_enabled: formData.get('delivery_webhook_enabled') === 'on',
+    delivery_webhook_url: text(formData, 'delivery_webhook_url'),
+  })
+
+  if (!parsed.success) {
+    return { error: 'Please check the form and try again.', fieldErrors: fieldErrorsFrom(parsed.error) }
+  }
+
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) return { error: 'Your session has expired. Please sign in again.' }
+
+  const values = parsed.data
+  const { error } = await supabase
+    .from('profiles')
+    .update({
+      delivery_email_copy: values.delivery_email_copy,
+      delivery_client_copy: values.delivery_client_copy,
+      delivery_webhook_enabled: values.delivery_webhook_enabled,
+      // Clearing the URL alongside the toggle keeps the CHECK constraint happy.
+      delivery_webhook_url: values.delivery_webhook_enabled ? values.delivery_webhook_url?.trim() || null : null,
+    })
+    .eq('id', user.id)
+  if (error) return { error: error.message }
+
+  revalidatePath('/settings')
+  return { ok: true, message: 'Your delivery options have been updated.' }
 }

@@ -5,6 +5,7 @@ export type EmailTemplateKey =
   | 'approval'
   | 'rejection'
   | 'submission_notification'
+  | 'submission_client_copy'
   | 'password_reset'
 
 export interface EmailTemplateDefinition {
@@ -116,6 +117,33 @@ View: {{submission_url}}`,
       'submission_url',
     ],
   },
+  submission_client_copy: {
+    key: 'submission_client_copy',
+    name: 'Copy of FactFind (to client)',
+    description: 'Sent to the client with their completed FactFind attached as a PDF.',
+    subject: 'Your {{form_type}} FactFind — copy for your records',
+    bodyHtml: `<h2>Your {{form_type}} FactFind</h2>
+<p>Hi {{client_name}},</p>
+<p>Thank you for completing your {{form_type}} FactFind. A copy of everything you told us is attached as a PDF for your records.</p>
+<ul>
+  <li><strong>Reference:</strong> {{reference}}</li>
+  <li><strong>Submitted:</strong> {{submitted_at}}</li>
+</ul>
+<p>If anything needs correcting, just reply to this email and {{adviser_name}} will update it.</p>
+<p>{{adviser_name}}<br>{{company_name}}</p>`,
+    bodyText: `Hi {{client_name}},
+
+Thank you for completing your {{form_type}} FactFind. A copy of everything you told us is attached as a PDF for your records.
+
+Reference: {{reference}}
+Submitted: {{submitted_at}}
+
+If anything needs correcting, just reply to this email and {{adviser_name}} will update it.
+
+{{adviser_name}}
+{{company_name}}`,
+    variables: ['client_name', 'adviser_name', 'company_name', 'form_type', 'reference', 'submitted_at'],
+  },
   password_reset: {
     key: 'password_reset',
     name: 'Password reset (to user)',
@@ -149,6 +177,14 @@ export interface EmailVariablesMap {
   }
   approval: { name: string; company_name: string; login_url: string }
   rejection: { name: string; company_name: string; reason: string }
+  submission_client_copy: {
+    client_name: string
+    adviser_name: string
+    company_name: string
+    form_type: string
+    reference: string
+    submitted_at: string
+  }
   submission_notification: {
     name: string
     client_name: string

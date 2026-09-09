@@ -8,6 +8,7 @@ import { FactFindTypeBadge } from '@/components/shared/status-badge'
 import { SubmissionAnswers } from './submission-answers'
 import { SubmissionStatusSelect } from './submission-status-select'
 import { ExportButton } from './export-button'
+import { EmailClientButton } from './email-client-button'
 import { FACTFIND_TYPE_META } from '@/lib/constants'
 import type { FactFindSubmission } from '@/lib/supabase/database.types'
 import { formatDate, formatRelative } from '@/lib/utils'
@@ -78,6 +79,7 @@ export function SubmissionDetail({
         actions={
           <>
             <SubmissionStatusSelect submissionId={submission.id} status={submission.status} />
+            <EmailClientButton submissionId={submission.id} clientEmail={submission.client_email} />
             <ExportButton payload={submission.submission_data} reference={submission.reference} pdfHref={pdfHref} />
           </>
         }

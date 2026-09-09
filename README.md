@@ -324,7 +324,13 @@ The public page reads all of this through `resolve_factfind_form()` — the tabl
 `/admin/submissions/{id}/pdf` for admins) that streams an A4 PDF in the adviser's branding: logo, colour band,
 adviser card with photo, client details, then every section and answer, with page numbers and a confidential
 footer. The same PDF is attached to the adviser's "new submission" notification email when `RESEND_API_KEY`
-is set. Rendering uses `@react-pdf/renderer` (pure JavaScript, no headless browser, so it runs on Vercel
+is set.
+
+**PDF copy to the client.** Under **Settings → Delivery** (or onboarding step 4), "Send the client a PDF copy"
+emails the client their completed FactFind as a branded PDF the moment they submit, using the
+`submission_client_copy` template (editable by admins under Email templates) with replies routed to the
+adviser. Every submission page also has an **Email PDF to client** button for sending one by hand, whether or
+not the automatic copy is on. Without a mail provider the email is written to `email_log` instead of sent. Rendering uses `@react-pdf/renderer` (pure JavaScript, no headless browser, so it runs on Vercel
 serverless) with Poppins embedded from `src/lib/pdf/fonts`; `next.config.ts` lists those files in
 `outputFileTracingIncludes` so they ship with the routes that need them. Logos and photos are converted to
 PNG with `sharp` on the way in, so SVG and WEBP uploads work.

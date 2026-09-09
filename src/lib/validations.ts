@@ -128,10 +128,11 @@ export type BrandingValues = z.infer<typeof brandingSchema>
 export const onboardingBrandSchema = brandingSchema
 export type OnboardingBrandValues = z.infer<typeof onboardingBrandSchema>
 
-/** Step 4 — Delivery. A webhook URL is required when the webhook is enabled. */
-export const onboardingDeliverySchema = z
+/** Delivery preferences (onboarding step 4 and Settings). A webhook URL is required when the webhook is enabled. */
+export const deliverySchema = z
   .object({
     delivery_email_copy: z.boolean(),
+    delivery_client_copy: z.boolean(),
     delivery_webhook_enabled: z.boolean(),
     delivery_webhook_url: optionalUrl,
   })
@@ -139,7 +140,9 @@ export const onboardingDeliverySchema = z
     (values) => !values.delivery_webhook_enabled || Boolean(values.delivery_webhook_url),
     { message: 'Enter the webhook URL to send fact finds to', path: ['delivery_webhook_url'] },
   )
-export type OnboardingDeliveryValues = z.infer<typeof onboardingDeliverySchema>
+export type DeliveryValues = z.infer<typeof deliverySchema>
+export const onboardingDeliverySchema = deliverySchema
+export type OnboardingDeliveryValues = DeliveryValues
 
 /** Step 5 — Your team. */
 export const teamMemberSchema = z.object({

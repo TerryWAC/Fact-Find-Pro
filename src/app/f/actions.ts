@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient, hasAdminClient } from '@/lib/supabase/admin'
 import { sendEmail, type EmailAttachment } from '@/lib/email/send'
 import { renderSubmissionPdf, submissionPdfFilename } from '@/lib/pdf/render'
+import { sendClientPdfCopy } from '@/lib/email/client-copy'
 import { clientIdentitySchema } from '@/lib/validations'
 import { isFactFindType, FACTFIND_TYPE_META } from '@/lib/constants'
 import { getBaseUrl } from '@/lib/utils'
@@ -125,7 +126,7 @@ async function notifyAdviser(params: {
 
   const { data: adviser } = await admin
     .from('profiles')
-    .select('name, email, company_name, brand_colour, logo_url, avatar_url')
+    .select('name, email, company_name, brand_colour, logo_url, avatar_url, delivery_client_copy')
     .eq('id', form.adviser_id)
     .maybeSingle()
 
@@ -133,16 +134,22 @@ async function notifyAdviser(params: {
 
   // Attach the branded PDF. A rendering problem must not cost the notification.
   const attachments: EmailAttachment[] = []
+  const { data: submission } = await admin.from('factfind_submissions').select('*').eq('id', params.submissionId).maybeSingle()
+  let pdf: Buffer | undefined
   try {
-    const { data: submission } = await admin.from('factfind_submissions').select('*').eq('id', params.submissionId).maybeSingle()
     if (submission) {
-      attachments.push({
-        filename: submissionPdfFilename(submission),
-        content: await renderSubmissionPdf({ submission, adviser }),
-      })
+      pdf = await renderSubmissionPdf({ submission, adviser })
+      attachments.push({ filename: submissionPdfFilename(submission), content: pdf })
     }
   } catch (error) {
     console.error('submission PDF for notification failed:', (error as Error).message)
+  }
+
+  // The client's own copy, if the adviser has turned it on.
+  if (submission && pdf && adviser.delivery_client_copy) {
+    void sendClientPdfCopy(submission, adviser, pdf).catch((error: Error) =>
+      console.error('client PDF copy failed:', error.message),
+    )
   }
 
   await sendEmail(

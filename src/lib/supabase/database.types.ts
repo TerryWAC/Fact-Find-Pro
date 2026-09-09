@@ -38,6 +38,7 @@ type ProfileRow = {
   website: string | null
   business_location: string | null
   delivery_email_copy: boolean
+  delivery_client_copy: boolean
   delivery_downloads: boolean
   delivery_webhook_enabled: boolean
   delivery_webhook_url: string | null
@@ -68,6 +69,7 @@ type ProfileInsert = {
   website?: string | null
   business_location?: string | null
   delivery_email_copy?: boolean
+  delivery_client_copy?: boolean
   delivery_downloads?: boolean
   delivery_webhook_enabled?: boolean
   delivery_webhook_url?: string | null

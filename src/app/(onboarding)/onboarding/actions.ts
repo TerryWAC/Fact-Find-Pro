@@ -220,6 +220,7 @@ export async function saveDeliveryAction(
 
   const submitted = {
     delivery_email_copy: formData.get('delivery_email_copy') === 'on',
+    delivery_client_copy: formData.get('delivery_client_copy') === 'on',
     delivery_webhook_enabled: formData.get('delivery_webhook_enabled') === 'on',
     delivery_webhook_url: text(formData, 'delivery_webhook_url'),
   }
@@ -241,6 +242,7 @@ export async function saveDeliveryAction(
     .from('profiles')
     .update({
       delivery_email_copy: values.delivery_email_copy,
+      delivery_client_copy: values.delivery_client_copy,
       delivery_webhook_enabled: values.delivery_webhook_enabled,
       // Clearing the URL alongside the toggle keeps the CHECK constraint happy.
       delivery_webhook_url: values.delivery_webhook_enabled

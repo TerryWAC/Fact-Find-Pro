@@ -16,6 +16,8 @@ export interface EmailAttachment {
 
 export interface SendEmailOptions {
   attachments?: EmailAttachment[]
+  /** Overrides EMAIL_REPLY_TO — e.g. the adviser's address on a client copy. */
+  replyTo?: string
 }
 
 export interface SendEmailResult {
@@ -168,7 +170,7 @@ export async function sendEmail<K extends EmailTemplateKey>(
         subject: rendered.subject,
         html: rendered.html,
         text: rendered.text,
-        ...(process.env.EMAIL_REPLY_TO ? { reply_to: process.env.EMAIL_REPLY_TO } : {}),
+        ...(options.replyTo || process.env.EMAIL_REPLY_TO ? { reply_to: options.replyTo || process.env.EMAIL_REPLY_TO } : {}),
         ...(attachments.length
           ? { attachments: attachments.map((a) => ({ filename: a.filename, content: a.content.toString('base64') })) }
           : {}),

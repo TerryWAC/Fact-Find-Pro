@@ -26,6 +26,7 @@
                  six-step setup wizard writes to
      Branding    logo, photo and brand colour per adviser, used on client
                  pages and PDFs
+     Client copy optional PDF copy emailed to the client on submission
      Storage     branding and submission-upload buckets
 
    AFTERWARDS
@@ -44,7 +45,7 @@
    ==========================================================================
 */
 
-/* ======================= PART 1 of 6  Schema, RLS, triggers and public RPCs ======================= */
+/* ======================= PART 1 of 7  Schema, RLS, triggers and public RPCs ======================= */
 
 /*
    =============================================================================
@@ -647,7 +648,7 @@ grant execute on function public.submit_factfind(public.factfind_type, text, tex
 grant execute on function public.is_admin() to authenticated;
 grant execute on function public.is_approved() to authenticated;
 
-/* ======================= PART 2 of 6  Default notification email templates ======================= */
+/* ======================= PART 2 of 7  Default notification email templates ======================= */
 
 /*
    =============================================================================
@@ -731,7 +732,7 @@ values
   )
 on conflict (key) do nothing;
 
-/* ======================= PART 3 of 6  Storage buckets and their policies ======================= */
+/* ======================= PART 3 of 7  Storage buckets and their policies ======================= */
 
 /*
    =============================================================================
@@ -782,7 +783,7 @@ create policy "submission_uploads_admin_all" on storage.objects
   using (bucket_id = 'submission-uploads' and public.is_admin())
   with check (bucket_id = 'submission-uploads' and public.is_admin());
 
-/* ======================= PART 4 of 6  Onboarding fields and the team roster ======================= */
+/* ======================= PART 4 of 7  Onboarding fields and the team roster ======================= */
 
 /*
    =============================================================================
@@ -875,7 +876,7 @@ create policy "team_members_admin_all" on public.team_members
 
 grant select, insert, update, delete on public.team_members to authenticated, service_role;
 
-/* ======================= PART 5 of 6  Admin allowlist (auto-approves the first admin) ======================= */
+/* ======================= PART 5 of 7  Admin allowlist (auto-approves the first admin) ======================= */
 
 /*
    ==========================================================================
@@ -1007,7 +1008,7 @@ begin
   end loop;
 end $$;
 
-/* ======================= PART 6 of 6  Adviser branding (colour check, adviser photo on public links) ======================= */
+/* ======================= PART 6 of 7  Adviser branding (colour check, adviser photo on public links) ======================= */
 
 /*
    =============================================================================
@@ -1061,3 +1062,39 @@ $$;
 
 revoke all on function public.resolve_factfind_form(public.factfind_type, text) from public;
 grant execute on function public.resolve_factfind_form(public.factfind_type, text) to anon, authenticated;
+
+/* ======================= PART 7 of 7  PDF copy to the client (preference and email template) ======================= */
+
+/*
+   =============================================================================
+   FactFind Pro — PDF copy to the client
+   =============================================================================
+   • delivery_client_copy: when on, the client is emailed a branded PDF of
+   their answers as soon as they submit. Advisers can also send one by hand
+   from the submission page at any time.
+   • The email template the client receives (editable by admins).
+   =============================================================================
+ */
+
+alter table public.profiles
+  add column if not exists delivery_client_copy boolean not null default false;
+
+insert into public.email_templates (key, name, description, subject, body_html, body_text)
+values
+  (
+    'submission_client_copy',
+    'Copy of FactFind (to client)',
+    'Sent to the client with their completed FactFind attached as a PDF.',
+    'Your {{form_type}} FactFind — copy for your records',
+    '<h2>Your {{form_type}} FactFind</h2>'
+    '<p>Hi {{client_name}},</p>'
+    '<p>Thank you for completing your {{form_type}} FactFind. A copy of everything you told us is attached as a PDF for your records.</p>'
+    '<ul>'
+    '<li><strong>Reference:</strong> {{reference}}</li>'
+    '<li><strong>Submitted:</strong> {{submitted_at}}</li>'
+    '</ul>'
+    '<p>If anything needs correcting, just reply to this email and {{adviser_name}} will update it.</p>'
+    '<p>{{adviser_name}}<br>{{company_name}}</p>',
+    'Hi {{client_name}},\n\nThank you for completing your {{form_type}} FactFind. A copy of everything you told us is attached as a PDF for your records.\n\nReference: {{reference}}\nSubmitted: {{submitted_at}}\n\nIf anything needs correcting, just reply to this email and {{adviser_name}} will update it.\n\n{{adviser_name}}\n{{company_name}}'
+  )
+on conflict (key) do nothing;
