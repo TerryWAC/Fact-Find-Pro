@@ -346,7 +346,11 @@ create trigger on_profile_status_change
 -- =============================================================================
 
 -- Resolve /f/{type}/{slug} to the owning adviser without exposing the tables.
-create or replace function public.resolve_factfind_form(
+-- Dropped first: a later migration widens the return type, and Postgres will
+-- not `create or replace` a function whose OUT columns have changed.
+drop function if exists public.resolve_factfind_form(public.factfind_type, text);
+
+create function public.resolve_factfind_form(
   p_form_type public.factfind_type,
   p_slug      text
 )
