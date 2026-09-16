@@ -7,12 +7,22 @@ import {
   ArrowLeft,
   ArrowRight,
   ClipboardCheck,
+  History,
   Loader2,
   LockKeyhole,
+  RotateCcw,
   Send,
 } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Progress } from '@/components/ui/progress'
 import { FieldRenderer } from './field-renderer'
 import { StepIndicator } from './step-indicator'
@@ -31,6 +41,8 @@ import {
 } from '@/lib/forms/engine'
 import type { FormSchema, FormValues } from '@/lib/forms/types'
 import { isPresentational } from '@/lib/forms/types'
+import { clearDraft, draftKey, loadDraft, saveDraft } from '@/lib/forms/draft-storage'
+import { formatRelative } from '@/lib/utils'
 import type { FactFindType } from '@/lib/supabase/database.types'
 
 export interface FactFindSubmitResult {
@@ -75,11 +87,17 @@ export function FactFindForm({
   const titleRef = useRef<HTMLHeadingElement>(null)
   const pendingFocus = useRef<string | null>(null)
   const [focusRequest, setFocusRequest] = useState(0)
+  // Unfinished answers live in this browser until the form is sent.
+  const storageKey = useMemo(() => draftKey(formType, slug), [formType, slug])
+  const [resumedAt, setResumedAt] = useState<string | null>(null)
+  const [restartOpen, setRestartOpen] = useState(false)
+  const draftReady = useRef(false)
   const defaultValues = useMemo(() => defaultValuesFor(schema), [schema])
   const {
     control,
     register,
     watch,
+    reset,
     setError,
     clearErrors,
     formState: { errors, isDirty },
@@ -121,6 +139,35 @@ export function FactFindForm({
     pendingFocus.current = null
   }, [focusRequest])
 
+  // Pick up where the client left off on this device.
+  useEffect(() => {
+    const draft = loadDraft(storageKey, schema.version)
+    if (draft) {
+      reset({ ...defaultValues, ...draft.values }, { keepDefaultValues: true })
+      if (schema.steps.some((entry) => entry.id === draft.activeStepId)) setActiveStepId(draft.activeStepId)
+      setCompletedIds(draft.completedIds)
+      setResumedAt(draft.savedAt)
+    }
+    draftReady.current = true
+    // Runs once per form; the key only changes when the link does.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storageKey])
+
+  // Save as the client goes, a moment after they stop typing.
+  const valuesJson = JSON.stringify(values)
+  useEffect(() => {
+    if (!draftReady.current) return
+    const timer = window.setTimeout(() => {
+      saveDraft(storageKey, {
+        version: schema.version,
+        values: JSON.parse(valuesJson) as FormValues,
+        activeStepId,
+        completedIds,
+      })
+    }, 400)
+    return () => window.clearTimeout(timer)
+  }, [storageKey, schema.version, valuesJson, activeStepId, completedIds])
+
   useEffect(() => {
     if (!isDirty) return
     const warnBeforeLeaving = (event: BeforeUnloadEvent) => {
@@ -130,6 +177,21 @@ export function FactFindForm({
     window.addEventListener('beforeunload', warnBeforeLeaving)
     return () => window.removeEventListener('beforeunload', warnBeforeLeaving)
   }, [isDirty])
+
+  /** Clears every answer on this device and returns to the first section. */
+  function startAgain() {
+    clearDraft(storageKey)
+    reset(defaultValues)
+    setCompletedIds([])
+    setHasReviewed(false)
+    setReviewing(false)
+    setSubmitError(null)
+    clearErrors()
+    setResumedAt(null)
+    setRestartOpen(false)
+    setActiveStepId(schema.steps[0]?.id ?? '')
+    requestFocus()
+  }
 
   function requestFocus(fieldId?: string) {
     pendingFocus.current = fieldId ?? null
@@ -213,6 +275,7 @@ export function FactFindForm({
         } else requestFocus()
         return
       }
+      clearDraft(storageKey)
       onComplete(result.reference)
     } catch {
       setSubmitError(
@@ -246,6 +309,17 @@ export function FactFindForm({
           <p className="mt-2 text-xs text-muted-foreground">
             {validCompletedIds.length} of {steps.length} sections completed
           </p>
+          <div className="mt-3 flex items-center justify-between gap-2 border-t pt-3 text-xs text-muted-foreground">
+            <span>Saved on this device</span>
+            <button
+              type="button"
+              onClick={() => setRestartOpen(true)}
+              disabled={isSubmitting}
+              className="inline-flex min-h-8 items-center gap-1 rounded-md px-1.5 font-medium text-foreground underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+            >
+              <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" /> Start again
+            </button>
+          </div>
         </div>
         <StepIndicator
           steps={steps}
@@ -289,6 +363,25 @@ export function FactFindForm({
             <SectionDepth number={safeIndex + 1} reviewing={reviewing} />
           </div>
           <div className="p-5 sm:p-8">
+            {resumedAt && (
+              <Alert className="mb-6" data-testid="draft-resumed">
+                <History />
+                <AlertDescription className="flex flex-wrap items-center justify-between gap-2">
+                  <span>
+                    Welcome back. We kept the answers you gave on this device{' '}
+                    {formatRelative(resumedAt)}, so you can carry on from here.
+                  </span>
+                  <span className="flex gap-1">
+                    <Button type="button" variant="ghost" size="sm" onClick={() => setResumedAt(null)}>
+                      Continue
+                    </Button>
+                    <Button type="button" variant="outline" size="sm" onClick={() => setRestartOpen(true)}>
+                      Start again
+                    </Button>
+                  </span>
+                </AlertDescription>
+              </Alert>
+            )}
             {submitError && (
               <Alert variant="destructive" className="mb-6" role="alert">
                 <AlertCircle />
@@ -423,9 +516,30 @@ export function FactFindForm({
         </section>
         <p className="flex items-start justify-center gap-2 px-2 text-center text-xs leading-relaxed text-muted-foreground">
           <LockKeyhole className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-          Your answers are sent when you submit. Keep this tab open until you finish.
+          Your answers stay on this device as you go and are sent to your adviser only when you submit.
+          Come back to this link any time to carry on.
         </p>
       </div>
+
+      <Dialog open={restartOpen} onOpenChange={setRestartOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Start again from the beginning?</DialogTitle>
+            <DialogDescription>
+              This clears every answer saved on this device for this FactFind. Nothing has been sent to{' '}
+              {adviserName} yet.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setRestartOpen(false)}>
+              Keep my answers
+            </Button>
+            <Button type="button" variant="destructive" onClick={startAgain} data-testid="confirm-start-again">
+              <RotateCcw aria-hidden="true" /> Start again
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
