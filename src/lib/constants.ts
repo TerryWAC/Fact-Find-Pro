@@ -1,5 +1,12 @@
 import type { FactFindType, SubmissionStatus, UserStatus } from '@/lib/supabase/database.types'
 
+/**
+ * The public address of the live product. Client FactFind links, email links
+ * and auth fallbacks use this in production so every adviser shares the same
+ * domain, whichever hostname they happen to be signed in on.
+ */
+export const PRODUCTION_ORIGIN = 'https://www.factfindpro.com'
+
 export const BRAND = {
   product: 'FactFind Pro',
   organisation: 'Wealthy Advisers Club',

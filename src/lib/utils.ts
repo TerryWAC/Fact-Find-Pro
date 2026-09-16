@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { PRODUCTION_ORIGIN } from '@/lib/constants'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -9,8 +10,17 @@ export function cn(...inputs: ClassValue[]) {
 export function getBaseUrl(): string {
   if (typeof window !== 'undefined') return window.location.origin
 
-  const explicit = process.env.NEXT_PUBLIC_APP_URL
-  if (explicit) return explicit.replace(/\/$/, '')
+  const explicit = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '')
+
+  // Production always presents the product's own domain. An explicit
+  // NEXT_PUBLIC_APP_URL still wins unless it is a *.vercel.app address left
+  // over from before the domain was attached.
+  if (process.env.VERCEL_ENV === 'production') {
+    if (explicit && !/\.vercel\.app$/i.test(new URL(explicit).hostname)) return explicit
+    return PRODUCTION_ORIGIN
+  }
+
+  if (explicit) return explicit
 
   if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
     return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
