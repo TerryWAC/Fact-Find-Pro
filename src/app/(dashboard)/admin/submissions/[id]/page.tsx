@@ -5,6 +5,7 @@ import { requireAdmin } from '@/lib/auth'
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = { title: 'Submission' }
+export const maxDuration = 60
 
 export default async function AdminSubmissionDetailPage({
   params,

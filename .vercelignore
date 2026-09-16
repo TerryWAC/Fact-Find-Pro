@@ -1,0 +1,14 @@
+# Keep local builds, credentials and test artifacts out of deployment uploads.
+.git/
+.vercel/
+.env*
+node_modules/
+.next/
+.next-preview/
+test-results/
+playwright-report/
+coverage/
+tests/
+*.tsbuildinfo
+*.patch
+*.log

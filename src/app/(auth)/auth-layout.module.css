@@ -1,0 +1,72 @@
+.shell { display: grid; min-height: 100dvh; padding: 14px; gap: 14px; background: hsl(var(--background)); }
+.brand { position: relative; display: none; flex-direction: column; justify-content: space-between; overflow: hidden; isolation: isolate; padding: 36px 40px; border: 1px solid #ffffff12; border-radius: 22px; color: #faf8f2; background: radial-gradient(ellipse at 85% 72%, #c5974420, transparent 58%), #111311; }
+.brand::after { position: absolute; z-index: -1; inset: 0; content: ''; opacity: .13; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23fff' filter='url(%23n)' opacity='.24' d='M0 0h180v180H0z'/%3E%3C/svg%3E"); pointer-events: none; }
+.brandHeader { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.edition { max-width: 80px; text-align: right; color: #a4a69c; font-size: 9px; text-transform: uppercase; letter-spacing: .15em; line-height: 1.8; }
+.story { width: 100%; max-width: 530px; margin: 52px auto 32px; }
+.eyebrow { display: flex; align-items: center; gap: 10px; color: #e3bc78; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .2em; }
+.eyebrow > span { height: 1px; width: 27px; background: #e3bc78; }
+.story h2 { max-width: 500px; margin-top: 22px; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(43px, 4.2vw, 65px); font-weight: 400; line-height: 1.07; letter-spacing: -.045em; }
+.story h2 em { display: block; color: #e9c98f; font-weight: 400; }
+.description { max-width: 350px; margin-top: 22px; font-size: 12px; line-height: 1.9; color: #b8bbb0; }
+.illustration { position: relative; margin: 42px 24px 34px 0; padding-top: 12px; }
+.orbit { position: absolute; width: 365px; height: 365px; border: 1px solid #e3bc7817; border-radius: 50%; right: -80px; top: -55px; }
+.orbit::after { content: ''; position: absolute; inset: 26px; border: 1px solid #e3bc7812; border-radius: 50%; }
+.paperBack { position: absolute; inset: 5px 10px 2px; border: 1px solid #e4c98b23; border-radius: 13px; background: #34382a; transform: rotate(-4deg); }
+.paper { position: relative; padding: 22px; border: 1px solid #dfcda72e; border-radius: 13px; background: linear-gradient(130deg, #2b2e26, #1d211c); box-shadow: 0 25px 55px #0003; }
+.paperHeader, .paperHeader > span:first-child, .paperFooter, .paperFooter > span:first-child { display: flex; align-items: center; justify-content: space-between; gap: 9px; }
+.paperHeader { color: #bbbfb1; font-size: 8px; letter-spacing: .12em; }
+.paperHeader svg { color: #dab575; }
+.paperDots { font-size: 18px; }
+.paperTitle { margin-top: 13px; font-size: 16px; font-weight: 500; letter-spacing: -.04em; }
+.documentRow { display: flex; align-items: center; gap: 11px; margin-top: 20px; }
+.documentIcon { display: flex; padding: 10px; border: 1px solid #e9c98f25; border-radius: 9px; background: #e9c98f0a; color: #e9c98f; }
+.documentRow > div { flex: 1; }
+.documentRow strong, .documentRow div > span { display: block; }
+.documentRow strong { font-size: 10px; font-weight: 500; }
+.documentRow div > span { margin-top: 5px; color: #a9ad9e; font-size: 8px; }
+.documentRow > svg { color: #abae9f; }
+.paperLines { display: flex; gap: 5px; margin: 20px 0; }
+.paperLines i { height: 4px; flex: 1; border-radius: 4px; background: #aaaf9130; }
+.paperLines i:first-child { background: #ddbd7d; }
+.paperLines i:nth-child(2) { background: #ddbd7d80; }
+.paperFooter { font-size: 8px; color: #bbbfb1; padding-top: 13px; border-top: 1px solid #ffffff0f; }
+.paperFooter > span:last-child { border: 1px solid #ffffff20; border-radius: 4px; padding: 2px 5px; font-size: 7px; }
+.note { position: absolute; display: flex; align-items: center; gap: 10px; padding: 14px 19px; right: -24px; bottom: -28px; border: 1px solid #e5d3aa; background: #f3ebd9; color: #34352d; border-radius: 10px; box-shadow: 0 12px 30px #0003; transform: rotate(2deg); }
+.noteIcon { display: flex; padding: 7px; border-radius: 50%; background: #65745516; color: #566247; }
+.note strong, .note div > span { display: block; }
+.note strong { font-size: 10px; font-weight: 600; }
+.note div > span { margin-top: 3px; font-size: 8px; color: #686a60; }
+.brandFooter { border-top: 1px solid #ffffff15; padding-top: 22px; }
+.brandFooter p { font-size: 11px; color: #d4d6cd; }
+.brandFooter > div { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 10px; color: #959c8c; font-size: 9px; }
+.main { display: flex; flex-direction: column; min-width: 0; }
+.mainHeader { display: flex; align-items: center; justify-content: space-between; gap: 15px; min-height: 72px; padding: 0 8px; }
+.workspaceLabel { display: none; color: hsl(var(--muted-foreground)); font-size: 10px; letter-spacing: .13em; text-transform: uppercase; }
+.formArea { display: flex; flex: 1; align-items: center; justify-content: center; padding: 16px 0 30px; }
+.formCard { width: 100%; max-width: 452px; padding: 29px 23px; border: 1px solid hsl(var(--border)); border-radius: 22px; background: hsl(var(--card)); box-shadow: 0 14px 55px -24px #372d2424, 0 2px 5px #372d2403; }
+.footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 5px 16px; padding: 10px 12px 18px; color: hsl(var(--muted-foreground)); font-size: 9px; }
+.footer > span:first-child { font-weight: 600; }
+@media (min-width: 640px) {
+  .mainHeader { padding: 0 24px; }
+  .formArea { padding: 30px 24px; }
+  .formCard { padding: 36px; }
+}
+@media (min-width: 1024px) {
+  .shell { grid-template-columns: 1fr 1fr; }
+  .brand { display: flex; }
+  .workspaceLabel { display: block; }
+  .mainHeader { padding: 0 32px; }
+  .formArea { padding: 28px 28px 46px; }
+}
+@media (min-width: 1280px) {
+  .shell { grid-template-columns: 1.04fr .96fr; }
+  .brand { padding: 38px 52px 30px; }
+  .formArea { padding-left: 42px; padding-right: 42px; }
+}
+@media (max-width: 639px) and (max-height: 760px) {
+  .shell { padding: 10px; }
+  .mainHeader { min-height: 60px; }
+  .formArea { padding-top: 8px; padding-bottom: 16px; }
+  .formCard { padding-top: 23px; padding-bottom: 23px; }
+}

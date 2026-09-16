@@ -37,9 +37,8 @@ export function teamRoleLabel(role: TeamRole): string {
 }
 
 // -----------------------------------------------------------------------------
-// Checklist state — drives the welcome screen and the "resume where you left
-// off" behaviour. Each task reports whether it has been done, from real data
-// rather than a stored flag, so it stays honest if details are edited later.
+// Checklist state describes saved account data. Resume uses onboarding_step;
+// default delivery settings do not mean the adviser has reviewed that step.
 // -----------------------------------------------------------------------------
 
 export interface ChecklistTask {
@@ -61,28 +60,28 @@ export function onboardingChecklist(profile: Profile, teamCount: number): Checkl
     },
     {
       step: 3,
-      title: 'Logo and headshot',
+      title: 'Your visual identity',
       description: 'Shown to clients on links, copies and PDFs',
       done: Boolean(profile.logo_url || profile.avatar_url),
     },
     {
       step: 4,
-      title: 'Choose where fact finds go',
-      description: 'Email copy, downloads, or straight into your CRM',
-      // Downloads are always on, so this task is satisfied by default.
+      title: 'Saved delivery settings',
+      description: `Adviser email: ${profile.delivery_email_copy ? 'automatic' : 'off'}. Client email: ${profile.delivery_client_copy ? 'automatic' : 'off'}. PDF downloads always available.`,
+      // These preferences exist even before the adviser reviews them.
       done: true,
     },
     {
       step: 5,
       title: 'Add your team',
-      description: 'Optional. Everyone gets their own configured copy',
+      description: 'Optional colleague directory; accounts are registered separately',
       done: teamCount > 0,
       optional: true,
     },
     {
       step: 6,
-      title: 'Share your first fact find',
-      description: 'Copy a client link and run one with a test client',
+      title: 'Your links and final review',
+      description: 'Check link availability and delivery choices, then open your dashboard',
       done: Boolean(profile.onboarding_completed_at),
     },
   ]

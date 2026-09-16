@@ -2,8 +2,9 @@
 
 import { useMemo, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { toast } from 'sonner'
-import { Check, Loader2, MoreHorizontal, Undo2, UserX, X } from 'lucide-react'
+import { Check, Loader2, Mail, MoreHorizontal, Undo2, UserX, X } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -25,11 +26,13 @@ import {
 import { EmptyState } from '@/components/shared/empty-state'
 import { UserStatusBadge } from '@/components/shared/status-badge'
 import { RejectDialog } from './reject-dialog'
-import { approveUsers, rejectUsers, setUserStatus } from '@/app/(dashboard)/admin/actions'
+import { approveUsers, rejectUsers, setUserStatus, resendApprovalEmail } from '@/app/(dashboard)/admin/actions'
 import type { UserRole, UserStatus } from '@/lib/supabase/database.types'
 import { formatDate } from '@/lib/utils'
+import { practiceWebsite, type PracticeDetails } from '@/lib/practice'
 
-export interface AdminUserRow {
+export interface AdminUserRow extends PracticeDetails {
+  import_pending?: boolean
   id: string
   name: string
   company_name: string | null
@@ -55,7 +58,7 @@ export function UsersTable({
 
   // Only pending registrations can be bulk approved or rejected.
   const selectableIds = useMemo(
-    () => users.filter((user) => user.status === 'pending').map((user) => user.id),
+    () => users.filter((user) => user.status === 'pending' && !user.import_pending).map((user) => user.id),
     [users],
   )
 
@@ -79,7 +82,8 @@ export function UsersTable({
         toast.error(result.error ?? 'Could not approve')
         return
       }
-      toast.success(result.message ?? 'Approved')
+      if (result.warning) toast.warning(result.message)
+      else toast.success(result.message ?? 'Approved')
       setSelected([])
       router.refresh()
     })
@@ -92,7 +96,8 @@ export function UsersTable({
         toast.error(result.error ?? 'Could not reject')
         return
       }
-      toast.success(result.message ?? 'Rejected')
+      if (result.warning) toast.warning(result.message)
+      else toast.success(result.message ?? 'Rejected')
       setSelected([])
       setRejectTarget(null)
       router.refresh()
@@ -108,6 +113,15 @@ export function UsersTable({
       }
       toast.success(result.message ?? 'Updated')
       router.refresh()
+    })
+  }
+
+  function runResendApproval(id: string) {
+    startTransition(async () => {
+      const result = await resendApprovalEmail(id)
+      if (!result.ok) toast.error(result.error ?? 'Could not send the email')
+      else if (result.warning) toast.warning(result.message)
+      else toast.success(result.message)
     })
   }
 
@@ -174,7 +188,7 @@ export function UsersTable({
         <TableBody>
           {users.map((user) => {
             const isSelf = user.id === currentAdminId
-            const isPendingUser = user.status === 'pending'
+            const isPendingUser = user.status === 'pending' && !user.import_pending
 
             return (
               <TableRow key={user.id} data-state={selected.includes(user.id) ? 'selected' : undefined}>
@@ -194,6 +208,12 @@ export function UsersTable({
                   </div>
                   <p className="text-xs text-muted-foreground md:hidden">{user.company_name ?? '—'}</p>
                   <p className="text-xs text-muted-foreground sm:hidden">{user.email}</p>
+                  <details className="mt-1 max-w-xs"><summary className="inline-flex min-h-11 cursor-pointer items-center rounded text-xs font-medium underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Practice details<span className="sr-only"> for {user.name}</span></summary><dl className="space-y-3 rounded-lg border bg-muted/30 p-3 text-xs">
+                    {[
+                      ['Role', user.job_title], ['Client contact', user.contact_email], ['Location', user.business_location], ['Services', user.services], ['Who they help', user.client_focus],
+                    ].map(([label, value]) => <div key={label}><dt className="font-medium">{label}</dt><dd className="mt-1 whitespace-pre-wrap break-words text-muted-foreground">{value || 'Not provided'}</dd></div>)}
+                    <div><dt className="font-medium">Website</dt><dd className="mt-1 break-all">{practiceWebsite(user.website) ? <a href={practiceWebsite(user.website)!} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center underline">{user.website}<span className="sr-only"> (new tab)</span></a> : 'Not provided'}</dd></div>
+                  </dl></details>
                 </TableCell>
 
                 <TableCell className="hidden md:table-cell text-sm">{user.company_name ?? '—'}</TableCell>
@@ -213,16 +233,17 @@ export function UsersTable({
                 </TableCell>
 
                 <TableCell>
-                  <UserStatusBadge status={user.status} />
+                  {user.import_pending ? <Badge variant="outline">Prepared · not invited</Badge> : <UserStatusBadge status={user.status} />}
                 </TableCell>
 
                 <TableCell className="text-right">
-                  {isPendingUser ? (
+                  {user.import_pending ? <Button size="sm" variant="outline" asChild><Link href={`/admin/imports?q=${encodeURIComponent(user.email)}`}>View FactFinds</Link></Button> : isPendingUser ? (
                     <div className="flex justify-end gap-1.5">
                       <Button
                         size="sm"
                         variant="success"
                         onClick={() => runApprove([user.id])}
+                        aria-label="Approve"
                         disabled={isPending}
                       >
                         <Check className="h-4 w-4" />
@@ -232,6 +253,7 @@ export function UsersTable({
                         size="sm"
                         variant="outline"
                         onClick={() => setRejectTarget([user.id])}
+                        aria-label="Reject"
                         disabled={isPending}
                       >
                         <X className="h-4 w-4" />
@@ -265,6 +287,12 @@ export function UsersTable({
                           </DropdownMenuItem>
                         )}
                         <DropdownMenuSeparator />
+                        {user.status === 'approved' && user.role === 'adviser' && (
+                          <DropdownMenuItem onSelect={() => runResendApproval(user.id)}>
+                            <Mail className="h-4 w-4" />
+                            Resend approval email
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem
                           onSelect={() => setRejectTarget([user.id])}
                           className="text-destructive focus:text-destructive"

@@ -21,7 +21,7 @@ export function BrandStep({ profile }: { profile: Profile }) {
   return (
     <StepShell
       title="Your brand"
-      description="Upload your company logo, a picture of yourself and pick your brand colour. These go on every client link, client copy and PDF. Leave them blank and the Wealthy Advisers Club branding is used."
+      description="Give clients a familiar first impression. Add your logo, adviser photo and brand colour for your forms and PDFs. Without a logo, your practice name still introduces you; the default style is black and gold."
     >
       {state.error && (
         <Alert variant="destructive">
@@ -56,7 +56,7 @@ export function BrandStep({ profile }: { profile: Profile }) {
           </div>
 
           <p className="text-xs text-muted-foreground">
-            PNG, JPG, WEBP or SVG, up to 2MB. Images are stored privately against your account.
+            PNG, JPG, WEBP or SVG, up to 2MB. Branding images are visible to anyone who opens your client links.
           </p>
 
           <Separator />

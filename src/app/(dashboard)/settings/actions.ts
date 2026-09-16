@@ -2,13 +2,14 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import { brandingSchema, changePasswordSchema, deliverySchema, profileSchema } from '@/lib/validations'
+import { brandingSchema, changePasswordSchema, deliverySchema, completeProfileSchema } from '@/lib/validations'
 
 export interface SettingsActionState {
   ok?: boolean
   error?: string
   message?: string
   fieldErrors?: Record<string, string>
+  values?: Record<string, string>
 }
 
 function fieldErrorsFrom(error: { issues: { path: (string | number)[]; message: string }[] }) {
@@ -24,14 +25,11 @@ export async function updateProfileAction(
   _prev: SettingsActionState,
   formData: FormData,
 ): Promise<SettingsActionState> {
-  const parsed = profileSchema.safeParse({
-    name: formData.get('name'),
-    company_name: formData.get('company_name'),
-    phone: formData.get('phone'),
-  })
+  const submitted = Object.fromEntries(['name', 'company_name', 'phone', 'job_title', 'fca_number', 'website', 'business_location', 'contact_email', 'services', 'client_focus'].map(key => [key, text(formData, key)]))
+  const parsed = completeProfileSchema.safeParse(submitted)
 
   if (!parsed.success) {
-    return { error: 'Please check the form and try again.', fieldErrors: fieldErrorsFrom(parsed.error) }
+    return { error: 'Please check the form and try again.', fieldErrors: fieldErrorsFrom(parsed.error), values: submitted }
   }
 
   const supabase = await createClient()
@@ -42,11 +40,11 @@ export async function updateProfileAction(
   if (!user) return { error: 'Your session has expired. Please sign in again.' }
 
   // RLS blocks role/status changes, so this can only ever edit safe fields.
-  const { error } = await supabase.from('profiles').update(parsed.data).eq('id', user.id)
-  if (error) return { error: error.message }
+  const { error } = await supabase.from('profiles').update(parsed.data).eq('id', user.id).select('id').single()
+  if (error) return { error: 'Your practice details could not be saved. Please try again.', values: submitted }
 
   // Keep the auth metadata in step with the profile.
-  await supabase.auth.updateUser({ data: parsed.data })
+  await supabase.auth.updateUser({ data: { name: parsed.data.name, company_name: parsed.data.company_name, phone: parsed.data.phone } })
 
   revalidatePath('/settings')
   revalidatePath('/', 'layout')
@@ -134,7 +132,7 @@ export async function updateBrandingAction(
   revalidatePath('/settings')
   revalidatePath('/', 'layout')
 
-  return { ok: true, message: 'Your branding has been updated. Client pages and PDFs use it from now on.' }
+  return { ok: true, message: 'Your branding has been updated. Client pages, emails and PDFs use it from now on.' }
 }
 
 /** Where completed fact finds go: adviser copy, client PDF copy, webhook. */

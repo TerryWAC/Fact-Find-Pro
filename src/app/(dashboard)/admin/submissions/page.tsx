@@ -4,6 +4,7 @@ import { PageHeader } from '@/components/shared/page-header'
 import { Pagination } from '@/components/shared/pagination'
 import { SubmissionFilters } from '@/components/submissions/submission-filters'
 import { SubmissionsTable } from '@/components/submissions/submissions-table'
+import { SubmissionLoadError } from '@/components/submissions/submission-load-error'
 import { requireAdmin } from '@/lib/auth'
 import { querySubmissions, type SubmissionSearchParams } from '@/lib/submissions'
 
@@ -17,7 +18,7 @@ export default async function AdminSubmissionsPage({
   await requireAdmin()
   const params = await searchParams
 
-  const { rows, total, page, pageSize } = await querySubmissions({
+  const { rows, total, page, pageSize, error } = await querySubmissions({
     adviserId: null,
     searchParams: params,
     withAdviser: true,
@@ -31,8 +32,12 @@ export default async function AdminSubmissionsPage({
       />
 
       <Card className="overflow-hidden p-0">
-        <SubmissionFilters showAdviserSearch />
-        <SubmissionsTable rows={rows} detailBasePath="/admin/submissions" showAdviser />
+        <SubmissionFilters total={error ? null : total} />
+        {error ? (
+          <SubmissionLoadError />
+        ) : (
+          <SubmissionsTable rows={rows} detailBasePath="/admin/submissions" showAdviser />
+        )}
         {total > 0 && <Pagination page={page} pageSize={pageSize} total={total} />}
       </Card>
     </>

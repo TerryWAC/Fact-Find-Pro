@@ -11,7 +11,7 @@ export default async function OnboardingLayout({ children }: { children: React.R
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <header className="sticky top-0 z-30 border-b bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-        <div className="mx-auto flex h-16 w-full max-w-4xl items-center justify-between px-6">
+        <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
           <Logo href={null} />
           <div className="flex items-center gap-1">
             <ThemeToggle />
@@ -25,8 +25,8 @@ export default async function OnboardingLayout({ children }: { children: React.R
         </div>
       </header>
 
-      <main className="flex-1 px-6 py-8 sm:py-12">
-        <div className="mx-auto w-full max-w-4xl animate-fade-in space-y-8">{children}</div>
+      <main className="onboarding-background flex-1 px-4 py-6 sm:px-6 sm:py-10">
+        <div className="mx-auto w-full max-w-6xl space-y-7 sm:space-y-10">{children}</div>
       </main>
 
       <footer className="border-t py-6">

@@ -1,6 +1,7 @@
 'use client'
 
 import { useTransition } from 'react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { completeOnboardingAction } from '@/app/(onboarding)/onboarding/actions'
 
@@ -11,7 +12,7 @@ export function DismissSetupButton({ label = 'Skip setup, take me to the dashboa
   return (
     <Button
       variant="ghost"
-      onClick={() => startTransition(async () => void (await completeOnboardingAction()))}
+      onClick={() => startTransition(async () => { const result = await completeOnboardingAction(); if (result?.error) toast.error(result.error) })}
       disabled={pending}
       className="text-muted-foreground"
     >

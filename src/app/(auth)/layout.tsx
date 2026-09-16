@@ -1,61 +1,57 @@
-import { CheckCircle2 } from 'lucide-react'
+import { ArrowUpRight, Check, FileText, Layers3 } from 'lucide-react'
 import { Logo } from '@/components/shared/logo'
-import { BrandBannerImage } from '@/components/shared/brand-banner-image'
 import { ThemeToggle } from '@/components/shared/theme-toggle'
 import { BRAND } from '@/lib/constants'
-
-const HIGHLIGHTS = [
-  'Four unique client FactFind links per adviser',
-  'Every submission tied to the adviser who owns the link',
-  'Search, filter and export your client submissions',
-  'Approved by the Wealthy Advisers Club team',
-]
+import styles from './auth-layout.module.css'
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="grid min-h-screen lg:grid-cols-[1.05fr_1fr]">
-      {/* Brand panel */}
-      <aside className="brand-surface relative hidden flex-col justify-between p-10 lg:flex">
-        <BrandBannerImage
-          className="max-w-md rounded-xl"
-          fallback={<Logo variant="light" href="/login" />}
-        />
-
-        <div className="max-w-md">
-          <h2 className="text-3xl font-semibold leading-tight tracking-tight text-white">
-            <span className="text-brand-gold">Sell more.</span> Protect more families.
-            <br />
-            Grow your business.
-          </h2>
-          <p className="mt-4 text-sm leading-relaxed text-white/65">{BRAND.tagline}</p>
-
-          <ul className="mt-8 space-y-3">
-            {HIGHLIGHTS.map((item) => (
-              <li key={item} className="flex items-start gap-3 text-sm text-white/85">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-                {item}
-              </li>
-            ))}
-          </ul>
+    <div className={styles.shell}>
+      <aside className={styles.brand}>
+        <div className={styles.brandHeader}>
+          <Logo variant="light" href="/login" showOrganisation={false} />
+          <span className={styles.edition}>The adviser platform</span>
         </div>
 
-        <p className="text-xs text-white/50">
-          © {new Date().getFullYear()} {BRAND.organisation}
-        </p>
+        <div className={styles.story}>
+          <p className={styles.eyebrow}><span /> A clearer beginning</p>
+          <h2>A clearer picture.<em>A better beginning.</em></h2>
+          <p className={styles.description}>Give every client a thoughtful first step. Bring their answers together, ready for your next conversation.</p>
 
-        <div className="gold-rule absolute inset-x-0 bottom-0 h-1" />
+          <div className={styles.illustration} aria-hidden="true">
+            <div className={styles.orbit} />
+            <div className={styles.paperBack} />
+            <div className={styles.paper}>
+              <div className={styles.paperHeader}><span><Layers3 size={16} /> YOUR CLIENT WORKSPACE</span><span className={styles.paperDots}>···</span></div>
+              <p className={styles.paperTitle}>The details. All together.</p>
+              <div className={styles.documentRow}>
+                <span className={styles.documentIcon}><FileText size={20} /></span>
+                <div><strong>Mortgage FactFind</strong><span>Answers organised for your review</span></div>
+                <ArrowUpRight size={17} />
+              </div>
+              <div className={styles.paperLines}><i /><i /><i /></div>
+              <div className={styles.paperFooter}><span><Check size={13} /> Branded for your practice</span><span>PDF</span></div>
+            </div>
+            <div className={styles.note}><span className={styles.noteIcon}><Check size={16} /></span><div><strong>Ready for the next step</strong><span>From answers to conversation</span></div></div>
+          </div>
+        </div>
+
+        <div className={styles.brandFooter}>
+          <p>Four FactFinds. One workspace.</p>
+          <div><span>Mortgage</span><span>Protection</span><span>Medical</span><span>Home</span></div>
+        </div>
       </aside>
 
-      {/* Form panel */}
-      <main className="flex flex-col bg-background">
-        <div className="flex h-16 items-center justify-between border-b px-6">
-          <Logo href="/login" className="lg:invisible" />
+      <main className={styles.main}>
+        <header className={styles.mainHeader}>
+          <div className="lg:hidden"><Logo href="/login" showOrganisation={false} /></div>
+          <span className={styles.workspaceLabel}>Your adviser workspace</span>
           <ThemeToggle />
+        </header>
+        <div className={styles.formArea}>
+          <div className={styles.formCard}>{children}</div>
         </div>
-
-        <div className="flex flex-1 items-center justify-center px-6 py-10 sm:px-10">
-          <div className="w-full max-w-md animate-fade-in">{children}</div>
-        </div>
+        <footer className={styles.footer}><span>FactFind Pro</span><span>By {BRAND.organisation}</span></footer>
       </main>
     </div>
   )

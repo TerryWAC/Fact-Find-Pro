@@ -11,6 +11,7 @@ interface StatCardProps {
   href?: string
   iconClassName?: string
   emphasis?: boolean
+  compact?: boolean
 }
 
 export function StatCard({
@@ -21,18 +22,20 @@ export function StatCard({
   href,
   iconClassName,
   emphasis = false,
+  compact = false,
 }: StatCardProps) {
   const body = (
     <Card
       className={cn(
         'h-full p-5 transition-all',
+        compact && 'p-4 sm:p-5',
         href && 'hover:-translate-y-0.5 hover:border-accent/50 hover:shadow-md',
         emphasis && 'border-accent/40 bg-accent/5',
       )}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 space-y-1">
-          <p className="truncate text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
           <p className="text-3xl font-semibold tracking-tight tabular-nums text-foreground">{value}</p>
           {description && <p className="text-xs text-muted-foreground">{description}</p>}
         </div>
@@ -40,6 +43,7 @@ export function StatCard({
           className={cn(
             'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent/15 text-accent-strong dark:text-accent',
             iconClassName,
+            compact && 'hidden sm:flex',
           )}
           aria-hidden
         >
@@ -52,7 +56,10 @@ export function StatCard({
   if (!href) return body
 
   return (
-    <Link href={href} className="rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+    <Link
+      href={href}
+      className="rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
       {body}
     </Link>
   )

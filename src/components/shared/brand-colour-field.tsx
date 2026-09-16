@@ -14,6 +14,7 @@ interface BrandColourFieldProps {
   /** Shown in the preview header. */
   logoUrl?: string
   companyName?: string
+  onValueChange?: (value: string) => void
 }
 
 /**
@@ -22,8 +23,9 @@ interface BrandColourFieldProps {
  * The text input is the form control; the native colour input and the swatches
  * just write into it, so a plain form submission carries the value.
  */
-export function BrandColourField({ name, defaultValue, logoUrl, companyName }: BrandColourFieldProps) {
-  const [value, setValue] = useState(defaultValue)
+export function BrandColourField({ name, defaultValue, logoUrl, companyName, onValueChange }: BrandColourFieldProps) {
+  const [value, setInternalValue] = useState(defaultValue)
+  function setValue(next: string) { setInternalValue(next); onValueChange?.(next) }
   const id = useId()
   const hex = normaliseHex(value)
   const theme = brandTheme(hex)
@@ -114,7 +116,7 @@ export function BrandColourField({ name, defaultValue, logoUrl, companyName }: B
       <p className="text-xs text-muted-foreground">
         {theme.custom
           ? 'Text switches between black and white automatically so it stays readable on your colour.'
-          : 'Leave blank to use the Wealthy Advisers Club black and gold.'}
+          : 'Leave blank to use classic black and gold with your firm’s identity.'}
       </p>
     </div>
   )

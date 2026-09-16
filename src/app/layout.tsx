@@ -26,6 +26,9 @@ export const metadata: Metadata = {
     type: 'website',
   },
   robots: { index: false, follow: false },
+  manifest: '/manifest.webmanifest',
+  appleWebApp: { capable: true, title: BRAND.product, statusBarStyle: 'default' },
+  icons: { icon: '/app-icon?size=192', apple: '/app-icon?size=180' },
 }
 
 export const viewport: Viewport = {
@@ -35,6 +38,7 @@ export const viewport: Viewport = {
   ],
   width: 'device-width',
   initialScale: 1,
+  viewportFit: 'cover',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

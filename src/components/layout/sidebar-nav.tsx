@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Logo } from '@/components/shared/logo'
-import { BrandBannerImage } from '@/components/shared/brand-banner-image'
 import { isActive, navForRole } from './nav-config'
 import { cn } from '@/lib/utils'
 
@@ -17,16 +16,12 @@ export function SidebarNav({ isAdmin, onNavigate }: SidebarNavProps) {
   const sections = navForRole(isAdmin)
 
   return (
-    <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
-      <div className="shrink-0 border-b border-sidebar-border">
-        <BrandBannerImage
-          className="px-3 pt-3 pb-2"
-          fallback={
-            <div className="flex h-16 items-center px-5">
-              <Logo variant="light" href="/dashboard" />
-            </div>
-          }
-        />
+    <div className="flex h-full flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
+      <div className="shrink-0 border-b border-sidebar-border px-5 py-7">
+        <Link href="/dashboard" onClick={onNavigate} aria-label="FactFind Pro dashboard" className="block rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-accent">
+          <Logo variant="light" href={null} showOrganisation={false} />
+        </Link>
+        <p className="mt-4 text-[10px] font-medium uppercase tracking-[0.18em] text-sidebar-muted">Your adviser workspace</p>
       </div>
 
       <nav className="scrollbar-thin flex-1 space-y-6 overflow-y-auto px-3 py-5" aria-label="Main navigation">
@@ -35,7 +30,7 @@ export function SidebarNav({ isAdmin, onNavigate }: SidebarNavProps) {
             <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-sidebar-muted">
               {section.label}
             </p>
-            <ul className="space-y-0.5">
+            <ul className="space-y-1">
               {section.items.map((item) => {
                 const active = isActive(pathname, item)
                 return (
@@ -45,10 +40,10 @@ export function SidebarNav({ isAdmin, onNavigate }: SidebarNavProps) {
                       onClick={onNavigate}
                       aria-current={active ? 'page' : undefined}
                       className={cn(
-                        'group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                        'group flex min-h-11 items-center gap-3 rounded-lg border border-transparent px-3 py-2.5 text-sm font-medium transition-colors',
                         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-accent',
                         active
-                          ? 'bg-white/10 text-white'
+                          ? 'border-sidebar-accent/20 bg-sidebar-accent/10 text-white'
                           : 'text-sidebar-foreground/75 hover:bg-white/5 hover:text-white',
                       )}
                     >
@@ -57,6 +52,7 @@ export function SidebarNav({ isAdmin, onNavigate }: SidebarNavProps) {
                           'h-4 w-4 shrink-0 transition-colors',
                           active ? 'text-sidebar-accent' : 'text-sidebar-muted group-hover:text-sidebar-accent',
                         )}
+                        aria-hidden
                       />
                       <span className="truncate">{item.label}</span>
                     </Link>
@@ -70,9 +66,8 @@ export function SidebarNav({ isAdmin, onNavigate }: SidebarNavProps) {
 
       <div className="shrink-0 border-t border-sidebar-border px-5 py-4">
         <p className="text-[11px] leading-relaxed text-sidebar-muted">
-          Wealthy Advisers Club
-          <br />
-          FactFind Pro · MVP
+          FactFind Pro<br />
+          <span className="text-sidebar-foreground/60">By Wealthy Advisers Club</span>
         </p>
       </div>
     </div>

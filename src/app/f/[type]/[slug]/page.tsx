@@ -12,12 +12,21 @@ export async function generateMetadata({
 }: {
   params: Promise<{ type: string; slug: string }>
 }): Promise<Metadata> {
-  const { type } = await params
-  if (!isFactFindType(type)) return { title: 'FactFind' }
+  const { type, slug } = await params
+  const form = await resolvePublicFactFind(type, slug)
+  if (!isFactFindType(type) || !form) return { title: { absolute: 'FactFind unavailable' }, openGraph: null }
+  const firm = form.company_name || form.adviser_name
+  const title = `${FACTFIND_TYPE_META[type].label} · ${firm}`
+  const icon = `/f/${type}/${slug}/app-icon?size=192`
 
   return {
-    title: FACTFIND_TYPE_META[type].label,
+    title: { absolute: title },
     description: FACTFIND_TYPE_META[type].description,
+    applicationName: firm,
+    manifest: `/f/${type}/${slug}/manifest.webmanifest`,
+    appleWebApp: { capable: true, title: firm, statusBarStyle: 'default' },
+    icons: { icon, apple: `/f/${type}/${slug}/app-icon?size=180` },
+    openGraph: { title, siteName: firm, description: FACTFIND_TYPE_META[type].description, type: 'website' },
     robots: { index: false, follow: false },
   }
 }
@@ -47,6 +56,7 @@ export default async function PublicFactFindPage({
       adviserName={form.adviser_name}
       companyName={form.company_name}
       adviserPhotoUrl={form.avatar_url}
+      practice={form}
     />
   )
 }

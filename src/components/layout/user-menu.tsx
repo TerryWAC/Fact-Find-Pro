@@ -36,7 +36,7 @@ export function UserMenu({ name, email, companyName, isAdmin }: UserMenuProps) {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-auto gap-2 px-2 py-1.5">
+        <Button variant="ghost" aria-label="Open account menu" className="h-auto min-h-11 gap-2 px-2 py-1.5">
           <Avatar className="h-8 w-8">
             <AvatarFallback>{initials(name)}</AvatarFallback>
           </Avatar>

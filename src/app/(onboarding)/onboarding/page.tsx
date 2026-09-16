@@ -43,6 +43,7 @@ export default async function OnboardingPage({
     links = forms.map((form) => ({
       type: form.form_type,
       url: factFindUrl(baseUrl, form.form_type, form.unique_slug),
+      isActive: form.is_active,
     }))
   }
 
@@ -53,15 +54,15 @@ export default async function OnboardingPage({
       {step === 1 && (
         <WelcomeStep
           tasks={tasks}
-          firstName={profile.name.split(' ')[0] ?? ''}
-          hasStarted={profile.onboarding_step > 1}
+          profile={profile}
+          resumeStep={profile.onboarding_completed_at ? 2 : Math.max(2, clampStep(profile.onboarding_step))}
         />
       )}
       {step === 2 && <DetailsStep profile={profile} email={email} />}
       {step === 3 && <BrandStep profile={profile} />}
       {step === 4 && <DeliveryStep profile={profile} />}
       {step === 5 && <TeamStep members={members} />}
-      {step === 6 && <FinishStep links={links} tasks={tasks} />}
+      {step === 6 && <FinishStep links={links} companyName={profile.company_name || profile.name} adviserCopy={profile.delivery_email_copy} clientCopy={profile.delivery_client_copy} />}
     </>
   )
 }

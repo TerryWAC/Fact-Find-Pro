@@ -82,7 +82,7 @@ export function DeliveryStep({ profile }: { profile: Profile }) {
   return (
     <StepShell
       title="Where should completed fact finds go?"
-      description="Tick everything that applies. You can change this any time in Settings."
+      description="Decide who receives a PDF when a form is submitted, whether the client completes it or you fill it in together. These choices can be changed any time in Settings."
     >
       {state.error && (
         <Alert variant="destructive">
@@ -108,8 +108,8 @@ export function DeliveryStep({ profile }: { profile: Profile }) {
                   Email me a copy
                 </Label>
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                  When a fact find is finished you get an email with the full brief. Forward it, or paste it
-                  into any CRM. No setup needed.
+                  Receive a notification with the completed FactFind attached as a branded PDF.
+                  The submission is also available in your dashboard.
                 </p>
               </div>
             </div>
@@ -130,8 +130,8 @@ export function DeliveryStep({ profile }: { profile: Profile }) {
                   Send the client a PDF copy
                 </Label>
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                  As soon as they submit, the client gets an email in your branding with their answers
-                  attached as a PDF. Replies come to you. You can also send one by hand from any submission.
+                  The client receives their answers as a branded PDF, excluding adviser-only notes.
+                  Emails use the FactFind sending domain and replies come to you. You can also send a copy from a submission.
                 </p>
               </div>
             </div>
@@ -140,15 +140,14 @@ export function DeliveryStep({ profile }: { profile: Profile }) {
           {/* Downloads — always on */}
           <Option checked locked>
             <div className="flex items-start gap-3">
-              <Checkbox checked disabled className="mt-0.5" aria-label="PDF and CSV downloads, always on" />
+              <Checkbox checked disabled className="mt-0.5" aria-label="PDF downloads and copying JSON, always available" />
               <div>
                 <p className="flex items-center gap-1.5 text-sm font-medium">
-                  PDF and CSV downloads
+                  PDF downloads and copying JSON
                   <Lock className="h-3 w-3 text-muted-foreground" />
                 </p>
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                  Always on. Download a PDF per fact find, or a CSV of everything for importing into your own
-                  CRM.
+                  Always available. Download a PDF per fact find or copy its answers as JSON.
                 </p>
               </div>
             </div>
@@ -166,11 +165,11 @@ export function DeliveryStep({ profile }: { profile: Profile }) {
               {webhook && <input type="hidden" name="delivery_webhook_enabled" value="on" />}
               <div className="min-w-0 flex-1">
                 <Label htmlFor="delivery_webhook_enabled" className="text-sm font-medium">
-                  Send automatically to a CRM or Zapier
+                  CRM or Zapier preference — coming soon
                 </Label>
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                  Works with any system that accepts a JSON webhook: Zapier, Make, GoHighLevel, HubSpot, or a
-                  custom CRM. If you are not sure, leave this off and use email or CSV.
+                  Saves your preference only. Automatic delivery to your CRM is not available yet.
+                  Use email, PDF downloads or copying JSON in the meantime.
                 </p>
 
                 {showWebhookUrl && (
@@ -193,6 +192,11 @@ export function DeliveryStep({ profile }: { profile: Profile }) {
           </Option>
         </Card>
 
+        <div className="rounded-xl border bg-accent/5 p-5" role="status">
+          <p className="text-sm font-semibold">When a FactFind is submitted</p>
+          <p className="mt-2 text-xs leading-6 text-muted-foreground">It will appear in your dashboard. Adviser PDF email: <strong className="font-medium text-foreground">{emailCopy ? 'automatic' : 'off'}</strong>. Client PDF email: <strong className="font-medium text-foreground">{clientCopy ? 'automatic' : 'off'}</strong>.</p>
+          <p className="mt-2 text-xs text-muted-foreground">Save and continue applies these choices. Saving your setup does not send an email.</p>
+        </div>
         <StepFooter backTo={3} skipTo={5} />
       </form>
     </StepShell>

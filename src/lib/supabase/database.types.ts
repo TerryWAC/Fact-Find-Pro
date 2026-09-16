@@ -18,6 +18,7 @@ export type SubmissionStatus = 'new' | 'in_review' | 'completed' | 'archived'
 // -----------------------------------------------------------------------------
 
 type ProfileRow = {
+  import_pending: boolean
   id: string
   name: string
   company_name: string | null
@@ -36,6 +37,9 @@ type ProfileRow = {
   job_title: string | null
   fca_number: string | null
   website: string | null
+  contact_email: string | null
+  services: string | null
+  client_focus: string | null
   business_location: string | null
   delivery_email_copy: boolean
   delivery_client_copy: boolean
@@ -49,6 +53,7 @@ type ProfileRow = {
 }
 
 type ProfileInsert = {
+  import_pending?: boolean
   id: string
   name?: string
   company_name?: string | null
@@ -67,6 +72,9 @@ type ProfileInsert = {
   job_title?: string | null
   fca_number?: string | null
   website?: string | null
+  contact_email?: string | null
+  services?: string | null
+  client_focus?: string | null
   business_location?: string | null
   delivery_email_copy?: boolean
   delivery_client_copy?: boolean
@@ -247,9 +255,36 @@ type ActivityLogInsert = {
 // signature — declaring these as interfaces silently resolves every query to
 // `never`.
 
+export type AdviserImport = {
+  source_id: string
+  source_form_id: string
+  batch_label: string
+  batch_sha256: string
+  source_row: number
+  decision: 'include' | 'hold' | 'exclude_test' | 'exclude_invalid' | 'supersede'
+  decision_reason: string
+  superseded_by: string | null
+  name: string
+  email: string
+  company_name: string
+  source_submitted_at: string | null
+  source_profile: Json
+  profile_prefill: Json
+  follow_up: Json
+  asset_paths: Json
+  profile_id: string | null
+  created_at: string
+}
+
 export type Database = {
   public: {
     Tables: {
+      adviser_imports: {
+        Row: AdviserImport
+        Insert: Omit<AdviserImport, 'created_at'> & { created_at?: string }
+        Update: Partial<AdviserImport>
+        Relationships: []
+      }
       profiles: {
         Row: ProfileRow
         Insert: ProfileInsert
@@ -319,6 +354,13 @@ export type Database = {
           brand_colour: string | null
           form_type: FactFindType
           is_active: boolean
+          job_title: string | null
+          website: string | null
+          business_location: string | null
+          contact_phone: string | null
+          contact_email: string | null
+          services: string | null
+          client_focus: string | null
         }[]
       }
       submit_factfind: {

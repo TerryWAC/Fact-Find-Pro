@@ -22,6 +22,10 @@
  * Exit code 1 on any unexplained difference.
  */
 import fs from 'node:fs'
+import { tsImport } from 'tsx/esm/api'
+
+// Exercise the same visibility functions used by the form and submission action.
+const { isFieldVisible, isStepVisible } = await tsImport('../src/lib/forms/engine.ts', import.meta.url)
 
 const [, , exportPath, schemaPath] = process.argv
 if (!exportPath || !schemaPath) { console.error('usage: verify-typeform-import.mjs <export.json> <schema.json>'); process.exit(1) }
@@ -298,28 +302,13 @@ function typeformShown(tfAns) {
   return shown
 }
 
-/** Engine: mirrors src/lib/forms/engine.ts (matchesCondition / isStepVisible / isFieldVisible). */
-function matches(c, values) {
-  if (!c) return true
-  if (c.all) return c.all.every((x) => matches(x, values))
-  if (c.any) return c.any.some((x) => matches(x, values))
-  const actual = values[c.field], v = c.value
-  switch (c.operator) {
-    case 'eq': return String(actual ?? '') === String(v ?? '')
-    case 'neq': return String(actual ?? '') !== String(v ?? '')
-    case 'in': return Array.isArray(v) && v.map(String).includes(String(actual ?? ''))
-    case 'not_in': return Array.isArray(v) && !v.map(String).includes(String(actual ?? ''))
-    case 'truthy': return Array.isArray(actual) ? actual.length > 0 : Boolean(actual)
-    case 'falsy': return Array.isArray(actual) ? actual.length === 0 : !actual
-    default: throw new Error(`operator ${c.operator} not modelled`)
-  }
-}
+/** Evaluate the application engine against the independently simulated Typeform jumps. */
 function engineShown(values) {
   const shown = new Set()
   for (const st of schema.steps) {
-    if (!matches(st.visibleWhen, values)) continue
+    if (!isStepVisible(st, values)) continue
     if (headerless) shown.add(st.source) // the step *is* the Typeform group
-    for (const f of st.fields) if (matches(f.visibleWhen, values) && !(f.source in ADDITIONS)) shown.add(f.source)
+    for (const f of st.fields) if (isFieldVisible(f, values) && !(f.source in ADDITIONS)) shown.add(f.source)
   }
   return shown
 }

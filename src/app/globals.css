@@ -109,6 +109,19 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: 'rlig' 1, 'calt' 1;
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  html { scroll-padding-top: 6rem; }
+  @media (pointer: coarse) {
+    input:not([type='checkbox']):not([type='radio']):not([type='hidden']), textarea, select {
+      font-size: 16px !important;
+    }
+    button:not([role='checkbox']):not([role='switch']), a[role='button'] { min-height: 44px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
   }
   ::selection {
     @apply bg-accent/30;
@@ -116,6 +129,20 @@
 }
 
 @layer utilities {
+  /* Larger touch targets and 16px input text prevent mobile focus zoom. */
+  .factfind-fields input:not([type='radio']):not([type='checkbox']),
+  .factfind-fields button[role='combobox'] {
+    @apply min-h-12 rounded-lg bg-card text-base;
+  }
+  .factfind-fields textarea {
+    @apply rounded-lg bg-card text-base;
+  }
+  .factfind-fields label {
+    @apply leading-relaxed;
+  }
+  .factfind-fields [role='radiogroup'] label:focus-within {
+    @apply ring-2 ring-ring ring-offset-2 ring-offset-card;
+  }
   /* Black brand surface used by the sidebar, auth panel and hero */
   .brand-surface {
     background-color: #0a0a0a;
@@ -139,5 +166,192 @@
   }
   .scrollbar-thin::-webkit-scrollbar-thumb {
     @apply rounded-full bg-border;
+  }
+}
+
+@layer components {
+  .onboarding-eyebrow {
+    @apply text-[10px] font-semibold uppercase tracking-[0.18em] text-accent-strong dark:text-accent;
+  }
+  .onboarding-background {
+    background-image: radial-gradient(ellipse at 50% 0%, hsl(var(--accent) / 0.045), transparent 700px);
+  }
+  .onboarding-tour {
+    box-shadow: 0 8px 32px -24px hsl(var(--foreground) / 0.24);
+  }
+  .onboarding-tour-scene {
+    background-image: radial-gradient(ellipse at 50% 40%, hsl(var(--accent) / 0.12), transparent 75%);
+    background-color: hsl(var(--muted) / 0.3);
+    perspective: 1200px;
+  }
+  .onboarding-demo::before, .onboarding-demo::after {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    inset: 5px 12px 40px;
+    border: 1px solid hsl(var(--accent) / 0.2);
+    border-radius: 16px;
+    background: hsl(var(--card));
+  }
+  .onboarding-demo::before { transform: translateY(5px) rotate(-4deg); }
+  .onboarding-demo::after { transform: translateY(4px) rotate(3deg); }
+  .onboarding-demo-card { z-index: 1; }
+  .onboarding-demo-choice[aria-pressed='true'] {
+    box-shadow: 0 3px 0 hsl(var(--accent) / 0.2);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .onboarding-demo { animation: onboarding-tour-arrive 420ms cubic-bezier(0.22, 1, 0.36, 1); }
+    .onboarding-demo-choice { transition: transform 160ms ease-out, box-shadow 160ms ease-out; }
+    .onboarding-demo-choice[aria-pressed='true'] { transform: translateY(-2px); }
+  }
+  @keyframes onboarding-tour-arrive {
+    from { opacity: 0; transform: translate3d(0, 12px, -20px) rotateY(-7deg) rotateX(2deg); }
+    to { opacity: 1; transform: none; }
+  }
+  .factfind-stage {
+    transform-origin: 50% 100px;
+    box-shadow: 0 2px 3px hsl(var(--foreground) / 0.03), 0 14px 40px -22px hsl(var(--foreground) / 0.22);
+  }
+  .factfind-section-header {
+    background-image: radial-gradient(ellipse at 100% 0%, hsl(var(--accent) / 0.1), transparent 65%);
+  }
+  .factfind-depth {
+    position: relative;
+    flex: 0 0 72px;
+    height: 80px;
+    margin-top: 2px;
+    perspective: 600px;
+    pointer-events: none;
+  }
+  .factfind-depth-sheet {
+    position: absolute;
+    inset: 5px 10px 9px 6px;
+    border: 1px solid hsl(var(--accent) / 0.25);
+    border-radius: 10px;
+    transform-origin: 50% 75%;
+  }
+  .factfind-depth-back {
+    background: hsl(var(--accent) / 0.12);
+    transform: translate3d(9px, 6px, -16px) rotateY(-16deg) rotateZ(13deg);
+  }
+  .factfind-depth-middle {
+    background: hsl(var(--card));
+    transform: translate3d(4px, 3px, -8px) rotateY(-16deg) rotateZ(5deg);
+    box-shadow: 0 4px 8px hsl(var(--foreground) / 0.04);
+  }
+  .factfind-depth-front {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    @apply text-accent-strong dark:text-accent;
+    background: linear-gradient(145deg, hsl(var(--card)), hsl(var(--accent) / 0.16)), hsl(var(--card));
+    transform: rotateY(-16deg) rotateZ(-5deg);
+    box-shadow: 2px 8px 12px -4px hsl(var(--foreground) / 0.16), inset 0 1px 0 hsl(var(--background) / 0.7);
+  }
+  .factfind-depth-line {
+    height: 2px;
+    width: 22px;
+    border-radius: 2px;
+    background: hsl(var(--accent) / 0.35);
+  }
+  .factfind-depth-line-short { width: 14px; }
+  .factfind-progress-panel {
+    background-image: linear-gradient(135deg, hsl(var(--accent) / 0.06), transparent 80%);
+    box-shadow: 0 4px 0 -2px hsl(var(--background)), 0 4px 0 -1px hsl(var(--border));
+  }
+  .factfind-progress {
+    box-shadow: inset 0 1px 3px hsl(var(--foreground) / 0.1);
+  }
+  .factfind-progress > div {
+    background-image: linear-gradient(180deg, hsl(var(--background) / 0.2), transparent 55%, hsl(var(--foreground) / 0.1));
+    box-shadow: inset 0 1px 0 hsl(var(--background) / 0.3);
+  }
+  .factfind-choice {
+    box-shadow: 0 2px 0 hsl(var(--border) / 0.5);
+  }
+  .factfind-question {
+    position: relative;
+    background: hsl(var(--card));
+    transform-origin: 50% 0;
+    box-shadow: 0 2px 5px -3px hsl(var(--foreground) / 0.1);
+  }
+  .factfind-question:focus-within {
+    border-color: hsl(var(--accent) / 0.65);
+    box-shadow: 0 0 0 3px hsl(var(--accent) / 0.07), 0 8px 20px -16px hsl(var(--accent) / 0.4);
+  }
+  .factfind-question:has([aria-invalid='true']) {
+    border-color: hsl(var(--destructive) / 0.55);
+  }
+  .factfind-question-number {
+    color: hsl(var(--muted-foreground));
+    background: hsl(var(--muted));
+  }
+  .factfind-question:focus-within .factfind-question-number {
+    @apply text-accent-strong dark:text-accent;
+    background: hsl(var(--accent) / 0.12);
+  }
+  .factfind-choice[data-selected='true'] {
+    box-shadow: 0 3px 0 hsl(var(--accent) / 0.22), 0 7px 14px -10px hsl(var(--accent) / 0.4);
+    background-image: linear-gradient(135deg, hsl(var(--accent) / 0.06), transparent);
+  }
+  .factfind-step-link[aria-current='step'] .factfind-step-token {
+    box-shadow: 0 3px 0 hsl(var(--primary) / 0.2), inset 0 1px 0 hsl(var(--background) / 0.2);
+  }
+  .factfind-primary-action {
+    box-shadow: 0 4px 0 hsl(var(--primary) / 0.2), 0 8px 16px -10px hsl(var(--primary) / 0.45);
+  }
+  .factfind-primary-action:disabled { box-shadow: none; }
+  .factfind-complete-seal {
+    border: 1px solid hsl(var(--success) / 0.25);
+    box-shadow: 0 5px 0 -1px hsl(var(--success) / 0.15), 0 12px 24px -10px hsl(var(--success) / 0.3);
+  }
+
+  @media (max-width: 639px) {
+    .factfind-depth { flex-basis: 54px; height: 64px; }
+    .factfind-depth-sheet { inset: 4px 3px 5px 0; border-radius: 8px; }
+    .factfind-depth-front { gap: 3px; }
+  }
+
+  /* All motion is finite and event-driven; nothing moves while someone reads. */
+  @media (prefers-reduced-motion: no-preference) {
+    .factfind-question { transition: border-color 180ms ease-out, box-shadow 180ms ease-out; }
+    .factfind-depth-front { animation: factfind-paper-arrive 550ms cubic-bezier(0.22, 1, 0.36, 1); }
+    .factfind-progress-value { animation: factfind-number-arrive 300ms ease-out; }
+    .factfind-step-check { animation: factfind-check-arrive 320ms cubic-bezier(0.2, 1.5, 0.5, 1); }
+    .factfind-choice, .factfind-primary-action {
+      transition: transform 180ms ease-out, box-shadow 180ms ease-out, background-color 180ms ease-out, border-color 180ms ease-out;
+    }
+    .factfind-choice[data-selected='true'] { transform: perspective(700px) translateY(-1px) rotateX(1deg); }
+    .factfind-primary-action:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 hsl(var(--primary) / 0.2); }
+    .factfind-complete-card { animation: factfind-complete-arrive 500ms cubic-bezier(0.22, 1, 0.36, 1); }
+    .factfind-complete-seal { animation: factfind-seal-arrive 700ms cubic-bezier(0.22, 1, 0.36, 1); }
+  }
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .factfind-choice:hover { transform: perspective(700px) translateY(-2px) rotateX(2deg); }
+    .factfind-choice:has(:disabled):hover { transform: none; }
+    .factfind-primary-action:hover:not(:disabled) { transform: perspective(700px) translateY(-2px) rotateX(3deg); }
+    .factfind-primary-action:active:not(:disabled) { transform: translateY(3px); }
+  }
+  @keyframes factfind-paper-arrive {
+    from { opacity: 0; transform: translate3d(4px, -6px, 24px) rotateY(-38deg) rotateZ(-12deg); }
+    to { opacity: 1; transform: rotateY(-16deg) rotateZ(-5deg); }
+  }
+  @keyframes factfind-number-arrive {
+    from { opacity: 0.5; transform: translateY(3px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes factfind-check-arrive {
+    from { opacity: 0; transform: scale(0.6); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes factfind-complete-arrive {
+    from { opacity: 0.7; transform: perspective(1200px) translateY(12px) rotateX(2deg); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes factfind-seal-arrive {
+    from { opacity: 0; transform: perspective(500px) translateY(8px) rotateY(-45deg) scale(0.85); }
+    to { opacity: 1; transform: none; }
   }
 }

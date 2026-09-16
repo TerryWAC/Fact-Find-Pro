@@ -7,7 +7,9 @@ import { UsersTable } from '@/components/admin/users-table'
 import { requireAdmin } from '@/lib/auth'
 import { createClient } from '@/lib/supabase/server'
 import { USERS_PAGE_SIZE } from '@/lib/constants'
-import { escapeLike } from '@/lib/utils'
+import { textSearchFilter } from '@/lib/postgrest-search'
+import { submissionPage } from '@/lib/submission-search'
+import { SubmissionLoadError } from '@/components/submissions/submission-load-error'
 import type { UserRole, UserStatus } from '@/lib/supabase/database.types'
 
 export const metadata: Metadata = { title: 'User Approvals' }
@@ -24,16 +26,16 @@ export default async function AdminUsersPage({
   const params = await searchParams
   const supabase = await createClient()
 
-  const page = Math.max(1, Number.parseInt(params.page ?? '1', 10) || 1)
-  const from = (page - 1) * USERS_PAGE_SIZE
+  let page = submissionPage(params.page)
 
-  let query = supabase
+  const buildQuery = () => {
+    let query = supabase
     .from('profiles')
-    .select('id, name, company_name, email, phone, role, status, adviser_slug, created_at', {
+    .select('id, name, company_name, email, phone, role, status, adviser_slug, created_at, import_pending, job_title, website, business_location, contact_email, services, client_focus', {
       count: 'exact',
     })
     .order('created_at', { ascending: false })
-    .range(from, from + USERS_PAGE_SIZE - 1)
+    .order('id', { ascending: false })
 
   if (params.status && STATUSES.includes(params.status as UserStatus)) {
     query = query.eq('status', params.status as UserStatus)
@@ -44,25 +46,39 @@ export default async function AdminUsersPage({
 
   const term = params.q?.trim()
   if (term) {
-    const safe = escapeLike(term)
-    query = query.or(`name.ilike.%${safe}%,email.ilike.%${safe}%,company_name.ilike.%${safe}%`)
+    query = query.or(textSearchFilter(['name', 'email', 'company_name'], term))
+  }
+    return query
   }
 
-  const { data, count } = await query
+  const fetchPage = (number: number) => buildQuery().range((number - 1) * USERS_PAGE_SIZE, number * USERS_PAGE_SIZE - 1)
+  let result = await fetchPage(page)
+  if (page > 1 && (result.error?.code === 'PGRST103' || (!result.error && !result.data?.length))) {
+    const first = await fetchPage(1)
+    if (first.error) result = first
+    else {
+      page = Math.max(1, Math.ceil((first.count ?? 0) / USERS_PAGE_SIZE))
+      result = page === 1 ? first : await fetchPage(page)
+    }
+  }
+  const { data, count, error } = result
   const users = data ?? []
   const total = count ?? 0
 
-  const { count: pendingCount } = await supabase
+  const { count: pendingCount, error: pendingError } = await supabase
     .from('profiles')
     .select('id', { count: 'exact', head: true })
     .eq('status', 'pending')
+    .eq('import_pending', false)
 
   return (
     <>
       <PageHeader
         title="User approvals"
         description={
-          pendingCount && pendingCount > 0
+          pendingError || pendingCount === null
+            ? 'Approval totals are currently unavailable. Please try again.'
+            : pendingCount > 0
             ? `${pendingCount} registration${pendingCount === 1 ? '' : 's'} awaiting your decision.`
             : 'Everyone has been reviewed — nothing is waiting for approval.'
         }
@@ -70,8 +86,8 @@ export default async function AdminUsersPage({
 
       <Card className="overflow-hidden p-0">
         <UserFilters />
-        <UsersTable users={users} currentAdminId={adminId} />
-        {total > 0 && <Pagination page={page} pageSize={USERS_PAGE_SIZE} total={total} />}
+        {error ? <SubmissionLoadError title="Users could not be loaded" /> : <UsersTable users={users} currentAdminId={adminId} />}
+        {!error && total > 0 && <Pagination page={page} pageSize={USERS_PAGE_SIZE} total={total} />}
       </Card>
     </>
   )

@@ -1,6 +1,8 @@
 import type { Json } from '@/lib/supabase/database.types'
+import { displayValue } from '@/lib/forms/engine'
 
 export interface AnswerRow {
+  id?: string
   label: string
   display: string
 }
@@ -26,6 +28,16 @@ function toDisplay(value: unknown): string {
   return String(value)
 }
 
+function recordedDisplay(entry: Record<string, unknown>): string {
+  // Older submissions saved lower-case Yes/No and rounded monetary displays.
+  // Use the original typed value so existing records benefit without rewriting them.
+  if ((entry.type === 'yesno' || entry.type === 'currency') &&
+      (typeof entry.value === 'string' || typeof entry.value === 'number')) {
+    return displayValue({ id: String(entry.id ?? ''), type: entry.type }, entry.value)
+  }
+  return String(entry.display ?? toDisplay(entry.value))
+}
+
 /**
  * Normalises `submission_data` into displayable steps.
  *
@@ -44,7 +56,7 @@ export function normaliseSubmissionData(data: Json | null | undefined): StepBloc
     const answers = (record.answers ?? record) as Record<string, unknown>
     const rows = Object.entries(answers)
       .filter(([key]) => !['steps', 'placeholder', 'schema_version', 'form_type', 'completed_at', 'note'].includes(key))
-      .map(([key, value]) => ({ label: humanise(key), display: toDisplay(value) }))
+      .map(([key, value]) => ({ id: key, label: humanise(key), display: toDisplay(value) }))
 
     return rows.length ? [{ id: 'responses', title: 'Responses', answers: rows }] : []
   }
@@ -59,12 +71,14 @@ export function normaliseSubmissionData(data: Json | null | undefined): StepBloc
       answers = rawAnswers.map((answer) => {
         const entry = (answer ?? {}) as Record<string, unknown>
         return {
+          id: typeof entry.id === 'string' ? entry.id : undefined,
           label: String(entry.label ?? humanise(String(entry.id ?? ''))),
-          display: String(entry.display ?? toDisplay(entry.value)),
+          display: recordedDisplay(entry),
         }
       })
     } else if (rawAnswers && typeof rawAnswers === 'object') {
       answers = Object.entries(rawAnswers as Record<string, unknown>).map(([key, value]) => ({
+        id: key,
         label: humanise(key),
         display: toDisplay(value),
       }))

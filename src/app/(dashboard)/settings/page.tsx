@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { Building2, Mail, Wand2 } from 'lucide-react'
+import { Building2, Wand2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -13,19 +13,15 @@ import { BrandingForm } from './branding-form'
 import { DeliveryForm } from './delivery-form'
 import { requireApprovedUser } from '@/lib/auth'
 import { formatDate } from '@/lib/utils'
+import { emailConfiguration } from '@/lib/email/config'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { InstallApp } from '@/components/shared/install-app'
 
 export const metadata: Metadata = { title: 'Settings' }
 
-const FUTURE_FEATURES = [
-  {
-    icon: Mail,
-    title: 'Email templates',
-    description: 'Personalise the emails clients receive after they submit a FactFind.',
-  },
-]
-
 export default async function SettingsPage() {
   const { profile, email } = await requireApprovedUser()
+  const mail = emailConfiguration(process.env)
 
   return (
     <>
@@ -46,8 +42,17 @@ export default async function SettingsPage() {
         <div className="space-y-6 lg:col-span-2">
           <Card>
             <CardHeader>
+              <CardTitle>Colleague directory</CardTitle>
+              <CardDescription>Keep contact details for your team. Directory entries do not grant access to client records; advisers register separately.</CardDescription>
+            </CardHeader>
+            <CardContent><Button asChild variant="outline"><Link href="/onboarding?step=5">Manage colleagues</Link></Button></CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
               <CardTitle>Your details</CardTitle>
-              <CardDescription>These appear on your account and client-facing pages.</CardDescription>
+              <CardDescription>
+                These appear on your account and client-facing pages.
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <ProfileForm
@@ -55,6 +60,13 @@ export default async function SettingsPage() {
                   name: profile.name,
                   company_name: profile.company_name ?? '',
                   phone: profile.phone ?? '',
+                  job_title: profile.job_title,
+                  website: profile.website,
+                  fca_number: profile.fca_number,
+                  business_location: profile.business_location,
+                  contact_email: profile.contact_email,
+                  services: profile.services,
+                  client_focus: profile.client_focus,
                 }}
                 email={email}
               />
@@ -65,7 +77,7 @@ export default async function SettingsPage() {
             <CardHeader>
               <CardTitle>Branding</CardTitle>
               <CardDescription>
-                Your logo, photo and colour on every client FactFind page and PDF.
+                Your firm’s identity on client pages, emails and PDFs.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -76,6 +88,8 @@ export default async function SettingsPage() {
                   brand_colour: profile.brand_colour ?? '',
                 }}
                 companyName={profile.company_name ?? profile.name}
+                adviserName={profile.name}
+                email={profile.email}
               />
             </CardContent>
           </Card>
@@ -83,9 +97,19 @@ export default async function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Delivery</CardTitle>
-              <CardDescription>Where completed fact finds go. PDF and CSV downloads are always on.</CardDescription>
+              <CardDescription>
+                Where completed fact finds go. PDF downloads and copying answers as JSON are always available.
+              </CardDescription>
             </CardHeader>
             <CardContent>
+              {(!mail.configured || mail.error) && (
+                <Alert className="mb-5" variant="warning">
+                  <AlertDescription>
+                    Email delivery is not enabled for this workspace yet. Your preferences can be
+                    saved, but PDF emails will not be delivered until an admin connects Resend.
+                  </AlertDescription>
+                </Alert>
+              )}
               <DeliveryForm
                 defaultValues={{
                   delivery_email_copy: profile.delivery_email_copy,
@@ -140,28 +164,12 @@ export default async function SettingsPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Coming soon</CardTitle>
-              <CardDescription>On the roadmap.</CardDescription>
+              <CardTitle>Made for your day</CardTitle>
+              <CardDescription>Use your workspace on phone, tablet or desktop.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {FUTURE_FEATURES.map((feature) => (
-                <div key={feature.title} className="flex items-start gap-3 opacity-70">
-                  <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-secondary text-muted-foreground">
-                    <feature.icon className="h-4 w-4" />
-                  </span>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium">{feature.title}</p>
-                      <Badge variant="outline" className="text-[10px]">
-                        Soon
-                      </Badge>
-                    </div>
-                    <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
-                      {feature.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
+              <p className="text-sm leading-relaxed text-muted-foreground">Add a shortcut for quick access. Your account and submissions stay protected by your usual sign-in.</p>
+              <InstallApp name="FactFind Pro" />
             </CardContent>
           </Card>
 
@@ -173,7 +181,9 @@ export default async function SettingsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="text-sm leading-relaxed text-muted-foreground">
-              The Wealthy Advisers Club team is on hand if you need anything changed on your account.
+              The Wealthy Advisers Club team is on hand if you need anything changed on your
+              account.
+              <Link href="/how-it-works#help-and-contacts" className="mt-3 flex min-h-11 items-center font-medium text-foreground underline underline-offset-4">Support contacts and guidance</Link>
             </CardContent>
           </Card>
         </div>

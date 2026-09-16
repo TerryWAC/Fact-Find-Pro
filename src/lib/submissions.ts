@@ -2,18 +2,15 @@ import 'server-only'
 
 import { createClient } from '@/lib/supabase/server'
 import { SUBMISSIONS_PAGE_SIZE, isFactFindType } from '@/lib/constants'
-import type { SubmissionStatus } from '@/lib/supabase/database.types'
-import { escapeLike } from '@/lib/utils'
+import {
+  isSubmissionStatus,
+  submissionPage,
+  submissionSearchFilter,
+  type SubmissionSearchParams,
+} from '@/lib/submission-search'
 import type { SubmissionRow } from '@/components/submissions/submissions-table'
 
-const SUBMISSION_STATUSES: SubmissionStatus[] = ['new', 'in_review', 'completed', 'archived']
-
-export interface SubmissionSearchParams {
-  q?: string
-  type?: string
-  status?: string
-  page?: string
-}
+export type { SubmissionSearchParams } from '@/lib/submission-search'
 
 export interface SubmissionQueryOptions {
   /** Restrict to one adviser. `null` returns every submission (admin view). */
@@ -28,6 +25,7 @@ export interface SubmissionQueryResult {
   total: number
   page: number
   pageSize: number
+  error: boolean
 }
 
 /**
@@ -44,52 +42,70 @@ export async function querySubmissions({
 }: SubmissionQueryOptions): Promise<SubmissionQueryResult> {
   const supabase = await createClient()
 
-  const page = Math.max(1, Number.parseInt(searchParams.page ?? '1', 10) || 1)
-  const from = (page - 1) * pageSize
-  const to = from + pageSize - 1
+  let page = submissionPage(searchParams.page)
 
   const columns = withAdviser
     ? 'id, reference, client_name, client_email, form_type, status, submitted_at, adviser:profiles!factfind_submissions_adviser_id_fkey(name, company_name)'
     : 'id, reference, client_name, client_email, form_type, status, submitted_at'
 
-  let query = supabase
-    .from('factfind_submissions')
-    .select(columns, { count: 'exact' })
-    .order('submitted_at', { ascending: false })
-    .range(from, to)
+  const buildQuery = () => {
+    let query = supabase
+      .from('factfind_submissions')
+      .select(columns, { count: 'exact' })
+      .order('submitted_at', { ascending: searchParams.sort === 'oldest' })
+      .order('id', { ascending: searchParams.sort === 'oldest' })
 
-  if (adviserId) query = query.eq('adviser_id', adviserId)
+    if (adviserId) query = query.eq('adviser_id', adviserId)
 
-  if (isFactFindType(searchParams.type)) {
-    query = query.eq('form_type', searchParams.type)
+    if (isFactFindType(searchParams.type)) {
+      query = query.eq('form_type', searchParams.type)
+    }
+
+    if (isSubmissionStatus(searchParams.status)) {
+      query = query.eq('status', searchParams.status)
+    }
+
+    const term = searchParams.q?.trim()
+    if (term) {
+      query = query.or(submissionSearchFilter(term))
+    }
+    return query
   }
 
-  if (searchParams.status && SUBMISSION_STATUSES.includes(searchParams.status as SubmissionStatus)) {
-    query = query.eq('status', searchParams.status as SubmissionStatus)
+  const fetchPage = (number: number) => buildQuery().range((number - 1) * pageSize, number * pageSize - 1)
+  let result = await fetchPage(page)
+
+  // A bookmarked page can disappear after filtering or deleting rows. Recover
+  // to the last available page; PostgREST reports out-of-range offsets as 416.
+  if (page > 1 && (result.error?.code === 'PGRST103' || (!result.error && !result.data?.length))) {
+    const first = await fetchPage(1)
+    if (first.error) result = first
+    else {
+      page = Math.max(1, Math.ceil((first.count ?? 0) / pageSize))
+      result = page === 1 ? first : await fetchPage(page)
+    }
   }
 
-  const term = searchParams.q?.trim()
-  if (term) {
-    const safe = escapeLike(term)
-    query = query.or(
-      `client_name.ilike.%${safe}%,client_email.ilike.%${safe}%,reference.ilike.%${safe}%`,
-    )
-  }
-
-  const { data, count, error } = await query
+  const { data, count, error } = result
 
   if (error) {
-    // Surfacing an empty result beats a 500 on a filter typo.
-    console.error('querySubmissions failed:', error.message)
-    return { rows: [], total: 0, page, pageSize }
+    console.error('querySubmissions failed:', error.code)
+    return { rows: [], total: 0, page, pageSize, error: true }
   }
 
-  const rows = ((data ?? []) as unknown as Array<
-    SubmissionRow & { adviser?: { name: string; company_name: string | null }[] | { name: string; company_name: string | null } | null }
-  >).map((row) => ({
+  const rows = (
+    (data ?? []) as unknown as Array<
+      SubmissionRow & {
+        adviser?:
+          | { name: string; company_name: string | null }[]
+          | { name: string; company_name: string | null }
+          | null
+      }
+    >
+  ).map((row) => ({
     ...row,
     adviser: Array.isArray(row.adviser) ? (row.adviser[0] ?? null) : (row.adviser ?? null),
   }))
 
-  return { rows, total: count ?? 0, page, pageSize }
+  return { rows, total: count ?? 0, page, pageSize, error: false }
 }

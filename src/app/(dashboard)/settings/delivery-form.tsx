@@ -81,8 +81,8 @@ export function DeliveryForm({ defaultValues }: { defaultValues: DeliveryDefault
         PDF. Replies come to you. You can also send one by hand from any submission.
       </Toggle>
 
-      <Toggle id="delivery_webhook_enabled" checked={webhook} onChange={setWebhook} label="Send automatically to a CRM or Zapier">
-        Posts each submission as JSON to a webhook URL.
+      <Toggle id="delivery_webhook_enabled" checked={webhook} onChange={setWebhook} label="CRM or Zapier preference — coming soon">
+        Saves your preference only. Automatic delivery to your CRM is not available yet.
         {showWebhookUrl && (
           <div className="mt-3 space-y-2">
             <Label htmlFor="delivery_webhook_url" className="text-xs">

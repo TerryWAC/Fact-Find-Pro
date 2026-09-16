@@ -65,7 +65,7 @@ export async function emailPdfToClientAction(submissionId: string): Promise<Emai
 
   const { data: adviser } = await supabase
     .from('profiles')
-    .select('name, email, company_name, brand_colour, logo_url, avatar_url')
+    .select('name, email, contact_email, company_name, brand_colour, logo_url, avatar_url')
     .eq('id', submission.adviser_id)
     .maybeSingle()
   if (!adviser) return { ok: false, error: 'The owning adviser could not be found.' }
@@ -73,9 +73,17 @@ export async function emailPdfToClientAction(submissionId: string): Promise<Emai
   try {
     const result = await sendClientPdfCopy(submission, adviser)
     if (!result.ok) return { ok: false, error: result.error ?? 'The email could not be sent.' }
-    if (result.skipped) return { ok: false, error: 'The client copy email template is switched off.' }
+    if (result.skipped)
+      return { ok: false, error: 'The client copy email template is switched off.' }
     return { ok: true, loggedOnly: result.provider === 'log' }
   } catch (error) {
-    return { ok: false, error: (error as Error).message }
+    console.error(
+      'Client PDF email could not be prepared:',
+      error instanceof Error ? error.name : 'Unknown error',
+    )
+    return {
+      ok: false,
+      error: 'The PDF email could not be prepared. Please try again or contact support.',
+    }
   }
 }

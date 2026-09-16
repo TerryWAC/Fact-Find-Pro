@@ -108,8 +108,22 @@ function fieldSchema(field: FormField): z.ZodTypeAny {
         : z.boolean().optional()
 
     case 'checkbox-group': {
-      const base = z.array(z.string())
+      const allowed = new Set(field.options?.map((option) => option.value) ?? [])
+      const base = z.array(z.string().refine((value) => allowed.has(value), 'Choose a listed option'))
       return field.required ? base.min(v.min ?? 1, requiredMessage) : base.optional()
+    }
+
+    case 'yesno':
+    case 'radio':
+    case 'select': {
+      const allowed = new Set(
+        field.type === 'yesno' ? ['yes', 'no'] : field.options?.map((option) => option.value) ?? [],
+      )
+      const base = z.string().refine(
+        (value) => allowed.has(value) || (!field.required && value === ''),
+        (value) => ({ message: value === '' && field.required ? requiredMessage : 'Choose a listed option' }),
+      )
+      return field.required ? base : base.optional()
     }
 
     case 'number':
@@ -118,7 +132,7 @@ function fieldSchema(field: FormField): z.ZodTypeAny {
       let base: z.ZodTypeAny = z
         .string()
         .trim()
-        .refine((value) => value === '' || !Number.isNaN(Number(value)), 'Enter a number')
+        .refine((value) => value === '' || Number.isFinite(Number(value)), 'Enter a finite number')
 
       if (v.min !== undefined) {
         const min = v.min
@@ -139,6 +153,16 @@ function fieldSchema(field: FormField): z.ZodTypeAny {
       return field.required
         ? base.min(1, requiredMessage).email('Enter a valid email address')
         : base.email('Enter a valid email address').optional().or(z.literal(''))
+    }
+
+    case 'date': {
+      const base = z.string().trim().refine((value) => {
+        if (value === '') return !field.required
+        if (!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(value) || value.startsWith('0000')) return false
+        const date = new Date(`${value}T00:00:00.000Z`)
+        return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value
+      }, (value) => ({ message: value === '' ? requiredMessage : 'Enter a valid date' }))
+      return field.required ? base : base.optional()
     }
 
     default: {
@@ -189,6 +213,7 @@ export function displayValue(field: FormField, value: FieldValue): string {
   if (value === undefined || value === null || value === '') return '—'
 
   if (field.type === 'checkbox') return value ? 'Yes' : 'No'
+  if (field.type === 'yesno') return value === 'yes' ? 'Yes' : value === 'no' ? 'No' : String(value)
 
   if (Array.isArray(value)) {
     if (value.length === 0) return '—'
@@ -203,8 +228,11 @@ export function displayValue(field: FormField, value: FieldValue): string {
 
   if (field.type === 'currency') {
     const numeric = Number(value)
-    if (!Number.isNaN(numeric)) {
-      return new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 }).format(numeric)
+    if (Number.isFinite(numeric)) {
+      const fractionDigits = Number.isInteger(numeric) ? 0 : 2
+      return new Intl.NumberFormat('en-GB', {
+        style: 'currency', currency: 'GBP', minimumFractionDigits: fractionDigits, maximumFractionDigits: fractionDigits,
+      }).format(numeric)
     }
   }
 

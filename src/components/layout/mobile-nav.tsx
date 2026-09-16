@@ -16,7 +16,7 @@ export function MobileNav({ isAdmin }: { isAdmin: boolean }) {
           <Menu className="h-5 w-5" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="left-0 top-0 h-full w-[17rem] max-w-[85vw] translate-x-0 translate-y-0 gap-0 rounded-none border-y-0 border-l-0 p-0 sm:rounded-none">
+      <DialogContent className="left-0 top-0 h-dvh max-h-dvh w-[17rem] max-w-[85vw] translate-x-0 translate-y-0 gap-0 rounded-none border-y-0 border-l-0 p-0 sm:rounded-none">
         <DialogTitle className="sr-only">Navigation</DialogTitle>
         <SidebarNav isAdmin={isAdmin} onNavigate={() => setOpen(false)} />
       </DialogContent>

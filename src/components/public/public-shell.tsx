@@ -1,11 +1,11 @@
-import { Logo } from '@/components/shared/logo'
-import { BrandBannerImage } from '@/components/shared/brand-banner-image'
+import Link from 'next/link'
 import { ThemeToggle } from '@/components/shared/theme-toggle'
-import { BRAND } from '@/lib/constants'
+import { AdviserLogo } from './adviser-logo'
+import { InstallApp } from '@/components/shared/install-app'
 import { brandCssVars, brandTheme } from '@/lib/branding'
 
 interface PublicShellProps {
-  /** The adviser's uploaded logo; the Wealthy Advisers Club banner when absent. */
+  /** The adviser's uploaded logo; firm name when absent or unavailable. */
   logoUrl?: string | null
   /** The adviser's brand colour; the black/gold house style when absent. */
   brandColour?: string | null
@@ -26,18 +26,13 @@ export function PublicShell({ logoUrl, brandColour, companyName, children }: Pub
   const toggleTone = theme.onColour === '#FFFFFF' ? 'text-white hover:bg-white/10 hover:text-white' : 'text-black hover:bg-black/10 hover:text-black'
 
   return (
-    <div className="flex min-h-screen flex-col bg-background" style={style} data-brand={theme.custom ? 'custom' : 'default'}>
+    <div className="flex min-h-dvh flex-col bg-background" style={style} data-brand={theme.custom ? 'custom' : 'default'}>
       <header
         className={theme.custom ? undefined : 'brand-surface'}
-        style={theme.custom ? { backgroundColor: theme.colour, color: theme.onColour } : undefined}
+        style={{ backgroundColor: theme.colour, color: theme.onColour }}
       >
-        <div className="mx-auto flex min-h-16 w-full max-w-5xl items-center justify-between gap-4 px-6 py-3">
-          {logoUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element -- adviser-supplied image of unknown dimensions
-            <img src={logoUrl} alt={companyName ?? 'Adviser logo'} className="block max-h-16 w-auto max-w-[60%] object-contain" data-testid="adviser-logo" />
-          ) : (
-            <BrandBannerImage className="max-h-20 w-auto" fallback={<Logo variant="light" href={null} />} />
-          )}
+        <div className="mx-auto flex min-h-16 w-full max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+          <AdviserLogo logoUrl={logoUrl} companyName={companyName || 'Your adviser'} />
           <ThemeToggle className={toggleTone} />
         </div>
         <div
@@ -46,13 +41,17 @@ export function PublicShell({ logoUrl, brandColour, companyName, children }: Pub
         />
       </header>
 
-      <main className="flex-1 px-6 py-10 sm:py-14">{children}</main>
+      <main className="flex-1 px-4 py-8 sm:px-6 sm:py-12">{children}</main>
 
       <footer className="border-t py-6">
+        <div className="mb-3 text-center"><InstallApp name={companyName || 'Your adviser'} /></div>
         <p className="mx-auto w-full max-w-5xl px-6 text-center text-xs text-muted-foreground">
-          {companyName ? `${companyName} · ` : ''}Powered by {BRAND.product} from {BRAND.organisation}. Your information is
-          handled in line with UK GDPR and shared only with your adviser.
+          {companyName || 'Your adviser'} · Private and confidential. Your answers are sent to your adviser for review.
         </p>
+        <nav aria-label="Form privacy information" className="mt-2 flex flex-wrap justify-center gap-x-6 px-4 text-xs text-muted-foreground">
+          <Link href="/privacy" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center underline underline-offset-4">Privacy notice <span className="sr-only">(opens in a new tab)</span></Link>
+          <Link href="/privacy#retention" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center underline underline-offset-4">Your data and deletion requests <span className="sr-only">(opens in a new tab)</span></Link>
+        </nav>
       </footer>
     </div>
   )

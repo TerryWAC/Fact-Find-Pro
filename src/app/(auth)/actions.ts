@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { getAdminRecipients, sendEmail } from '@/lib/email/send'
 import { forgotPasswordSchema, loginSchema, resetPasswordSchema, signupSchema } from '@/lib/validations'
-import { getBaseUrl } from '@/lib/utils'
+import { authCallbackUrl, requestOrigin } from '@/lib/auth-origin'
 import { isSupabaseConfigured, supabaseConfigMessage } from '@/lib/env'
 
 export interface ActionState {
@@ -88,7 +88,12 @@ export async function signInAction(_prev: ActionState, formData: FormData): Prom
   }
 
   const redirectTo = String(formData.get('redirectTo') ?? '')
-  const safeRedirect = redirectTo.startsWith('/') && !redirectTo.startsWith('//') ? redirectTo : null
+  const safeRedirect =
+    redirectTo.startsWith('/') &&
+    !redirectTo.startsWith('//') &&
+    (profile?.role === 'admin' || !redirectTo.startsWith('/admin'))
+      ? redirectTo
+      : null
 
   revalidatePath('/', 'layout')
 
@@ -128,7 +133,8 @@ export async function signUpAction(_prev: ActionState, formData: FormData): Prom
     password,
     options: {
       data: { name, company_name, phone },
-      emailRedirectTo: `${getBaseUrl()}/auth/callback`,
+      // Same host the user is on — see authCallbackUrl for why this matters.
+      emailRedirectTo: await authCallbackUrl(),
     },
   })
 
@@ -163,7 +169,7 @@ export async function signUpAction(_prev: ActionState, formData: FormData): Prom
       email,
       phone,
       registered_at: new Date().toLocaleString('en-GB'),
-      approvals_url: `${getBaseUrl()}/admin/users?status=pending`,
+      approvals_url: `${await requestOrigin()}/admin/users?status=pending`,
     })
   }
 
@@ -186,7 +192,7 @@ export async function forgotPasswordAction(_prev: ActionState, formData: FormDat
 
   const supabase = await createClient()
   await supabase.auth.resetPasswordForEmail(parsed.data.email, {
-    redirectTo: `${getBaseUrl()}/auth/callback?next=/reset-password`,
+    redirectTo: await authCallbackUrl('/reset-password'),
   })
 
   // Always report success — never reveal whether an address is registered.

@@ -1,4 +1,7 @@
 import { Badge } from '@/components/ui/badge'
+import Link from 'next/link'
+import { Search } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import type { Profile } from '@/lib/supabase/database.types'
 import { MobileNav } from './mobile-nav'
 import { ThemeToggle } from '@/components/shared/theme-toggle'
@@ -10,9 +13,9 @@ export function Topbar({ profile, isAdmin }: { profile: Profile; isAdmin: boolea
       <MobileNav isAdmin={isAdmin} />
 
       <div className="flex min-w-0 flex-1 items-center gap-3">
-        <div className="hidden min-w-0 flex-col leading-tight sm:flex">
+        <div className="flex min-w-0 flex-col leading-tight">
           <span className="truncate text-sm font-medium text-foreground">
-            {profile.company_name ?? profile.name}
+            {profile.company_name?.trim() || profile.name}
           </span>
           <span className="text-xs text-muted-foreground">
             {isAdmin ? 'Administrator' : 'Adviser workspace'}
@@ -25,6 +28,11 @@ export function Topbar({ profile, isAdmin }: { profile: Profile; isAdmin: boolea
         )}
       </div>
 
+      <Button asChild variant="ghost" className="h-11 w-11 shrink-0 px-0 md:w-auto md:gap-2 md:px-3">
+        <Link href="/submissions" aria-label="Find a submission" title="Find a submission">
+          <Search aria-hidden /><span className="hidden text-xs text-muted-foreground md:inline">Find a submission</span>
+        </Link>
+      </Button>
       <ThemeToggle />
 
       <UserMenu

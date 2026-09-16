@@ -1,12 +1,11 @@
 import 'server-only'
 
 import { createAdminClient, hasAdminClient } from '@/lib/supabase/admin'
-import { interpolate, wrapHtml } from './render'
-import {
-  DEFAULT_EMAIL_TEMPLATES,
-  type EmailTemplateKey,
-  type EmailVariablesMap,
-} from './templates'
+import { randomUUID } from 'node:crypto'
+import { interpolate, wrapHtml, type EmailBranding } from './render'
+import { emailConfiguration } from './config'
+import { sendResendEmail } from './transport'
+import { DEFAULT_EMAIL_TEMPLATES, type EmailTemplateKey, type EmailVariablesMap } from './templates'
 
 export interface EmailAttachment {
   filename: string
@@ -15,6 +14,7 @@ export interface EmailAttachment {
 }
 
 export interface SendEmailOptions {
+  branding?: EmailBranding
   attachments?: EmailAttachment[]
   /** Overrides EMAIL_REPLY_TO — e.g. the adviser's address on a client copy. */
   replyTo?: string
@@ -25,6 +25,7 @@ export interface SendEmailResult {
   provider: 'resend' | 'log'
   skipped?: boolean
   error?: string
+  messageId?: string
 }
 
 interface RenderedEmail {
@@ -67,6 +68,7 @@ async function loadTemplate(key: EmailTemplateKey) {
 export async function renderEmail<K extends EmailTemplateKey>(
   key: K,
   variables: EmailVariablesMap[K],
+  branding?: EmailBranding,
 ): Promise<RenderedEmail & { enabled: boolean }> {
   const template = await loadTemplate(key)
   const vars = variables as Record<string, string | undefined>
@@ -76,7 +78,7 @@ export async function renderEmail<K extends EmailTemplateKey>(
   return {
     enabled: template.enabled,
     subject,
-    html: wrapHtml(interpolate(template.bodyHtml, vars), subject),
+    html: wrapHtml(interpolate(template.bodyHtml, vars, true), subject, branding),
     text: interpolate(template.bodyText, vars),
   }
 }
@@ -93,7 +95,7 @@ async function logEmail(
   if (!hasAdminClient()) return
   try {
     const supabase = createAdminClient()
-    await supabase.from('email_log').insert({
+    const { error: logError } = await supabase.from('email_log').insert({
       template_key: key,
       to_email: to,
       subject,
@@ -102,9 +104,23 @@ async function logEmail(
       error: error ?? null,
       payload: payload as never,
     })
+    if (logError) console.error('Email log could not be saved:', logError.code)
   } catch {
     // Logging must never break the calling flow.
   }
+}
+
+/** Record preparation failures that happen before a provider request can be made. */
+export async function recordEmailPreparationFailure(key: EmailTemplateKey, to: string, submissionId: string) {
+  await logEmail(
+    key,
+    to,
+    'Submission PDF could not be prepared',
+    'failed',
+    'none',
+    'The PDF could not be prepared. Open the submission and retry the client copy.',
+    { submission_id: submissionId },
+  )
 }
 
 /**
@@ -132,7 +148,7 @@ export async function sendEmail<K extends EmailTemplateKey>(
 
   let rendered: RenderedEmail & { enabled: boolean }
   try {
-    rendered = await renderEmail(key, variables)
+    rendered = await renderEmail(key, variables, options.branding)
   } catch (error) {
     return { ok: false, provider: 'log', error: (error as Error).message }
   }
@@ -142,54 +158,31 @@ export async function sendEmail<K extends EmailTemplateKey>(
     return { ok: true, provider: 'log', skipped: true }
   }
 
-  const apiKey = process.env.RESEND_API_KEY
-  const from = process.env.EMAIL_FROM ?? 'FactFind Pro <onboarding@resend.dev>'
-
-  if (!apiKey) {
-    console.info(
-      `\n[email:${key}] (no RESEND_API_KEY — logged only)\n  to: ${recipients.join(', ')}\n  subject: ${rendered.subject}\n  ${rendered.text.replace(/\n/g, '\n  ')}\n` +
-        (attachments.length ? `  attachments: ${attachments.map((a) => `${a.filename} (${a.content.length} bytes)`).join(', ')}\n` : ''),
-    )
-    await logEmail(key, recipients.join(', '), rendered.subject, 'logged', 'log', undefined, {
+  const requestId = randomUUID()
+  const result = await sendResendEmail(
+    emailConfiguration(process.env),
+    {
+      to: recipients,
+      subject: rendered.subject,
+      html: rendered.html,
       text: rendered.text,
-      attachments: attachments.map((a) => a.filename),
-    })
-    return { ok: true, provider: 'log' }
-  }
-
-  try {
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from,
-        to: recipients,
-        subject: rendered.subject,
-        html: rendered.html,
-        text: rendered.text,
-        ...(options.replyTo || process.env.EMAIL_REPLY_TO ? { reply_to: options.replyTo || process.env.EMAIL_REPLY_TO } : {}),
-        ...(attachments.length
-          ? { attachments: attachments.map((a) => ({ filename: a.filename, content: a.content.toString('base64') })) }
-          : {}),
-      }),
-    })
-
-    if (!response.ok) {
-      const body = await response.text()
-      await logEmail(key, recipients.join(', '), rendered.subject, 'failed', 'resend', body)
-      return { ok: false, provider: 'resend', error: body }
-    }
-
-    await logEmail(key, recipients.join(', '), rendered.subject, 'sent', 'resend')
-    return { ok: true, provider: 'resend' }
-  } catch (error) {
-    const message = (error as Error).message
-    await logEmail(key, recipients.join(', '), rendered.subject, 'failed', 'resend', message)
-    return { ok: false, provider: 'resend', error: message }
-  }
+      replyTo: options.replyTo,
+      fromName: options.branding?.companyName || options.branding?.adviserName || undefined,
+      attachments,
+    },
+    requestId,
+  )
+  const status = !result.ok ? 'failed' : result.provider === 'log' ? 'logged' : 'sent'
+  // Preserve the existing status vocabulary; "sent" means provider acceptance.
+  await logEmail(key, recipients.join(', '), rendered.subject, status, result.provider, result.error, {
+    request_id: requestId,
+    ...(result.messageId ? { message_id: result.messageId } : {}),
+    attachments: attachments.map((item) => item.filename),
+  })
+  // Operational metadata only: never print the client's email body or PDF contents.
+  if (result.provider === 'log')
+    console.info(`[email:${key}] ${status}; ${attachments.length} attachment(s); request ${requestId}`)
+  return result
 }
 
 /** Admin notification recipients, from env or the admin profiles table. */

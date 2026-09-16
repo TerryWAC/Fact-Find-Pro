@@ -4,7 +4,7 @@ export const BRAND = {
   product: 'FactFind Pro',
   organisation: 'Wealthy Advisers Club',
   tagline: 'Client fact-finding for UK mortgage & protection advisers',
-  supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? 'support@wealthyadvisorsclub.co.uk',
+  supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? 'support@factfindpro.com',
 } as const
 
 /**

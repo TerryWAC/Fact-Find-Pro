@@ -76,7 +76,7 @@ export async function saveDetailsAction(
   const session = await getSessionUser()
   if (!session) redirect('/login')
 
-  const parsed = onboardingDetailsSchema.safeParse({
+  const submitted = {
     name: text(formData, 'name'),
     job_title: text(formData, 'job_title'),
     phone: text(formData, 'phone'),
@@ -84,10 +84,14 @@ export async function saveDetailsAction(
     fca_number: text(formData, 'fca_number'),
     website: text(formData, 'website'),
     business_location: text(formData, 'business_location'),
-  })
+    contact_email: text(formData, 'contact_email'),
+    services: text(formData, 'services'),
+    client_focus: text(formData, 'client_focus'),
+  }
+  const parsed = onboardingDetailsSchema.safeParse(submitted)
 
   if (!parsed.success) {
-    return { error: 'Please check the form and try again.', fieldErrors: fieldErrorsFrom(parsed.error) }
+    return { error: 'Please check the form and try again.', fieldErrors: fieldErrorsFrom(parsed.error), values: submitted }
   }
 
   const values = parsed.data
@@ -105,10 +109,15 @@ export async function saveDetailsAction(
       fca_number: emptyToNull(values.fca_number),
       website: emptyToNull(values.website),
       business_location: emptyToNull(values.business_location),
+      contact_email: emptyToNull(values.contact_email),
+      services: emptyToNull(values.services),
+      client_focus: emptyToNull(values.client_focus),
     })
     .eq('id', session.id)
+    .select('id')
+    .single()
 
-  if (error) return { error: error.message }
+  if (error) return { error: 'Your practice details could not be saved. Please try again.', values: submitted }
 
   await recordProgress(session.id, 3)
   revalidatePath('/onboarding')
@@ -168,6 +177,7 @@ const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/svg
 export async function uploadBrandImageAction(
   kind: 'logo' | 'headshot',
   formData: FormData,
+  persistProfile = true,
 ): Promise<{ ok: boolean; url?: string; error?: string }> {
   const session = await getSessionUser()
   if (!session) return { ok: false, error: 'Your session has expired. Please sign in again.' }
@@ -197,7 +207,7 @@ export async function uploadBrandImageAction(
   } = supabase.storage.from('branding').getPublicUrl(path)
 
   // Explicit branches rather than a computed key, so the update stays typed.
-  await supabase
+  if (persistProfile) await supabase
     .from('profiles')
     .update(kind === 'logo' ? { logo_url: publicUrl } : { avatar_url: publicUrl })
     .eq('id', session.id)
@@ -343,13 +353,17 @@ export async function completeOnboardingAction() {
   if (!session) redirect('/login')
 
   const supabase = await createClient()
-  await supabase
+  const { data, error } = await supabase
     .from('profiles')
     .update({
       onboarding_completed_at: new Date().toISOString(),
       onboarding_step: TOTAL_ONBOARDING_STEPS,
     })
     .eq('id', session.id)
+    .select('id')
+    .maybeSingle()
+
+  if (error || !data) return { error: 'Setup could not be saved. Please try again; your details are still here.' }
 
   revalidatePath('/', 'layout')
   redirect(session.profile.role === 'admin' ? '/admin' : '/dashboard')

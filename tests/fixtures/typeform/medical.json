@@ -1,0 +1,1618 @@
+{
+  "id": "xrjNX2Gg",
+  "title": "Chris Bell - Medical",
+  "fields": [
+    {
+      "id": "A6AaP3KC8PbB",
+      "title": "My name is Chris Bell",
+      "ref": "5641ef9b-6e66-4314-849b-36f68bfe1d01",
+      "properties": {
+        "description": "I am the Director of Nightingale Protection",
+        "button_text": "Continue",
+        "hide_marks": true
+      },
+      "type": "statement",
+      "layout": {
+        "type": "stack",
+        "viewport_overrides": {}
+      }
+    },
+    {
+      "id": "SdlhedHezKPu",
+      "title": "We're delighted to help you arrange the relevant and most appropriate protection for you & your family. Press continue to begin",
+      "ref": "c80f4597-69fa-4a0e-9e60-22ab993bdb3d",
+      "properties": {
+        "button_text": "Continue",
+        "hide_marks": true
+      },
+      "type": "statement",
+      "layout": {
+        "type": "stack",
+        "viewport_overrides": {}
+      }
+    },
+    {
+      "id": "jz6zG4g4Cctr",
+      "title": "Client Information",
+      "ref": "70521e6c-bdec-4537-9d1d-10d1b293fd4c",
+      "properties": {
+        "button_text": "Continue",
+        "show_button": true,
+        "fields": [
+          {
+            "id": "WBoXwgxnQN4U",
+            "title": "How would you like us to address you?",
+            "ref": "890bdb8e-0d89-4692-acfb-2819870f1ef1",
+            "properties": {
+              "randomize": false,
+              "allow_multiple_selection": false,
+              "allow_other_choice": false,
+              "vertical_alignment": true,
+              "choices": [
+                {
+                  "id": "jBxPaxrZZdzz",
+                  "ref": "26fa3eb3-2492-412a-b863-83f84a12fa35",
+                  "label": "Mr"
+                },
+                {
+                  "id": "KFaurUSO0JFS",
+                  "ref": "be3cd796-cc83-4354-a152-b76852b783bf",
+                  "label": "Mrs"
+                },
+                {
+                  "id": "hZXTGMgklyKJ",
+                  "ref": "be14e068-57ae-455f-96e2-9dcb486e216b",
+                  "label": "Miss"
+                },
+                {
+                  "id": "KTyQiM8femYu",
+                  "ref": "c9eb8a36-bab6-4334-93a6-9f977756c94d",
+                  "label": "Ms"
+                },
+                {
+                  "id": "UmQ6HNEcU62f",
+                  "ref": "34a6af1e-d393-450c-b5ea-7d6dc7714c45",
+                  "label": "Dr"
+                },
+                {
+                  "id": "A3gIAwGV0r5q",
+                  "ref": "515f266d-1275-42d2-8817-de4eb015cac1",
+                  "label": "Prof"
+                }
+              ]
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "multiple_choice"
+          },
+          {
+            "id": "ZtfHERCo4GPr",
+            "title": "What is your first name?",
+            "ref": "9e554fc9-efd4-4352-ad09-4e6834522471",
+            "properties": {},
+            "validations": {
+              "required": false
+            },
+            "type": "short_text"
+          },
+          {
+            "id": "Xv9BPfcartr9",
+            "title": "What is your surname?",
+            "ref": "4175ee47-7ec4-4817-b8ff-1fb86f2edeaf",
+            "properties": {},
+            "validations": {
+              "required": false
+            },
+            "type": "short_text"
+          },
+          {
+            "id": "3tFTDiyrFOJz",
+            "title": "What is your date of birth?",
+            "ref": "9aeea245-bd92-46ed-b88b-1b91094b6d75",
+            "properties": {
+              "separator": "/",
+              "structure": "DDMMYYYY"
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "date"
+          },
+          {
+            "id": "p1KVGtGFxWk3",
+            "title": "Which gender do you identify with?",
+            "ref": "68541f07-9321-40ed-b583-23ffd9b34456",
+            "properties": {
+              "randomize": false,
+              "allow_multiple_selection": false,
+              "allow_other_choice": false,
+              "vertical_alignment": true,
+              "choices": [
+                {
+                  "id": "yVnmKcJYFNyp",
+                  "ref": "ebbb0065-e67b-4259-a618-74685c517ccd",
+                  "label": "Him"
+                },
+                {
+                  "id": "1Zsv2ShxyA9r",
+                  "ref": "4aa8b536-8c24-4ffc-a87d-b1e2e460818d",
+                  "label": "Her"
+                }
+              ]
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "multiple_choice"
+          },
+          {
+            "id": "yY9uPSKRWNPn",
+            "title": "What is your height? (ft/inches or cm)",
+            "ref": "97668dc4-e90c-4dbd-97a3-bfea7517e9bf",
+            "properties": {},
+            "validations": {
+              "required": false
+            },
+            "type": "short_text"
+          },
+          {
+            "id": "yKifMXtGGHnh",
+            "title": "What is your weight? (stones/lbs or kg)",
+            "ref": "c9e3bd0a-64f3-4977-a6bc-af0ab4eb7d8a",
+            "properties": {},
+            "validations": {
+              "required": false
+            },
+            "type": "short_text"
+          },
+          {
+            "id": "Lwyuh0XqUJHJ",
+            "title": "What is your dress/waist size?",
+            "ref": "bbb4a6ec-be5c-419a-912c-61046d877747",
+            "properties": {},
+            "validations": {
+              "required": false
+            },
+            "type": "short_text"
+          }
+        ]
+      },
+      "type": "group"
+    },
+    {
+      "id": "kYYn2dSAAxIw",
+      "title": "Client Lifestyle",
+      "ref": "d4ab9aa4-2cb8-4ad4-b676-77d48d96961c",
+      "properties": {
+        "button_text": "Continue",
+        "show_button": true,
+        "fields": [
+          {
+            "id": "4sLYGpsGHG9h",
+            "title": "How often do you exercise each week?",
+            "ref": "ca4f1d40-8b6e-4257-b9b5-6964a9e0f56d",
+            "properties": {
+              "randomize": false,
+              "allow_multiple_selection": false,
+              "allow_other_choice": false,
+              "vertical_alignment": true,
+              "choices": [
+                {
+                  "id": "4IhxR4qFWJck",
+                  "ref": "d7368d03-0f1c-4b78-bdf8-65e32c9266a6",
+                  "label": "None"
+                },
+                {
+                  "id": "R4Jj8RGT0psl",
+                  "ref": "d0e6cae0-5ba6-4d89-b3e1-fc97dd685ccb",
+                  "label": "1-2 times"
+                },
+                {
+                  "id": "VtDGtiLNnuey",
+                  "ref": "a75570ce-a5dc-4b09-84dd-35c2c5ad7fb5",
+                  "label": "3-4 times"
+                },
+                {
+                  "id": "hxKYP82LLNSy",
+                  "ref": "c117e0b9-7c3f-4b22-9eec-e216cc0762e5",
+                  "label": "5+ times"
+                },
+                {
+                  "id": "xKI2Ou5sqpQv",
+                  "ref": "be904d2d-85c8-487c-9bb2-39ac6507b7b5",
+                  "label": "Daily"
+                }
+              ]
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "multiple_choice"
+          },
+          {
+            "id": "u8zdGyGAkiPk",
+            "title": "How much alcohol do you consume weekly?",
+            "ref": "13529457-1f4a-4888-8f9d-99ae41aa519a",
+            "properties": {
+              "randomize": false,
+              "allow_multiple_selection": false,
+              "allow_other_choice": false,
+              "vertical_alignment": true,
+              "choices": [
+                {
+                  "id": "w1cCrIHDZlML",
+                  "ref": "38017f06-0b7f-4a16-825e-c70e450bf357",
+                  "label": "None"
+                },
+                {
+                  "id": "OEVemGANnTTk",
+                  "ref": "3b42c217-503b-4dc8-a403-a1421ee3bf78",
+                  "label": "1-5 units"
+                },
+                {
+                  "id": "CsW57oX4wVwS",
+                  "ref": "54c907f7-6cf5-4692-8b20-675011fde06d",
+                  "label": "6-14 units"
+                },
+                {
+                  "id": "RAXHL7Q9N6OH",
+                  "ref": "a167813a-3b39-4774-9fdd-0b7a04183c45",
+                  "label": "15-25 units"
+                },
+                {
+                  "id": "FuUmQruPiIEH",
+                  "ref": "63bf9798-3f84-4b54-bc9d-cbe648089afb",
+                  "label": "25+ units"
+                }
+              ]
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "multiple_choice"
+          },
+          {
+            "id": "tGAeB3xhqlx7",
+            "title": "Have you been advised to lower your alcohol intake by a doctor?",
+            "ref": "114972ac-c320-421c-b0a9-2d736145973a",
+            "properties": {
+              "description": "If yes please state the date you were told this."
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "short_text"
+          },
+          {
+            "id": "DAGTWVOtnAmK",
+            "title": "2d. Do you currently smoke?",
+            "ref": "bae63ab2-8c29-4bc3-9aa3-041984e24f2c",
+            "properties": {
+              "randomize": false,
+              "allow_multiple_selection": false,
+              "allow_other_choice": false,
+              "vertical_alignment": true,
+              "choices": [
+                {
+                  "id": "3eJIidxKuwUS",
+                  "ref": "b1b36e84-1f8e-45a7-b11d-cccbdc77c9c6",
+                  "label": "Yes"
+                },
+                {
+                  "id": "j76rKurCK17Y",
+                  "ref": "2620a225-9c81-4852-beb8-9358e0746d93",
+                  "label": "No"
+                }
+              ]
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "multiple_choice"
+          },
+          {
+            "id": "iAsj6uuXN8LQ",
+            "title": "2e. Please enter all relevant info below:",
+            "ref": "21c7c576-3c9e-4628-92ac-fb22c9026627",
+            "properties": {
+              "description": "How much do you smoke per day/week?"
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "long_text"
+          },
+          {
+            "id": "Dgc1xtCDI3pY",
+            "title": "Do you use recreational drugs?",
+            "ref": "92dfa0d8-18e7-4e8b-817a-52d91f570e3f",
+            "properties": {},
+            "validations": {
+              "required": false
+            },
+            "type": "yes_no"
+          },
+          {
+            "id": "SmJkgNUm5QKu",
+            "title": "Please enter all relevant info below:",
+            "ref": "60d5c981-a180-4d86-b992-eb3c17c520c6",
+            "properties": {
+              "description": "Type of drug, Quantity, Date last taken, How long did you take them for, Are you still taking them plus any other relevant information."
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "long_text"
+          }
+        ]
+      },
+      "type": "group"
+    },
+    {
+      "id": "pizFkqZlOpvh",
+      "title": "Family Health",
+      "ref": "28cedbee-0563-456a-8d84-47217a9c48e9",
+      "properties": {
+        "button_text": "Continue",
+        "show_button": true,
+        "fields": [
+          {
+            "id": "gV7X2B7MLgZ1",
+            "title": "Before age 66, have any of your parents or siblings ever had heart disease, heart attack, diabetes, cancer, muscular dystrophy, Huntington's, motor neurone disease, MS, Parkinson's, Alzheimer's, kidney/bowel disease, or other hereditary disorders?",
+            "ref": "8bb1fc2c-e0e4-4c10-9805-96ad63290572",
+            "properties": {},
+            "validations": {
+              "required": false
+            },
+            "type": "yes_no"
+          },
+          {
+            "id": "07KeyEmG3XKJ",
+            "title": "Please provide details: which relation(s), age at diagnosis, type, and if hereditary testing has been offered to you.",
+            "ref": "98be399c-02d0-40b0-a91e-d996f5f7cea4",
+            "properties": {},
+            "validations": {
+              "required": false
+            },
+            "type": "long_text"
+          },
+          {
+            "id": "frPkDEFA9v3t",
+            "title": "Are both of your parents still alive?",
+            "ref": "3729a5b7-d189-4bd6-9b83-65738a4338a8",
+            "properties": {
+              "randomize": false,
+              "allow_multiple_selection": false,
+              "allow_other_choice": false,
+              "vertical_alignment": true,
+              "choices": [
+                {
+                  "id": "0h2JlxuHchjB",
+                  "ref": "98a0c14d-e831-4c1a-ae74-047a68ae4c8e",
+                  "label": "Yes"
+                },
+                {
+                  "id": "tNoFSvmiqDnk",
+                  "ref": "97707746-d986-4181-8a9b-3d4654c49d39",
+                  "label": "No"
+                },
+                {
+                  "id": "CKM4rI49A5QV",
+                  "ref": "ea0920ba-e9fe-4967-9d15-11e58a746b15",
+                  "label": "One Deceased"
+                }
+              ]
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "multiple_choice"
+          },
+          {
+            "id": "3tuVKb3hhLyX",
+            "title": "If no, at what age did they pass away?",
+            "ref": "ee1819ed-8d9c-4389-add0-9159d18fa657",
+            "properties": {
+              "description": "e.g., Father, 72, Heart Disease"
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "long_text"
+          }
+        ]
+      },
+      "type": "group"
+    },
+    {
+      "id": "mdiJ8oGTcoDR",
+      "title": "Your Health",
+      "ref": "9aa5513b-f004-4047-9358-62f231619ca0",
+      "properties": {
+        "button_text": "Continue",
+        "show_button": true,
+        "fields": [
+          {
+            "id": "wCwy5OeEjJnA",
+            "title": "Have you ever had, or do you currently have, any of the following: cancer, tumours, heart or artery issues, stroke, brain problems, MS, epilepsy, Parkinson's or other neurological problems, tested positive for HIV or hepatitis, or mental health concerns requiring treatment?",
+            "ref": "f1e5511e-3cc4-4bdc-b65f-c2c689fd0b8c",
+            "properties": {},
+            "validations": {
+              "required": false
+            },
+            "type": "yes_no"
+          },
+          {
+            "id": "30BwFTlc3QNe",
+            "title": "If yes, please provide details of the condition(s), date diagnosed, type/severity, frequency of symptoms, most recent symptoms, treatment, medication, time off work, hospitalisations, or complications.",
+            "ref": "fd51bc49-8b25-49b3-b6c6-af6eb3f82573",
+            "properties": {
+              "description": "If more than 1 condition enter all of them below"
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "long_text"
+          },
+          {
+            "id": "SdN1fB21ijP5",
+            "title": "In the last five years, have you had: raised blood pressure/cholesterol, chest pain, diabetes, raised blood sugar, anaemia, blood clot, blood disorders, growths, lumps, cysts, polyps, asthma, bronchitis, sleep apnoea, lung/breathing issues, Crohn's disease, colitis, IBS, digestive issues, urinary infection, kidney/bladder issues, abnormal smear tests, liver/pancreas issues, back/neck issues, joint/muscle pain, injuries, numbness, muscle weakness, fainting, ear/eye issues, CFS, depression, stress or anxiety?",
+            "ref": "7e1d45b4-0af3-428c-bccc-e668172f3003",
+            "properties": {},
+            "validations": {
+              "required": false
+            },
+            "type": "yes_no"
+          },
+          {
+            "id": "hsmsvp1tPXcX",
+            "title": "If yes, provide details of conditions, dates, treatment, and current status.",
+            "ref": "af6cf0c5-588c-4b13-abc5-7db76dbdef37",
+            "properties": {},
+            "validations": {
+              "required": false
+            },
+            "type": "long_text"
+          }
+        ]
+      },
+      "type": "group"
+    },
+    {
+      "id": "t3qced24KkoE",
+      "title": "Your Health Continued (Last 5 Years)",
+      "ref": "5f7ddc8b-a676-4d0e-91e2-ea789dbdb117",
+      "properties": {
+        "button_text": "Continue",
+        "show_button": true,
+        "fields": [
+          {
+            "id": "f7wEAOaS2ItR",
+            "title": "Have you visited your GP, hospital or clinic for any medical advice, treatments, or tests in the last 5 years for any reason at all?",
+            "ref": "2381b7ec-76d7-4b82-90be-e69379e556cf",
+            "properties": {},
+            "validations": {
+              "required": false
+            },
+            "type": "yes_no"
+          },
+          {
+            "id": "8ANLGDzwcI1X",
+            "title": "If yes, please provide information here",
+            "ref": "49430b7a-dbe7-4936-b7b3-c3eeff8e7e65",
+            "properties": {
+              "description": "Conditions, Dates, Treatment (is it still ongoing?)"
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "long_text"
+          },
+          {
+            "id": "C0cSHmhYSmXB",
+            "title": "Have you been prescribed medication or treatment for two weeks or more in the last 2 years?",
+            "ref": "3dc14a2b-a26e-4d5d-a319-62df38c6c36c",
+            "properties": {},
+            "validations": {
+              "required": false
+            },
+            "type": "yes_no"
+          },
+          {
+            "id": "haTn7ku5A4UP",
+            "title": "If yes, please provide information here",
+            "ref": "04c59a11-e319-447d-81f0-7a00e47cf7a8",
+            "properties": {
+              "description": "Reason for medication, Medication name, Time taking it, Frequency, Dosage"
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "long_text"
+          },
+          {
+            "id": "ikTjf5qwHcnR",
+            "title": "Have you been referred to any counselling or therapy?",
+            "ref": "3ada98e4-da41-4611-be21-e8c1facf0c0a",
+            "properties": {},
+            "validations": {
+              "required": false
+            },
+            "type": "yes_no"
+          },
+          {
+            "id": "yGTRHlT6SE3H",
+            "title": "If yes, please provide information here",
+            "ref": "6a133370-f99a-48b5-b83e-130126179175",
+            "properties": {
+              "description": "Date when started, Duration, Is it still ongoing?"
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "long_text"
+          },
+          {
+            "id": "zyInBwHM8JU6",
+            "title": "Have you been asked to attend a follow-up or regular review with a doctor, hospital or clinic in the last 2 years?",
+            "ref": "92ab9012-a526-4fcd-b1c9-f1100fa13080",
+            "properties": {},
+            "validations": {
+              "required": false
+            },
+            "type": "yes_no"
+          },
+          {
+            "id": "LLF32p19vRvR",
+            "title": "If yes, please provide information here",
+            "ref": "37022161-06bc-49c1-b4a0-dc9a872522e3",
+            "properties": {
+              "description": "Condition, Last review, Current status if ongoing"
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "long_text"
+          },
+          {
+            "id": "BfKFKJCPyn4h",
+            "title": "Have you been referred to or consulted a specialist in the last 5 years?",
+            "ref": "970eec27-769a-4c6a-9b58-e46553227ced",
+            "properties": {},
+            "validations": {
+              "required": false
+            },
+            "type": "yes_no"
+          },
+          {
+            "id": "GkfhOX0NiRkT",
+            "title": "If yes, please provide information here",
+            "ref": "1ae7fae5-2313-45d1-acc6-c7f7083b6096",
+            "properties": {
+              "description": "Condition, Reason for referral, Any other relevant info"
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "long_text"
+          },
+          {
+            "id": "YohUA3EXLAoU",
+            "title": "In the last five years, have you had any other medical conditions or symptoms not already disclosed?",
+            "ref": "21632cd6-508e-4c2c-b894-a739d1861e41",
+            "properties": {},
+            "validations": {
+              "required": false
+            },
+            "type": "yes_no"
+          },
+          {
+            "id": "GWTfwrgjJ36A",
+            "title": "If yes, please provide information here",
+            "ref": "d1a27619-ab39-4615-9f1d-ad8c33419493",
+            "properties": {
+              "description": "Condition, Medication, Treatment, Dates, Any other relevant information"
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "long_text"
+          },
+          {
+            "id": "9Jdu6rSAuJpS",
+            "title": "Have you suffered any symptoms or tested positive for Covid in the last three months?",
+            "ref": "c60658dd-a8f1-4c8b-a8b2-64f98291d47e",
+            "properties": {},
+            "validations": {
+              "required": false
+            },
+            "type": "yes_no"
+          },
+          {
+            "id": "IfBtMlNqT7UI",
+            "title": "If yes, please provide information here",
+            "ref": "4a8d539f-555a-4216-a544-398b831b64fb",
+            "properties": {
+              "description": "Dates, Symptoms, Is it still ongoing?"
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "long_text"
+          },
+          {
+            "id": "46itLHeazHXi",
+            "title": "In the last five years, have you been banned from driving for any reason?",
+            "ref": "4eecb380-41b3-4db0-b3fd-123891683587",
+            "properties": {},
+            "validations": {
+              "required": false
+            },
+            "type": "yes_no"
+          },
+          {
+            "id": "KMvJyPnS3tbG",
+            "title": "If yes, please provide information here",
+            "ref": "a6982089-e8e1-4a2d-8298-fd415fa479de",
+            "properties": {
+              "description": "Dates & Reason for ban"
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "long_text"
+          },
+          {
+            "id": "9GJEGWKayAJ2",
+            "title": "In the last five years, have you spent more than 30 days outside the UK or EU at once, in one calendar year?",
+            "ref": "adcbee78-a3d8-4925-89e0-51b57e528ded",
+            "properties": {},
+            "validations": {
+              "required": false
+            },
+            "type": "yes_no"
+          },
+          {
+            "id": "POt2CflCBhUZ",
+            "title": "If yes, please provide information here",
+            "ref": "2b20a22b-7edf-4985-87e3-3500f2808ac9",
+            "properties": {
+              "description": "Which country/countries, Duration, Reason for trip"
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "long_text"
+          }
+        ]
+      },
+      "type": "group"
+    },
+    {
+      "id": "KzCPRIODFkNt",
+      "title": "GP info",
+      "ref": "cd91ee1e-f782-4c45-be2e-83e75779d50e",
+      "properties": {
+        "fields": [
+          {
+            "id": "WhAyCbpTGNp0",
+            "title": "What is your GP's name?",
+            "ref": "c2292798-5799-4452-8939-96b708a649e8",
+            "properties": {},
+            "validations": {
+              "required": false
+            },
+            "type": "short_text"
+          },
+          {
+            "id": "kw63j8eCRX4O",
+            "title": "Surgery phone number",
+            "ref": "8da024e1-00ca-4529-adca-4b24fe6199c0",
+            "properties": {
+              "default_country_code": "GB"
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "phone_number"
+          },
+          {
+            "id": "Z1bQoKkGPncY",
+            "title": "Surgery full address",
+            "ref": "c0d4ba10-4ef2-4dab-a7b2-93b8fcf1f3c3",
+            "properties": {
+              "description": "Including postcode"
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "long_text"
+          },
+          {
+            "id": "im8Bg1ZQD8ti",
+            "title": "What is the name of your surgery?",
+            "ref": "0e581e62-0c43-4baa-8ea8-3c9c5a9a35a5",
+            "properties": {},
+            "validations": {
+              "required": false
+            },
+            "type": "short_text"
+          }
+        ]
+      },
+      "type": "inline_group"
+    },
+    {
+      "id": "dSRa4ZULIwG1",
+      "title": "Additional Information",
+      "ref": "94306f51-e2c2-403b-869b-e5fb1e4ec776",
+      "properties": {
+        "button_text": "Continue",
+        "show_button": true,
+        "fields": [
+          {
+            "id": "Y5jpooTNX9vd",
+            "title": "Is there anything else about your medical history past or present you haven't shared above? Please include any doctor's appointments, diagnoses, injuries, or illnesses, even minor ones.",
+            "ref": "f9de5845-5904-4756-ae8b-f9ec53db6ee3",
+            "properties": {
+              "description": "Condition, Dates, Treatment, All relevant info"
+            },
+            "validations": {
+              "required": false
+            },
+            "type": "long_text"
+          },
+          {
+            "id": "vAUMihWDORu5",
+            "title": "Please ensure that all information you have provided is true, accurate, and complete. Providing incorrect or incomplete information may affect your insurance application. Ultimately, it could prevent you from obtaining coverage or the most suitable product for you, so it is essential that all details are correct.",
+            "ref": "60ad0961-4e45-4762-81f1-499d4147a59c",
+            "properties": {
+              "choices": [
+                {
+                  "id": "PzLfV0Yd3eo8",
+                  "ref": "8ac1c27a-bee3-40b3-a7b6-8ca3933cdf66",
+                  "label": "I understand"
+                }
+              ]
+            },
+            "validations": {
+              "required": true
+            },
+            "type": "checkbox"
+          }
+        ]
+      },
+      "type": "group"
+    }
+  ],
+  "logic": [
+    {
+      "type": "field",
+      "ref": "2381b7ec-76d7-4b82-90be-e69379e556cf",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "3dc14a2b-a26e-4d5d-a319-62df38c6c36c"
+            }
+          },
+          "condition": {
+            "op": "is_not",
+            "vars": [
+              {
+                "type": "field",
+                "value": "2381b7ec-76d7-4b82-90be-e69379e556cf"
+              },
+              {
+                "type": "constant",
+                "value": true
+              }
+            ]
+          }
+        },
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "3dc14a2b-a26e-4d5d-a319-62df38c6c36c"
+            }
+          },
+          "condition": {
+            "op": "is_not",
+            "vars": [
+              {
+                "type": "field",
+                "value": "2381b7ec-76d7-4b82-90be-e69379e556cf"
+              },
+              {
+                "type": "constant",
+                "value": true
+              }
+            ]
+          }
+        },
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "49430b7a-dbe7-4936-b7b3-c3eeff8e7e65"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "92dfa0d8-18e7-4e8b-817a-52d91f570e3f",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "60d5c981-a180-4d86-b992-eb3c17c520c6"
+            }
+          },
+          "condition": {
+            "op": "is",
+            "vars": [
+              {
+                "type": "field",
+                "value": "92dfa0d8-18e7-4e8b-817a-52d91f570e3f"
+              },
+              {
+                "type": "constant",
+                "value": true
+              }
+            ]
+          }
+        },
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "8bb1fc2c-e0e4-4c10-9805-96ad63290572"
+            }
+          },
+          "condition": {
+            "op": "is_not",
+            "vars": [
+              {
+                "type": "field",
+                "value": "92dfa0d8-18e7-4e8b-817a-52d91f570e3f"
+              },
+              {
+                "type": "constant",
+                "value": true
+              }
+            ]
+          }
+        },
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "8bb1fc2c-e0e4-4c10-9805-96ad63290572"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "8bb1fc2c-e0e4-4c10-9805-96ad63290572",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "98be399c-02d0-40b0-a91e-d996f5f7cea4"
+            }
+          },
+          "condition": {
+            "op": "is",
+            "vars": [
+              {
+                "type": "field",
+                "value": "8bb1fc2c-e0e4-4c10-9805-96ad63290572"
+              },
+              {
+                "type": "constant",
+                "value": true
+              }
+            ]
+          }
+        },
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "3729a5b7-d189-4bd6-9b83-65738a4338a8"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "f1e5511e-3cc4-4bdc-b65f-c2c689fd0b8c",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "7e1d45b4-0af3-428c-bccc-e668172f3003"
+            }
+          },
+          "condition": {
+            "op": "is_not",
+            "vars": [
+              {
+                "type": "field",
+                "value": "f1e5511e-3cc4-4bdc-b65f-c2c689fd0b8c"
+              },
+              {
+                "type": "constant",
+                "value": true
+              }
+            ]
+          }
+        },
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "fd51bc49-8b25-49b3-b6c6-af6eb3f82573"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "7e1d45b4-0af3-428c-bccc-e668172f3003",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "2381b7ec-76d7-4b82-90be-e69379e556cf"
+            }
+          },
+          "condition": {
+            "op": "is_not",
+            "vars": [
+              {
+                "type": "field",
+                "value": "7e1d45b4-0af3-428c-bccc-e668172f3003"
+              },
+              {
+                "type": "constant",
+                "value": true
+              }
+            ]
+          }
+        },
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "af6cf0c5-588c-4b13-abc5-7db76dbdef37"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "4eecb380-41b3-4db0-b3fd-123891683587",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "adcbee78-a3d8-4925-89e0-51b57e528ded"
+            }
+          },
+          "condition": {
+            "op": "is_not",
+            "vars": [
+              {
+                "type": "field",
+                "value": "4eecb380-41b3-4db0-b3fd-123891683587"
+              },
+              {
+                "type": "constant",
+                "value": true
+              }
+            ]
+          }
+        },
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "a6982089-e8e1-4a2d-8298-fd415fa479de"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "adcbee78-a3d8-4925-89e0-51b57e528ded",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "f9de5845-5904-4756-ae8b-f9ec53db6ee3"
+            }
+          },
+          "condition": {
+            "op": "is_not",
+            "vars": [
+              {
+                "type": "field",
+                "value": "adcbee78-a3d8-4925-89e0-51b57e528ded"
+              },
+              {
+                "type": "constant",
+                "value": true
+              }
+            ]
+          }
+        },
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "2b20a22b-7edf-4985-87e3-3500f2808ac9"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "3dc14a2b-a26e-4d5d-a319-62df38c6c36c",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "3ada98e4-da41-4611-be21-e8c1facf0c0a"
+            }
+          },
+          "condition": {
+            "op": "is_not",
+            "vars": [
+              {
+                "type": "field",
+                "value": "3dc14a2b-a26e-4d5d-a319-62df38c6c36c"
+              },
+              {
+                "type": "constant",
+                "value": true
+              }
+            ]
+          }
+        },
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "04c59a11-e319-447d-81f0-7a00e47cf7a8"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "3ada98e4-da41-4611-be21-e8c1facf0c0a",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "92ab9012-a526-4fcd-b1c9-f1100fa13080"
+            }
+          },
+          "condition": {
+            "op": "is",
+            "vars": [
+              {
+                "type": "field",
+                "value": "3ada98e4-da41-4611-be21-e8c1facf0c0a"
+              },
+              {
+                "type": "constant",
+                "value": false
+              }
+            ]
+          }
+        },
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "6a133370-f99a-48b5-b83e-130126179175"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "92ab9012-a526-4fcd-b1c9-f1100fa13080",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "970eec27-769a-4c6a-9b58-e46553227ced"
+            }
+          },
+          "condition": {
+            "op": "is",
+            "vars": [
+              {
+                "type": "field",
+                "value": "92ab9012-a526-4fcd-b1c9-f1100fa13080"
+              },
+              {
+                "type": "constant",
+                "value": false
+              }
+            ]
+          }
+        },
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "37022161-06bc-49c1-b4a0-dc9a872522e3"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "970eec27-769a-4c6a-9b58-e46553227ced",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "21632cd6-508e-4c2c-b894-a739d1861e41"
+            }
+          },
+          "condition": {
+            "op": "is_not",
+            "vars": [
+              {
+                "type": "field",
+                "value": "970eec27-769a-4c6a-9b58-e46553227ced"
+              },
+              {
+                "type": "constant",
+                "value": true
+              }
+            ]
+          }
+        },
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "1ae7fae5-2313-45d1-acc6-c7f7083b6096"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "21632cd6-508e-4c2c-b894-a739d1861e41",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "c60658dd-a8f1-4c8b-a8b2-64f98291d47e"
+            }
+          },
+          "condition": {
+            "op": "is_not",
+            "vars": [
+              {
+                "type": "field",
+                "value": "21632cd6-508e-4c2c-b894-a739d1861e41"
+              },
+              {
+                "type": "constant",
+                "value": true
+              }
+            ]
+          }
+        },
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "d1a27619-ab39-4615-9f1d-ad8c33419493"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "c60658dd-a8f1-4c8b-a8b2-64f98291d47e",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "4eecb380-41b3-4db0-b3fd-123891683587"
+            }
+          },
+          "condition": {
+            "op": "is",
+            "vars": [
+              {
+                "type": "field",
+                "value": "c60658dd-a8f1-4c8b-a8b2-64f98291d47e"
+              },
+              {
+                "type": "constant",
+                "value": false
+              }
+            ]
+          }
+        },
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "4a8d539f-555a-4216-a544-398b831b64fb"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "49430b7a-dbe7-4936-b7b3-c3eeff8e7e65",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "3dc14a2b-a26e-4d5d-a319-62df38c6c36c"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "04c59a11-e319-447d-81f0-7a00e47cf7a8",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "3ada98e4-da41-4611-be21-e8c1facf0c0a"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "37022161-06bc-49c1-b4a0-dc9a872522e3",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "970eec27-769a-4c6a-9b58-e46553227ced"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "6a133370-f99a-48b5-b83e-130126179175",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "92ab9012-a526-4fcd-b1c9-f1100fa13080"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "1ae7fae5-2313-45d1-acc6-c7f7083b6096",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "21632cd6-508e-4c2c-b894-a739d1861e41"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "d1a27619-ab39-4615-9f1d-ad8c33419493",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "c60658dd-a8f1-4c8b-a8b2-64f98291d47e"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "a6982089-e8e1-4a2d-8298-fd415fa479de",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "adcbee78-a3d8-4925-89e0-51b57e528ded"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "2b20a22b-7edf-4985-87e3-3500f2808ac9",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "cd91ee1e-f782-4c45-be2e-83e75779d50e"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "cd91ee1e-f782-4c45-be2e-83e75779d50e",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "94306f51-e2c2-403b-869b-e5fb1e4ec776"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "114972ac-c320-421c-b0a9-2d736145973a",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "bae63ab2-8c29-4bc3-9aa3-041984e24f2c"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "bae63ab2-8c29-4bc3-9aa3-041984e24f2c",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "21c7c576-3c9e-4628-92ac-fb22c9026627"
+            }
+          },
+          "condition": {
+            "op": "is",
+            "vars": [
+              {
+                "type": "field",
+                "value": "bae63ab2-8c29-4bc3-9aa3-041984e24f2c"
+              },
+              {
+                "type": "choice",
+                "value": "b1b36e84-1f8e-45a7-b11d-cccbdc77c9c6"
+              }
+            ]
+          }
+        },
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "92dfa0d8-18e7-4e8b-817a-52d91f570e3f"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "21c7c576-3c9e-4628-92ac-fb22c9026627",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "92dfa0d8-18e7-4e8b-817a-52d91f570e3f"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -8,7 +8,8 @@ import { PageHeader } from '@/components/shared/page-header'
 import { StatCard } from '@/components/shared/stat-card'
 import { FactFindTypeBadge, UserStatusBadge } from '@/components/shared/status-badge'
 import { requireAdmin } from '@/lib/auth'
-import { getAdminStats, getRecentActivity } from '@/lib/queries'
+import { getAdminStats } from '@/lib/queries'
+import { SubmissionLoadError } from '@/components/submissions/submission-load-error'
 import { createClient } from '@/lib/supabase/server'
 import { formatDate, formatRelative } from '@/lib/utils'
 
@@ -18,9 +19,9 @@ export default async function AdminDashboardPage() {
   await requireAdmin()
   const supabase = await createClient()
 
-  const [stats, activity, registrations, submissions] = await Promise.all([
+  const [stats, activityResult, registrations, submissions] = await Promise.all([
     getAdminStats(),
-    getRecentActivity(null, 6),
+    supabase.from('activity_log').select('id, title, description, created_at').order('created_at', { ascending: false }).limit(6),
     supabase
       .from('profiles')
       .select('id, name, company_name, email, status, created_at')
@@ -36,6 +37,7 @@ export default async function AdminDashboardPage() {
   ])
 
   const recentRegistrations = registrations.data ?? []
+  const activity = activityResult.data ?? []
   const recentSubmissions = (submissions.data ?? []) as unknown as Array<{
     id: string
     client_name: string
@@ -51,38 +53,41 @@ export default async function AdminDashboardPage() {
         title="Admin dashboard"
         description="Platform-wide view of advisers, approvals and client submissions."
         actions={
+          <div className="flex flex-wrap gap-2">
+          <Button variant="outline" asChild><Link href="/admin/imports">Existing advisers</Link></Button>
           <Button asChild>
             <Link href="/admin/users?status=pending">
               Review approvals
-              {stats.pendingUsers > 0 && (
+              {stats.pendingUsers !== null && stats.pendingUsers > 0 && (
                 <span className="ml-1 rounded-full bg-accent px-1.5 py-0.5 text-[11px] font-semibold text-accent-foreground">
                   {stats.pendingUsers}
                 </span>
               )}
             </Link>
           </Button>
+          </div>
         }
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Total users" value={stats.totalUsers} icon={Users} href="/admin/users" />
+        <StatCard label="Total users" value={stats.totalUsers ?? '—'} icon={Users} href="/admin/users" />
         <StatCard
           label="Pending approvals"
-          value={stats.pendingUsers}
+          value={stats.pendingUsers ?? '—'}
           icon={Clock}
           href="/admin/users?status=pending"
-          description={stats.pendingUsers > 0 ? 'Waiting on you' : 'All caught up'}
-          emphasis={stats.pendingUsers > 0}
+          description={stats.pendingUsers === null ? 'Currently unavailable' : stats.pendingUsers > 0 ? 'Waiting on you' : 'All caught up'}
+          emphasis={stats.pendingUsers !== null && stats.pendingUsers > 0}
         />
         <StatCard
           label="Approved users"
-          value={stats.approvedUsers}
+          value={stats.approvedUsers ?? '—'}
           icon={CheckCircle2}
           href="/admin/users?status=approved"
         />
         <StatCard
           label="Total submissions"
-          value={stats.totalSubmissions}
+          value={stats.totalSubmissions ?? '—'}
           icon={FileText}
           href="/admin/submissions"
         />
@@ -101,7 +106,7 @@ export default async function AdminDashboardPage() {
             </Button>
           </CardHeader>
           <CardContent className="p-0">
-            {recentRegistrations.length === 0 ? (
+            {registrations.error ? <SubmissionLoadError title="Registrations could not be loaded" /> : recentRegistrations.length === 0 ? (
               <EmptyState icon={UserPlus} title="No registrations yet" />
             ) : (
               <ul className="divide-y">
@@ -136,7 +141,7 @@ export default async function AdminDashboardPage() {
             </Button>
           </CardHeader>
           <CardContent className="p-0">
-            {recentSubmissions.length === 0 ? (
+            {submissions.error ? <SubmissionLoadError /> : recentSubmissions.length === 0 ? (
               <EmptyState icon={FileText} title="No submissions yet" />
             ) : (
               <ul className="divide-y">
@@ -179,7 +184,7 @@ export default async function AdminDashboardPage() {
           <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent className="p-0">
-          {activity.length === 0 ? (
+          {activityResult.error ? <SubmissionLoadError title="Activity could not be loaded" /> : activity.length === 0 ? (
             <EmptyState icon={Activity} title="No activity yet" />
           ) : (
             <ul className="divide-y">

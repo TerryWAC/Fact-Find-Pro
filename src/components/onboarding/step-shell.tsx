@@ -9,7 +9,7 @@ interface StepShellProps {
 /** Consistent heading + body wrapper for each wizard step. */
 export function StepShell({ title, description, children }: StepShellProps) {
   return (
-    <div className="space-y-6">
+    <div className="mx-auto w-full max-w-3xl space-y-6">
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
         {description && (

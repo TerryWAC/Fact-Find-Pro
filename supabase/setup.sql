@@ -11,7 +11,7 @@
    WHAT IT CREATES
      Tables      profiles, factfind_forms, factfind_submissions,
                  email_templates, email_log, activity_log, team_members,
-                 admin_allowlist
+                 admin_allowlist, adviser_imports
      Security    Row Level Security on every table, so an adviser can only
                  read their own submissions and only admins see everything
      Automation  a signup creates a pending profile; approving an adviser
@@ -20,8 +20,9 @@
                  approved automatically at signup (and approved now if the
                  account already exists). Add more with:
                  insert into public.admin_allowlist (email) values ('...');
-     Public API  resolve_factfind_form() and submit_factfind(), the only way
-                 the public client-facing pages touch the database
+     Public API  resolve_factfind_form() reads active adviser branding
+     Submission  submit_factfind() is server-only; the app validates answers
+                 against the Typeform-derived schemas before writing
      Onboarding  firm details, delivery preferences and the team roster the
                  six-step setup wizard writes to
      Branding    logo, photo and brand colour per adviser, used on client
@@ -30,10 +31,12 @@
      Storage     branding and submission-upload buckets
 
    AFTERWARDS
-     Sign up through the app with an allowlisted email, or run
-     create-test-user.sql to create an account with a known password.
-     Optionally run seed.sql for demo data (development only, it contains
-     plaintext demo passwords).
+     Configure SUPABASE_SECRET_KEY on the server. Submissions require the
+     validated server action; direct anonymous database writes are denied.
+     Register through the app and verify your email. The named allowlisted
+     operator is approved automatically; other advisers require approval.
+     Use npm run preview:client for fictional local accounts and captured
+     data. The legacy seed and direct password-reset helpers are disabled.
 
    NOTE ON COMMENTS
      This file deliberately uses block comments only. Some editors mangle the
@@ -45,7 +48,7 @@
    ==========================================================================
 */
 
-/* ======================= PART 1 of 7  Schema, RLS, triggers and public RPCs ======================= */
+/* ======================= PART 1 of 11  Schema, RLS, triggers and public RPCs ======================= */
 
 /*
    =============================================================================
@@ -654,7 +657,7 @@ grant execute on function public.submit_factfind(public.factfind_type, text, tex
 grant execute on function public.is_admin() to authenticated;
 grant execute on function public.is_approved() to authenticated;
 
-/* ======================= PART 2 of 7  Default notification email templates ======================= */
+/* ======================= PART 2 of 11  Default notification email templates ======================= */
 
 /*
    =============================================================================
@@ -738,7 +741,7 @@ values
   )
 on conflict (key) do nothing;
 
-/* ======================= PART 3 of 7  Storage buckets and their policies ======================= */
+/* ======================= PART 3 of 11  Storage buckets and their policies ======================= */
 
 /*
    =============================================================================
@@ -789,7 +792,7 @@ create policy "submission_uploads_admin_all" on storage.objects
   using (bucket_id = 'submission-uploads' and public.is_admin())
   with check (bucket_id = 'submission-uploads' and public.is_admin());
 
-/* ======================= PART 4 of 7  Onboarding fields and the team roster ======================= */
+/* ======================= PART 4 of 11  Onboarding fields and the team roster ======================= */
 
 /*
    =============================================================================
@@ -882,7 +885,7 @@ create policy "team_members_admin_all" on public.team_members
 
 grant select, insert, update, delete on public.team_members to authenticated, service_role;
 
-/* ======================= PART 5 of 7  Admin allowlist (auto-approves the first admin) ======================= */
+/* ======================= PART 5 of 11  Admin allowlist (auto-approves the first admin) ======================= */
 
 /*
    ==========================================================================
@@ -1014,7 +1017,7 @@ begin
   end loop;
 end $$;
 
-/* ======================= PART 6 of 7  Adviser branding (colour check, adviser photo on public links) ======================= */
+/* ======================= PART 6 of 11  Adviser branding (colour check, adviser photo on public links) ======================= */
 
 /*
    =============================================================================
@@ -1069,7 +1072,7 @@ $$;
 revoke all on function public.resolve_factfind_form(public.factfind_type, text) from public;
 grant execute on function public.resolve_factfind_form(public.factfind_type, text) to anon, authenticated;
 
-/* ======================= PART 7 of 7  PDF copy to the client (preference and email template) ======================= */
+/* ======================= PART 7 of 11  PDF copy to the client (preference and email template) ======================= */
 
 /*
    =============================================================================
@@ -1104,3 +1107,157 @@ values
     'Hi {{client_name}},\n\nThank you for completing your {{form_type}} FactFind. A copy of everything you told us is attached as a PDF for your records.\n\nReference: {{reference}}\nSubmitted: {{submitted_at}}\n\nIf anything needs correcting, just reply to this email and {{adviser_name}} will update it.\n\n{{adviser_name}}\n{{company_name}}'
   )
 on conflict (key) do nothing;
+
+/* ======================= PART 8 of 11  Internal function access and fixed search paths ======================= */
+
+/* Internal helpers run through owner-executed triggers/functions, never the Data API. */
+revoke execute on function public.generate_adviser_slug() from public, anon, authenticated;
+revoke execute on function public.generate_submission_reference() from public, anon, authenticated;
+revoke execute on function public.provision_factfind_forms(uuid) from public, anon, authenticated;
+revoke execute on function public.is_allowlisted_admin(text) from public, anon, authenticated;
+revoke execute on function public.handle_new_user() from public, anon, authenticated;
+revoke execute on function public.handle_profile_status_change() from public, anon, authenticated;
+
+alter function public.generate_submission_reference() set search_path = pg_catalog, public;
+alter function public.touch_updated_at() set search_path = pg_catalog, public;
+
+/*
+   These remain public by design: client links need no account. is_admin and
+   is_approved only inspect auth.uid() and are needed by the existing RLS policies.
+   resolve_factfind_form and submit_factfind enforce the active adviser link.
+ */
+
+/* ======================= PART 9 of 11  Require validated server writes for completed FactFinds ======================= */
+
+/*
+   Apply after deploying the server action that uses the server-only key.
+   Public clients can resolve active links, but cannot bypass Typeform validation.
+ */
+revoke execute on function public.submit_factfind(public.factfind_type, text, text, text, text, jsonb, jsonb)
+  from public, anon, authenticated;
+grant execute on function public.submit_factfind(public.factfind_type, text, text, text, text, jsonb, jsonb)
+  to service_role;
+comment on function public.submit_factfind(public.factfind_type, text, text, text, text, jsonb, jsonb) is
+  'Server-only persistence after validation against the trusted Typeform-derived schema. Public link ownership and active-account checks remain enforced.';
+
+/* ======================= PART 10 of 11  Private existing-adviser directory and reserved FactFind accounts ======================= */
+
+/* Imported advisers are prepared privately until their individual activation is released. */
+alter table public.profiles add column if not exists import_pending boolean not null default false;
+
+create table if not exists public.adviser_imports (
+  source_id text primary key,
+  source_form_id text not null,
+  batch_label text not null,
+  batch_sha256 text not null,
+  source_row integer not null check (source_row > 0),
+  decision text not null check (decision in ('include','hold','exclude_test','exclude_invalid','supersede')),
+  decision_reason text not null,
+  superseded_by text,
+  name text not null,
+  email text not null,
+  company_name text not null,
+  source_submitted_at timestamptz,
+  source_profile jsonb not null default '{}'::jsonb,
+  profile_prefill jsonb not null default '{}'::jsonb,
+  follow_up jsonb not null default '[]'::jsonb,
+  asset_paths jsonb not null default '{}'::jsonb,
+  profile_id uuid references public.profiles(id) on delete set null,
+  created_at timestamptz not null default now(),
+  unique (source_form_id, source_row)
+);
+create index if not exists adviser_imports_profile_idx on public.adviser_imports(profile_id);
+create index if not exists adviser_imports_decision_idx on public.adviser_imports(decision);
+alter table public.adviser_imports enable row level security;
+revoke all on public.adviser_imports from anon, authenticated;
+grant select on public.adviser_imports to authenticated;
+grant all on public.adviser_imports to service_role;
+drop policy if exists adviser_imports_admin_read on public.adviser_imports;
+create policy adviser_imports_admin_read on public.adviser_imports for select to authenticated
+  using ((select public.is_admin()));
+
+/*
+   Only the trusted provisioning/activation service can change this marker.
+   Blocking status changes here also protects older admin deployments from sending
+   approval mail: their update fails before they reach the mail operation.
+ */
+create or replace function public.guard_imported_profile()
+returns trigger language plpgsql security invoker set search_path = pg_catalog, public as $$
+begin
+  if (tg_op = 'INSERT' and new.import_pending) or
+     (tg_op = 'UPDATE' and new.import_pending is distinct from old.import_pending) then
+    if current_user not in ('postgres', 'supabase_admin', 'service_role') then
+      raise exception 'Imported account activation is managed by the provisioning service.';
+    end if;
+  end if;
+  if new.import_pending and (new.status <> 'pending' or new.role <> 'adviser' or new.onboarding_completed_at is not null) then
+    raise exception 'Imported accounts must remain pending until activation is released.';
+  end if;
+  return new;
+end;
+$$;
+revoke all on function public.guard_imported_profile() from public, anon, authenticated;
+drop trigger if exists guard_imported_profile on public.profiles;
+create trigger guard_imported_profile before insert or update on public.profiles
+  for each row execute function public.guard_imported_profile();
+
+create or replace function public.guard_imported_form()
+returns trigger language plpgsql security invoker set search_path = pg_catalog, public as $$
+begin
+  if new.is_active and exists(select 1 from public.profiles p where p.id = new.adviser_id and p.import_pending) then
+    raise exception 'Prepared FactFind links remain inactive until adviser activation.';
+  end if;
+  return new;
+end;
+$$;
+revoke all on function public.guard_imported_form() from public, anon, authenticated;
+drop trigger if exists guard_imported_form on public.factfind_forms;
+create trigger guard_imported_form before insert or update on public.factfind_forms
+  for each row execute function public.guard_imported_form();
+
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('adviser-imports', 'adviser-imports', false, 5242880, array['image/png','image/jpeg','image/webp'])
+on conflict (id) do nothing;
+drop policy if exists adviser_import_assets_admin_read on storage.objects;
+create policy adviser_import_assets_admin_read on storage.objects for select to authenticated
+  using (bucket_id = 'adviser-imports' and (select public.is_admin()));
+
+/* ======================= PART 11 of 11  Adviser practice details and public business contacts ======================= */
+
+/* Optional, adviser-authored practice details. Existing accounts are not changed. */
+alter table public.profiles
+  add column if not exists contact_email text,
+  add column if not exists services text,
+  add column if not exists client_focus text;
+alter table public.profiles drop constraint if exists profiles_contact_email_length;
+alter table public.profiles add constraint profiles_contact_email_length check (char_length(contact_email) <= 254);
+alter table public.profiles drop constraint if exists profiles_services_length;
+alter table public.profiles add constraint profiles_services_length check (char_length(services) <= 600);
+alter table public.profiles drop constraint if exists profiles_client_focus_length;
+alter table public.profiles add constraint profiles_client_focus_length check (char_length(client_focus) <= 600);
+
+/* A return shape change requires DROP; the migration is applied atomically. */
+drop function if exists public.resolve_factfind_form(public.factfind_type, text);
+create function public.resolve_factfind_form(p_form_type public.factfind_type, p_slug text)
+returns table (
+  form_id uuid, adviser_id uuid, adviser_name text, company_name text,
+  logo_url text, avatar_url text, brand_colour text,
+  form_type public.factfind_type, is_active boolean,
+  job_title text, website text, business_location text,
+  contact_phone text, contact_email text, services text, client_focus text
+)
+language sql stable security definer set search_path = ''
+as $$
+  select f.id, f.adviser_id, p.name, p.company_name, p.logo_url, p.avatar_url,
+    p.brand_colour, f.form_type, f.is_active, p.job_title, p.website,
+    p.business_location, p.phone, p.contact_email, p.services, p.client_focus
+  from public.factfind_forms f
+  join public.profiles p on p.id = f.adviser_id
+  where f.form_type = p_form_type and f.unique_slug = p_slug
+    and f.is_active and p.status = 'approved' and not p.import_pending
+  limit 1;
+$$;
+revoke all on function public.resolve_factfind_form(public.factfind_type, text) from public;
+grant execute on function public.resolve_factfind_form(public.factfind_type, text) to anon, authenticated;
+comment on column public.profiles.contact_email is 'Optional public business contact and client-copy Reply-To; account email is unchanged.';
+notify pgrst, 'reload schema';

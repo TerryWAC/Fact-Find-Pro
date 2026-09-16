@@ -11,7 +11,7 @@ export const DEFAULT_BRAND = {
 
 /** Suggested swatches shown in the colour picker. */
 export const BRAND_COLOUR_PRESETS: { name: string; hex: string }[] = [
-  { name: 'Wealthy Advisers black', hex: '#0A0A0A' },
+  { name: 'Classic black', hex: '#0A0A0A' },
   { name: 'Gold', hex: '#E5B45C' },
   { name: 'Navy', hex: '#1E3A5F' },
   { name: 'Royal blue', hex: '#1D4ED8' },
@@ -57,7 +57,10 @@ export function relativeLuminance(hex: string): number {
 
 /** Black or white, whichever reads better on the given colour. */
 export function contrastForeground(hex: string): '#0A0A0A' | '#FFFFFF' {
-  return relativeLuminance(hex) > 0.35 ? '#0A0A0A' : '#FFFFFF'
+  const luminance = relativeLuminance(hex)
+  const darkContrast = (luminance + 0.05) / (relativeLuminance('#0A0A0A') + 0.05)
+  const whiteContrast = 1.05 / (luminance + 0.05)
+  return darkContrast > whiteContrast ? '#0A0A0A' : '#FFFFFF'
 }
 
 /** Mix a colour towards black (amount < 0) or white (amount > 0), amount in -1…1. */
@@ -107,7 +110,7 @@ export function brandTheme(colour: string | null | undefined): BrandTheme {
     colour: hex,
     onColour: contrastForeground(hex),
     accent: light ? shade(hex, -0.35) : shade(hex, 0.45),
-    strong: light ? shade(hex, -0.45) : hex,
+    strong: relativeLuminance(hex) > 0.18 ? shade(hex, -0.45) : hex,
     custom: true,
   }
 }

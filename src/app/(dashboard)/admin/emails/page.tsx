@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
-import { Mail, Info } from 'lucide-react'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Mail } from 'lucide-react'
+import { EmailConnection } from '@/components/admin/email-connection'
+import { emailConfiguration, emailConfigurationStatus } from '@/lib/email/config'
+import { hasAdminClient } from '@/lib/supabase/admin'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
@@ -12,9 +14,10 @@ import { DEFAULT_EMAIL_TEMPLATES, EMAIL_TEMPLATE_KEYS } from '@/lib/email/templa
 import { formatDate } from '@/lib/utils'
 
 export const metadata: Metadata = { title: 'Email Templates' }
+export const maxDuration = 60
 
 export default async function AdminEmailsPage() {
-  await requireAdmin()
+  const session = await requireAdmin()
   const supabase = await createClient()
 
   const [templatesResult, logResult] = await Promise.all([
@@ -45,7 +48,7 @@ export default async function AdminEmailsPage() {
     }
   })
 
-  const provider = process.env.RESEND_API_KEY ? 'Resend' : 'Log only (no provider configured)'
+  const configuration = emailConfigurationStatus(emailConfiguration(process.env))
 
   return (
     <>
@@ -54,13 +57,7 @@ export default async function AdminEmailsPage() {
         description="The notifications FactFind Pro sends. Edit the copy in the email_templates table — no deploy required."
       />
 
-      <Alert variant="info">
-        <Info />
-        <AlertDescription>
-          Delivery provider: <strong>{provider}</strong>. Without <code>RESEND_API_KEY</code> emails are
-          written to the server log and the <code>email_log</code> table so every flow stays testable.
-        </AlertDescription>
-      </Alert>
+      <EmailConnection {...configuration} recipient={session.email} automaticDeliveryReady={hasAdminClient()} />
 
       <div className="grid gap-4 md:grid-cols-2">
         {templates.map((template) => (
@@ -111,7 +108,7 @@ export default async function AdminEmailsPage() {
       <Card className="overflow-hidden p-0">
         <CardHeader className="p-6 pb-4">
           <CardTitle>Recent deliveries</CardTitle>
-          <CardDescription>The last 15 notifications FactFind Pro attempted to send.</CardDescription>
+          <CardDescription>The last 15 attempts. “Accepted” means Resend received the request; inbox delivery is not confirmed here.</CardDescription>
         </CardHeader>
         {log.length === 0 ? (
           <EmptyState
@@ -130,7 +127,7 @@ export default async function AdminEmailsPage() {
                   </p>
                 </div>
                 <Badge variant={entry.status === 'sent' ? 'success' : entry.status === 'failed' ? 'destructive' : 'secondary'}>
-                  {entry.status}
+                  {entry.status === 'sent' ? 'Accepted' : entry.status === 'logged' ? 'Logged only' : entry.status}
                 </Badge>
                 <span className="text-xs text-muted-foreground">{formatDate(entry.created_at, true)}</span>
               </li>

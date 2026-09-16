@@ -15,6 +15,8 @@ interface ImagePickerProps {
   defaultValue: string
   /** Headshots preview as a circle, logos as a rounded square. */
   shape?: 'square' | 'circle'
+  onValueChange?: (value: string) => void
+  persistProfile?: boolean
 }
 
 /**
@@ -23,9 +25,10 @@ interface ImagePickerProps {
  * Uploads go through a server action rather than a browser Supabase client, so
  * no public keys need to be inlined at build time.
  */
-export function ImagePicker({ kind, label, name, defaultValue, shape = 'square' }: ImagePickerProps) {
+export function ImagePicker({ kind, label, name, defaultValue, shape = 'square', onValueChange, persistProfile = true }: ImagePickerProps) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const [value, setValue] = useState(defaultValue)
+  const [value, setInternalValue] = useState(defaultValue)
+  function setValue(next: string) { setInternalValue(next); onValueChange?.(next) }
   const [pending, startTransition] = useTransition()
 
   function handleFile(file: File | undefined) {
@@ -35,7 +38,7 @@ export function ImagePicker({ kind, label, name, defaultValue, shape = 'square' 
     formData.append('file', file)
 
     startTransition(async () => {
-      const result = await uploadBrandImageAction(kind, formData)
+      const result = await uploadBrandImageAction(kind, formData, persistProfile)
       if (!result.ok || !result.url) {
         toast.error(result.error ?? 'Could not upload that image')
         return
@@ -58,13 +61,13 @@ export function ImagePicker({ kind, label, name, defaultValue, shape = 'square' 
         >
           {value ? (
             // eslint-disable-next-line @next/next/no-img-element -- user-supplied URL of unknown origin and size
-            <img src={value} alt="" className="h-full w-full object-cover" />
+            <img src={value} alt="" className={cn('h-full w-full', kind === 'logo' ? 'object-contain p-1' : 'object-cover')} />
           ) : (
             'None yet'
           )}
         </div>
 
-        <div className="min-w-[16rem] flex-1 space-y-2">
+        <div className="min-w-0 basis-48 flex-1 space-y-2">
           <input
             ref={inputRef}
             type="file"

@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { FieldError } from '@/components/shared/field-error'
 import { SubmitButton } from '@/components/shared/submit-button'
+import { PracticeFields } from '@/components/shared/practice-fields'
+import type { PracticeDetails } from '@/lib/practice'
 
 const initialState: SettingsActionState = {}
 
@@ -16,7 +18,7 @@ export function ProfileForm({
   defaultValues,
   email,
 }: {
-  defaultValues: { name: string; company_name: string; phone: string }
+  defaultValues: { name: string; company_name: string; phone: string; fca_number?: string | null } & PracticeDetails
   email: string
 }) {
   const [state, formAction] = useActionState(updateProfileAction, initialState)
@@ -40,7 +42,7 @@ export function ProfileForm({
           <Input
             id="name"
             name="name"
-            defaultValue={defaultValues.name}
+            defaultValue={state.values?.name ?? defaultValues.name}
             required
             aria-invalid={Boolean(state.fieldErrors?.name)}
           />
@@ -53,11 +55,12 @@ export function ProfileForm({
             id="phone"
             name="phone"
             type="tel"
-            defaultValue={defaultValues.phone}
+            defaultValue={state.values?.phone ?? defaultValues.phone}
             required
             aria-invalid={Boolean(state.fieldErrors?.phone)}
           />
           <FieldError message={state.fieldErrors?.phone} />
+          <p className="text-xs text-muted-foreground">Shown on your client forms. Use your business contact number; sample mobile numbers are hidden.</p>
         </div>
       </div>
 
@@ -66,7 +69,7 @@ export function ProfileForm({
         <Input
           id="company_name"
           name="company_name"
-          defaultValue={defaultValues.company_name}
+          defaultValue={state.values?.company_name ?? defaultValues.company_name}
           required
           aria-invalid={Boolean(state.fieldErrors?.company_name)}
         />
@@ -81,6 +84,7 @@ export function ProfileForm({
         </p>
       </div>
 
+      <div className="border-t pt-5"><PracticeFields values={{...defaultValues, ...state.values}} errors={state.fieldErrors} /></div>
       <SubmitButton pendingLabel="Saving…">Save changes</SubmitButton>
     </form>
   )

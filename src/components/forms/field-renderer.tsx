@@ -40,6 +40,10 @@ const TEXT_INPUT_TYPES: Record<string, string> = {
  */
 export function FieldRenderer({ field, control, register, error }: FieldRendererProps) {
   const spanClass = field.colSpan === 1 ? 'sm:col-span-1' : 'sm:col-span-2'
+  const describedBy =
+    [field.helpText && `${field.id}-help`, error && `${field.id}-error`]
+      .filter(Boolean)
+      .join(' ') || undefined
 
   // ---- Presentational -------------------------------------------------------
   if (field.type === 'divider') {
@@ -54,7 +58,12 @@ export function FieldRenderer({ field, control, register, error }: FieldRenderer
 
   if (field.type === 'paragraph') {
     return (
-      <p className={cn('rounded-lg border border-dashed bg-muted/40 p-4 text-sm leading-relaxed text-muted-foreground', spanClass)}>
+      <p
+        className={cn(
+          'rounded-lg border border-dashed bg-muted/40 p-4 text-sm leading-relaxed text-muted-foreground',
+          spanClass,
+        )}
+      >
         {field.label}
       </p>
     )
@@ -72,7 +81,9 @@ export function FieldRenderer({ field, control, register, error }: FieldRenderer
   ) : null
 
   const helpNode = field.helpText ? (
-    <p className="text-xs text-muted-foreground">{field.helpText}</p>
+    <p id={`${field.id}-help`} className="text-xs text-muted-foreground">
+      {field.helpText}
+    </p>
   ) : null
 
   // ---- Single checkbox ------------------------------------------------------
@@ -90,6 +101,8 @@ export function FieldRenderer({ field, control, register, error }: FieldRenderer
                 onCheckedChange={(checked) => controlled.onChange(checked === true)}
                 className="mt-0.5"
                 aria-invalid={Boolean(error)}
+                aria-describedby={describedBy}
+                aria-required={field.required}
               />
               <Label htmlFor={field.id} className="text-sm font-normal leading-relaxed">
                 {field.label}
@@ -103,7 +116,7 @@ export function FieldRenderer({ field, control, register, error }: FieldRenderer
           )}
         />
         {helpNode}
-        <FieldError message={error} />
+        <FieldError id={`${field.id}-error`} message={error} />
       </div>
     )
   }
@@ -119,9 +132,22 @@ export function FieldRenderer({ field, control, register, error }: FieldRenderer
           render={({ field: controlled }) => {
             const values = Array.isArray(controlled.value) ? (controlled.value as string[]) : []
             return (
-              <div className="grid gap-2 sm:grid-cols-2">
+              <div
+                id={field.id}
+                role="group"
+                aria-label={field.label}
+                aria-describedby={describedBy}
+                className="grid gap-2 sm:grid-cols-2"
+              >
                 {(field.options ?? []).map((option) => (
-                  <div key={option.value} className="flex items-start gap-3 rounded-lg border p-3">
+                  <div
+                    key={option.value}
+                    data-selected={values.includes(option.value)}
+                    className={cn(
+                      'factfind-choice flex items-start gap-3 rounded-lg border p-3',
+                      values.includes(option.value) && 'border-accent bg-accent/10',
+                    )}
+                  >
                     <Checkbox
                       id={`${field.id}-${option.value}`}
                       checked={values.includes(option.value)}
@@ -134,10 +160,15 @@ export function FieldRenderer({ field, control, register, error }: FieldRenderer
                       }
                       className="mt-0.5"
                     />
-                    <Label htmlFor={`${field.id}-${option.value}`} className="text-sm font-normal leading-relaxed">
+                    <Label
+                      htmlFor={`${field.id}-${option.value}`}
+                      className="text-sm font-normal leading-relaxed"
+                    >
                       {option.label}
                       {option.description && (
-                        <span className="mt-0.5 block text-xs text-muted-foreground">{option.description}</span>
+                        <span className="mt-0.5 block text-xs text-muted-foreground">
+                          {option.description}
+                        </span>
                       )}
                     </Label>
                   </div>
@@ -147,7 +178,7 @@ export function FieldRenderer({ field, control, register, error }: FieldRenderer
           }}
         />
         {helpNode}
-        <FieldError message={error} />
+        <FieldError id={`${field.id}-error`} message={error} />
       </div>
     )
   }
@@ -161,6 +192,7 @@ export function FieldRenderer({ field, control, register, error }: FieldRenderer
             { value: 'no', label: 'No' },
           ]
         : (field.options ?? [])
+    const compactChoices = options.length === 2 && options.every((option) => /^(yes|no)$/i.test(option.label))
 
     return (
       <div className={cn('space-y-2', spanClass)}>
@@ -171,21 +203,30 @@ export function FieldRenderer({ field, control, register, error }: FieldRenderer
           render={({ field: controlled }) => (
             <div
               role="radiogroup"
+              id={field.id}
               aria-label={field.label}
-              className={cn('grid gap-2', field.type === 'yesno' ? 'sm:grid-cols-2' : 'sm:grid-cols-2')}
+              aria-invalid={Boolean(error)}
+              aria-describedby={describedBy}
+              aria-required={field.required}
+              className={cn(
+                'grid gap-2',
+                compactChoices ? 'grid-cols-2' : 'sm:grid-cols-2',
+              )}
             >
               {options.map((option) => {
                 const checked = controlled.value === option.value
                 return (
                   <label
                     key={option.value}
+                    data-selected={checked}
                     className={cn(
-                      'flex cursor-pointer items-start gap-3 rounded-lg border p-3 text-sm transition-colors',
+                      'factfind-choice flex min-h-12 cursor-pointer items-start gap-3 rounded-lg border p-3 text-sm has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring has-[:focus-visible]:ring-offset-2',
                       checked ? 'border-accent bg-accent/10' : 'hover:bg-muted/50',
                     )}
                   >
                     <input
                       type="radio"
+                      aria-describedby={describedBy}
                       name={field.id}
                       value={option.value}
                       checked={checked}
@@ -195,7 +236,9 @@ export function FieldRenderer({ field, control, register, error }: FieldRenderer
                     <span>
                       {option.label}
                       {'description' in option && option.description && (
-                        <span className="mt-0.5 block text-xs text-muted-foreground">{option.description}</span>
+                        <span className="mt-0.5 block text-xs text-muted-foreground">
+                          {option.description}
+                        </span>
                       )}
                     </span>
                   </label>
@@ -205,7 +248,7 @@ export function FieldRenderer({ field, control, register, error }: FieldRenderer
           )}
         />
         {helpNode}
-        <FieldError message={error} />
+        <FieldError id={`${field.id}-error`} message={error} />
       </div>
     )
   }
@@ -223,7 +266,12 @@ export function FieldRenderer({ field, control, register, error }: FieldRenderer
               value={typeof controlled.value === 'string' ? controlled.value : ''}
               onValueChange={controlled.onChange}
             >
-              <SelectTrigger id={field.id} aria-invalid={Boolean(error)}>
+              <SelectTrigger
+                id={field.id}
+                aria-invalid={Boolean(error)}
+                aria-describedby={describedBy}
+                aria-required={field.required}
+              >
                 <SelectValue placeholder={field.placeholder ?? 'Please choose…'} />
               </SelectTrigger>
               <SelectContent>
@@ -237,7 +285,7 @@ export function FieldRenderer({ field, control, register, error }: FieldRenderer
           )}
         />
         {helpNode}
-        <FieldError message={error} />
+        <FieldError id={`${field.id}-error`} message={error} />
       </div>
     )
   }
@@ -252,10 +300,12 @@ export function FieldRenderer({ field, control, register, error }: FieldRenderer
           rows={field.rows ?? 4}
           placeholder={field.placeholder}
           aria-invalid={Boolean(error)}
+          aria-describedby={describedBy}
+          aria-required={field.required}
           {...register(field.id)}
         />
         {helpNode}
-        <FieldError message={error} />
+        <FieldError id={`${field.id}-error`} message={error} />
       </div>
     )
   }
@@ -274,8 +324,24 @@ export function FieldRenderer({ field, control, register, error }: FieldRenderer
           id={field.id}
           type={TEXT_INPUT_TYPES[field.type] ?? 'text'}
           inputMode={['number', 'currency', 'percent'].includes(field.type) ? 'decimal' : undefined}
+          autoComplete={
+            field.identity
+              ? (
+                  {
+                    client_name: 'name',
+                    client_first_name: 'given-name',
+                    client_last_name: 'family-name',
+                    client_email: 'email',
+                    client_phone: 'tel',
+                  } as const
+                )[field.identity]
+              : undefined
+          }
+          step={['currency', 'percent', 'number'].includes(field.type) ? 'any' : undefined}
           placeholder={field.placeholder}
           aria-invalid={Boolean(error)}
+          aria-describedby={describedBy}
+          aria-required={field.required}
           className={cn(field.type === 'currency' && 'pl-7', field.type === 'percent' && 'pr-8')}
           {...register(field.id)}
         />
@@ -286,7 +352,7 @@ export function FieldRenderer({ field, control, register, error }: FieldRenderer
         )}
       </div>
       {helpNode}
-      <FieldError message={error} />
+      <FieldError id={`${field.id}-error`} message={error} />
     </div>
   )
 }

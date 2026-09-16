@@ -54,7 +54,7 @@ export function TeamStep({ members }: { members: TeamMember[] }) {
   return (
     <StepShell
       title="Your team"
-      description="Add the advisers and admin staff who will use FactFind Pro. Each one gets their own set of client links, pointed at the same delivery settings, so every fact find lands in one place. You can add more later under Settings."
+      description="Keep an optional directory of your colleagues. Adding someone here does not create a login, client links or access to your submissions. Each adviser must register and be approved for their own workspace. Manage this directory from Settings."
     >
       {state.error && (
         <Alert variant="destructive">
@@ -114,7 +114,7 @@ export function TeamStep({ members }: { members: TeamMember[] }) {
             </div>
           </div>
 
-          <ImagePicker kind="headshot" label="Headshot" name="headshot_url" defaultValue="" shape="circle" />
+          <ImagePicker kind="headshot" label="Headshot" name="headshot_url" defaultValue="" shape="circle" persistProfile={false} />
 
           <SubmitButton variant="accent">
             <UserPlus className="h-4 w-4" />
@@ -173,7 +173,7 @@ export function TeamStep({ members }: { members: TeamMember[] }) {
             <Link href="/onboarding?step=6">Skip for now</Link>
           </Button>
           <Button asChild variant="accent" className="sm:min-w-[11rem]">
-            <Link href="/onboarding?step=6">Save and continue</Link>
+            <Link href="/onboarding?step=6">Continue to my links</Link>
           </Button>
         </div>
       </div>

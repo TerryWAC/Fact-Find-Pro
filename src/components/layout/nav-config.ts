@@ -7,6 +7,7 @@ import {
   Users,
   Inbox,
   Mail,
+  BookOpen,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -35,7 +36,10 @@ export const ADVISER_NAV: NavSection[] = [
   },
   {
     label: 'Account',
-    items: [{ label: 'Settings', href: '/settings', icon: Settings }],
+    items: [
+      { label: 'How it works', href: '/how-it-works', icon: BookOpen },
+      { label: 'Settings', href: '/settings', icon: Settings },
+    ],
   },
 ]
 
@@ -46,6 +50,7 @@ export const ADMIN_NAV: NavSection[] = [
     items: [
       { label: 'Admin Dashboard', href: '/admin', icon: ShieldCheck },
       { label: 'User Approvals', href: '/admin/users', icon: Users, matchPrefix: true },
+      { label: 'Existing Advisers', href: '/admin/imports', icon: Link2, matchPrefix: true },
       { label: 'All Submissions', href: '/admin/submissions', icon: Inbox },
       { label: 'Email Templates', href: '/admin/emails', icon: Mail },
     ],

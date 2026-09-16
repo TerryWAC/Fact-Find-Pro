@@ -20,6 +20,10 @@ TITLES = {
     '20250101000004_admin_allowlist.sql': 'Admin allowlist (auto-approves the first admin)',
     '20250101000005_branding.sql': 'Adviser branding (colour check, adviser photo on public links)',
     '20250101000006_client_copy.sql': 'PDF copy to the client (preference and email template)',
+    '20260912191541_harden_internal_functions.sql': 'Internal function access and fixed search paths',
+    '20260913211513_restrict_factfind_writes_to_validated_server.sql': 'Require validated server writes for completed FactFinds',
+    '20260913232741_stage_existing_advisers.sql': 'Private existing-adviser directory and reserved FactFind accounts',
+    '20260914003747_adviser_practice_contact.sql': 'Adviser practice details and public business contacts',
 }
 
 HEADER = """/*
@@ -35,7 +39,7 @@ HEADER = """/*
    WHAT IT CREATES
      Tables      profiles, factfind_forms, factfind_submissions,
                  email_templates, email_log, activity_log, team_members,
-                 admin_allowlist
+                 admin_allowlist, adviser_imports
      Security    Row Level Security on every table, so an adviser can only
                  read their own submissions and only admins see everything
      Automation  a signup creates a pending profile; approving an adviser
@@ -44,8 +48,9 @@ HEADER = """/*
                  approved automatically at signup (and approved now if the
                  account already exists). Add more with:
                  insert into public.admin_allowlist (email) values ('...');
-     Public API  resolve_factfind_form() and submit_factfind(), the only way
-                 the public client-facing pages touch the database
+     Public API  resolve_factfind_form() reads active adviser branding
+     Submission  submit_factfind() is server-only; the app validates answers
+                 against the Typeform-derived schemas before writing
      Onboarding  firm details, delivery preferences and the team roster the
                  six-step setup wizard writes to
      Branding    logo, photo and brand colour per adviser, used on client
@@ -54,10 +59,12 @@ HEADER = """/*
      Storage     branding and submission-upload buckets
 
    AFTERWARDS
-     Sign up through the app with an allowlisted email, or run
-     create-test-user.sql to create an account with a known password.
-     Optionally run seed.sql for demo data (development only, it contains
-     plaintext demo passwords).
+     Configure SUPABASE_SECRET_KEY on the server. Submissions require the
+     validated server action; direct anonymous database writes are denied.
+     Register through the app and verify your email. The named allowlisted
+     operator is approved automatically; other advisers require approval.
+     Use npm run preview:client for fictional local accounts and captured
+     data. The legacy seed and direct password-reset helpers are disabled.
 
    NOTE ON COMMENTS
      This file deliberately uses block comments only. Some editors mangle the
@@ -78,8 +85,14 @@ if missing:
 parts = [HEADER]
 for i, p in enumerate(files, 1):
     parts.append(f'\n/* {"=" * 23} PART {i} of {len(files)}  {TITLES[p.name]} {"=" * 23} */\n\n')
-    parts.append(convert(p.read_text()).rstrip() + '\n')
+    parts.append(convert(p.read_text(encoding='utf-8')).rstrip() + '\n')
 text = ''.join(parts)
 assert '--' not in text, 'a double hyphen survived'
-OUT.write_text(text)
-print(f'{OUT.relative_to(ROOT)}: {len(files)} migrations, {len(text.splitlines())} lines')
+if '--check' in sys.argv:
+    if not OUT.exists() or OUT.read_text(encoding='utf-8') != text:
+        sys.exit('supabase/setup.sql is stale. Run python scripts/build-setup-sql.py')
+    print(f'supabase/setup.sql matches all {len(files)} migrations')
+else:
+    OUT.write_text(text, encoding='utf-8', newline='\n')
+    print(f'{OUT.relative_to(ROOT)}: {len(files)} migrations, {len(text.splitlines())} lines')
+

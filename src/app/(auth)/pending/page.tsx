@@ -19,13 +19,19 @@ const STEPS = [
   {
     icon: Clock,
     title: 'Awaiting approval',
-    body: 'The Wealthy Advisers Club team reviews new registrations, usually within one working day.',
+    body: 'The Wealthy Advisers Club team reviews your registration. We will email you when a decision is made.',
     done: false,
   },
   {
     icon: ShieldCheck,
-    title: 'Links go live',
-    body: 'Once approved, your four unique client FactFind links are generated automatically.',
+    title: 'Make it yours',
+    body: 'Once approved, sign in to add your logo, colours and adviser details, and choose your PDF email preferences.',
+    done: false,
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Share your four links',
+    body: 'Your Mortgage, Protection, Medical and Home links are created automatically on approval. Copy them from your dashboard after setup.',
     done: false,
   },
 ]
@@ -45,7 +51,7 @@ export default async function PendingPage({
     <div className="space-y-6">
       <div className="space-y-2">
         <h1 className="text-2xl font-semibold tracking-tight">
-          {status === 'rejected' ? 'Registration not approved' : 'Thanks — you’re on the list'}
+          {status === 'rejected' ? 'Registration not approved' : 'Your setup is in progress'}
         </h1>
         <p className="text-sm leading-relaxed text-muted-foreground">
           {status === 'rejected'
@@ -54,7 +60,7 @@ export default async function PendingPage({
         </p>
       </div>
 
-      {email && (
+      {email && status !== 'rejected' && (
         <Alert variant="info">
           <Mail />
           <AlertDescription>
@@ -65,8 +71,8 @@ export default async function PendingPage({
               </>
             ) : (
               <>
-                We will email <strong className="font-medium">{email}</strong> the moment your account is
-                approved.
+                Watch <strong className="font-medium">{email}</strong> for your approval email, then sign in
+                to finish setting up your practice.
               </>
             )}
           </AlertDescription>
@@ -107,6 +113,10 @@ export default async function PendingPage({
           </Button>
         )}
       </div>
+      <p className="text-xs leading-relaxed text-muted-foreground">
+        You can read the <Link href="/terms" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">terms of use</Link> and{' '}
+        <Link href="/privacy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">privacy notice</Link> here at any time.
+      </p>
     </div>
   )
 }

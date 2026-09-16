@@ -4,7 +4,7 @@ import type { Database } from './database.types'
 import { isSupabaseConfigured, requireSupabaseEnv, supabaseConfigMessage } from '@/lib/env'
 
 /** Routes that never require a session. */
-const PUBLIC_PREFIXES = ['/login', '/signup', '/forgot-password', '/reset-password', '/pending', '/f/', '/auth/']
+const PUBLIC_PREFIXES = ['/login', '/signup', '/forgot-password', '/reset-password', '/pending', '/terms', '/privacy', '/f/', '/auth/']
 
 const ADMIN_PREFIX = '/admin'
 
@@ -23,6 +23,8 @@ function isPublicPath(pathname: string): boolean {
  */
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request })
+  // App identity assets contain no account data and must work before sign-in.
+  if (request.nextUrl.pathname === '/app-icon' || request.nextUrl.pathname === '/manifest.webmanifest') return response
 
   // Without Supabase credentials there is no session to read. Let the request
   // through so the app can render a page explaining the misconfiguration,
@@ -80,7 +82,7 @@ export async function updateSession(request: NextRequest) {
   const isAdmin = profile?.role === 'admin' && isApproved
 
   // Public FactFind pages stay public even for signed-in users.
-  if (pathname.startsWith('/f/') || pathname.startsWith('/auth/')) return response
+  if (pathname.startsWith('/f/') || pathname.startsWith('/auth/') || pathname === '/terms' || pathname === '/privacy' || pathname === '/reset-password') return response
 
   if (!isApproved) {
     if (pathname === '/pending' || pathname === '/reset-password') return response

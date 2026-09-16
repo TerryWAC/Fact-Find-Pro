@@ -1,14 +1,12 @@
 'use server'
 
 import { headers } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
+import { after } from 'next/server'
 import { createAdminClient, hasAdminClient } from '@/lib/supabase/admin'
-import { sendEmail, type EmailAttachment } from '@/lib/email/send'
-import { renderSubmissionPdf, submissionPdfFilename } from '@/lib/pdf/render'
-import { sendClientPdfCopy } from '@/lib/email/client-copy'
-import { clientIdentitySchema } from '@/lib/validations'
-import { isFactFindType, FACTFIND_TYPE_META } from '@/lib/constants'
-import { getBaseUrl } from '@/lib/utils'
+import { notifySubmission } from '@/lib/email/submission-notifications'
+import { getFormSchema } from '@/lib/forms/registry'
+import { prepareSubmission } from '@/lib/forms/prepare-submission'
+import { isFactFindType } from '@/lib/constants'
 import type { FactFindType, Json } from '@/lib/supabase/database.types'
 
 export interface SubmitFactFindInput {
@@ -24,18 +22,21 @@ export interface SubmitFactFindResult {
   ok: boolean
   reference?: string
   error?: string
+  stepId?: string
+  fieldErrors?: Record<string, string>
 }
 
 /**
  * Public FactFind submission.
  *
- * Writes through the `submit_factfind` SECURITY DEFINER function, which
+ * Validates against the trusted Typeform-derived schema, then writes through
+ * the service-role-only `submit_factfind` function, which
  * resolves the slug to its owning adviser server-side. The client never gets to
  * name the adviser, so a submission can only ever land on the adviser whose
  * link was actually used.
  */
 export async function submitFactFind(input: SubmitFactFindInput): Promise<SubmitFactFindResult> {
-  if (!isFactFindType(input.formType)) {
+  if (!input || !isFactFindType(input.formType)) {
     return { ok: false, error: 'Unknown FactFind type.' }
   }
 
@@ -44,26 +45,24 @@ export async function submitFactFind(input: SubmitFactFindInput): Promise<Submit
     return { ok: false, error: 'This FactFind link is not valid.' }
   }
 
-  const identity = clientIdentitySchema.safeParse({
-    client_name: input.clientName,
-    client_email: input.clientEmail,
-    client_phone: input.clientPhone ?? '',
-  })
+  const prepared = prepareSubmission(getFormSchema(input.formType), input.submissionData)
+  if (!prepared.ok) return prepared
 
-  if (!identity.success) {
-    return { ok: false, error: identity.error.issues[0]?.message ?? 'Please check your details.' }
+  if (!hasAdminClient()) {
+    console.error('Validated submission persistence is unavailable: Supabase server key missing.')
+    return { ok: false, error: 'Submissions are temporarily unavailable. Your answers are still here; please try again shortly.' }
   }
 
   const headerList = await headers()
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   const { data, error } = await supabase.rpc('submit_factfind', {
     p_form_type: input.formType,
     p_slug: slug,
-    p_client_name: identity.data.client_name,
-    p_client_email: identity.data.client_email,
-    p_client_phone: identity.data.client_phone || null,
-    p_submission_data: (input.submissionData ?? {}) as Json,
+    p_client_name: prepared.identity.client_name,
+    p_client_email: prepared.identity.client_email,
+    p_client_phone: prepared.identity.client_phone || null,
+    p_submission_data: prepared.payload as unknown as Json,
     p_meta: {
       user_agent: headerList.get('user-agent') ?? null,
       referer: headerList.get('referer') ?? null,
@@ -87,83 +86,18 @@ export async function submitFactFind(input: SubmitFactFindInput): Promise<Submit
   const submissionId = result?.submission_id
 
   if (!reference || !submissionId) {
-    return { ok: false, error: 'We could not confirm your submission. Please contact your adviser.' }
+    return {
+      ok: false,
+      error: 'We could not confirm your submission. Please contact your adviser.',
+    }
   }
 
-  // Notify the adviser. Never let a mail failure fail the submission.
-  void notifyAdviser({
-    slug,
-    formType: input.formType,
-    submissionId,
-    reference,
-    clientName: identity.data.client_name,
-    clientEmail: identity.data.client_email,
-  }).catch(() => undefined)
+  // Keep notification work alive after the response on serverless hosts.
+  after(async () => {
+    await notifySubmission(submissionId).catch(() =>
+      console.error('Submission notification could not complete.'),
+    )
+  })
 
   return { ok: true, reference }
-}
-
-async function notifyAdviser(params: {
-  slug: string
-  formType: FactFindType
-  submissionId: string
-  reference: string
-  clientName: string
-  clientEmail: string
-}) {
-  if (!hasAdminClient()) return
-
-  const admin = createAdminClient()
-
-  const { data: form } = await admin
-    .from('factfind_forms')
-    .select('adviser_id')
-    .eq('form_type', params.formType)
-    .eq('unique_slug', params.slug)
-    .maybeSingle()
-
-  if (!form) return
-
-  const { data: adviser } = await admin
-    .from('profiles')
-    .select('name, email, company_name, brand_colour, logo_url, avatar_url, delivery_client_copy')
-    .eq('id', form.adviser_id)
-    .maybeSingle()
-
-  if (!adviser) return
-
-  // Attach the branded PDF. A rendering problem must not cost the notification.
-  const attachments: EmailAttachment[] = []
-  const { data: submission } = await admin.from('factfind_submissions').select('*').eq('id', params.submissionId).maybeSingle()
-  let pdf: Buffer | undefined
-  try {
-    if (submission) {
-      pdf = await renderSubmissionPdf({ submission, adviser })
-      attachments.push({ filename: submissionPdfFilename(submission), content: pdf })
-    }
-  } catch (error) {
-    console.error('submission PDF for notification failed:', (error as Error).message)
-  }
-
-  // The client's own copy, if the adviser has turned it on.
-  if (submission && pdf && adviser.delivery_client_copy) {
-    void sendClientPdfCopy(submission, adviser, pdf).catch((error: Error) =>
-      console.error('client PDF copy failed:', error.message),
-    )
-  }
-
-  await sendEmail(
-    'submission_notification',
-    adviser.email,
-    {
-      name: adviser.name,
-      client_name: params.clientName,
-      client_email: params.clientEmail,
-      form_type: FACTFIND_TYPE_META[params.formType].shortLabel,
-      reference: params.reference,
-      submitted_at: new Date().toLocaleString('en-GB'),
-      submission_url: `${getBaseUrl()}/submissions/${params.submissionId}`,
-    },
-    { attachments },
-  )
 }

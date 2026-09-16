@@ -132,8 +132,9 @@ export function SignupForm() {
           <div className="flex items-start gap-3">
             <Checkbox id="terms" name="terms" className="mt-0.5" required />
             <Label htmlFor="terms" className="text-sm font-normal leading-relaxed text-muted-foreground">
-              I confirm I am an FCA-authorised adviser (or work under an authorised firm) and accept the
-              Wealthy Advisers Club terms of use and privacy policy.
+              I confirm I am an FCA-authorised adviser (or work under an authorised firm) and accept the{' '}
+              <Link href="/terms" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">FactFind Pro terms of use</Link> and have read the{' '}
+              <Link href="/privacy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">privacy notice</Link>.
             </Label>
           </div>
           <FieldError message={state.fieldErrors?.terms} />

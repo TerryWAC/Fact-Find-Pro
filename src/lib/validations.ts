@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { practiceWebsite } from './practice'
 
 const ukPhone = z
   .string()
@@ -95,16 +96,24 @@ const optionalUrl = z
   .optional()
   .or(z.literal(''))
 
-/** Step 2 — Your details. Everything is optional so the step can be skipped. */
+export const practiceDetailsSchema = z.object({
+  job_title: optionalText(120),
+  fca_number: optionalText(40),
+  website: z.string().trim().max(300).refine(value => !value || Boolean(practiceWebsite(value)), 'Enter your business website, for example yourfirm.co.uk').transform(value => practiceWebsite(value) ?? '').optional(),
+  business_location: optionalText(160),
+  contact_email: z.string().trim().max(254).email('Enter a valid client contact email').or(z.literal('')).optional(),
+  services: optionalText(600),
+  client_focus: optionalText(600),
+})
+
+export const completeProfileSchema = profileSchema.merge(practiceDetailsSchema)
+
+/** Step 2 — Name is required when saving; other details can be added later. */
 export const onboardingDetailsSchema = z.object({
   name: z.string().trim().min(2, 'Enter your full name').max(120),
-  job_title: optionalText(120),
   phone: optionalText(24),
   company_name: optionalText(160),
-  fca_number: optionalText(40),
-  website: optionalUrl,
-  business_location: optionalText(160),
-})
+}).merge(practiceDetailsSchema)
 export type OnboardingDetailsValues = z.infer<typeof onboardingDetailsSchema>
 
 /** A 6-digit hex colour, or blank for the default. */

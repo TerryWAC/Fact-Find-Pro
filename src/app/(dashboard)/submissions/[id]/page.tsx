@@ -5,6 +5,7 @@ import { requireApprovedUser } from '@/lib/auth'
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = { title: 'Submission' }
+export const maxDuration = 60
 
 export default async function SubmissionDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: submissionId } = await params

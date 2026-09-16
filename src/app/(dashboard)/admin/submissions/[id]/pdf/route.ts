@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { renderSubmissionPdf, submissionPdfFilename } from '@/lib/pdf/render'
 
 export const dynamic = 'force-dynamic'
+export const maxDuration = 60
 
 /** Branded PDF of any submission, in the owning adviser's branding (admin only). */
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {

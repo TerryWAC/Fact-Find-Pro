@@ -1,0 +1,41 @@
+name: Checks
+on:
+  pull_request:
+  push:
+    branches: [main, master, 'codex/**', claude/factfind-pro-platform-8nnic8]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test:unit
+      - run: npm run test:adviser-import
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: npm run test:transfer
+      - run: npm run verify:typeforms
+      - run: python scripts/build-setup-sql.py --check
+      - run: npm run build
+      - run: npm run check:pdf-assets
+      - run: npm audit --omit=dev --audit-level=high
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - run: npm run test:email-flow
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-test-results
+          path: test-results/
+          retention-days: 7

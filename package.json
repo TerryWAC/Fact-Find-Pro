@@ -15,7 +15,23 @@
     "db:push": "supabase db push",
     "db:seed": "supabase db reset --no-seed=false",
     "import:typeform": "node scripts/import-typeform.mjs",
-    "verify:typeform": "node scripts/verify-typeform-import.mjs"
+    "prepare:advisers": "node scripts/prepare-adviser-import.mjs",
+    "stage:advisers": "node scripts/stage-adviser-batch.mjs",
+    "test:adviser-import": "node --test tests/scripts/adviser-import.test.mjs tests/scripts/adviser-batch.test.mjs tests/scripts/provisioning-fetch.test.mjs",
+    "test:transfer": "node --test tests/scripts/transfer-pack.test.mjs",
+    "pack:transfer": "node scripts/create-transfer-pack.mjs",
+    "provision:advisers": "node --env-file=.env.local scripts/provision-adviser-batch.mjs",
+    "verify:typeform": "node scripts/verify-typeform-import.mjs",
+    "verify:typeforms": "node scripts/verify-typeforms.mjs",
+    "preview:client": "node tests/start-preview.mjs",
+    "test:e2e": "npm run build:preview && playwright test",
+    "build:preview": "node tests/start-preview.mjs --build",
+    "test:unit": "playwright test --config playwright.unit.config.ts",
+    "test:email-flow": "playwright test --config playwright.email.config.ts",
+    "test:responsive": "playwright test --config playwright.responsive.config.ts",
+    "test:webkit": "playwright test --config playwright.webkit.config.ts",
+    "email:test": "tsx scripts/test-email.ts",
+    "check:pdf-assets": "node scripts/check-pdf-assets.mjs"
   },
   "dependencies": {
     "@eslint/eslintrc": "^3.3.7",
@@ -38,6 +54,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "ipaddr.js": "2.5.0",
     "lucide-react": "^0.469.0",
     "next": "15.5.25",
     "next-themes": "^0.4.4",
@@ -51,14 +68,19 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@playwright/test": "1.63.0",
     "@types/node": "^22.10.5",
     "@types/react": "^19.0.4",
     "@types/react-dom": "^19.0.2",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.18.0",
     "eslint-config-next": "15.5.25",
-    "postcss": "^8.4.49",
+    "postcss": "8.5.28",
     "tailwindcss": "^3.4.17",
+    "tsx": "4.23.13",
     "typescript": "^5.7.3"
+  },
+  "overrides": {
+    "postcss": "$postcss"
   }
 }

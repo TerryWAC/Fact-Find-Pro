@@ -15,42 +15,63 @@ import {
 import { emailPdfToClientAction } from '@/app/(dashboard)/submissions/actions'
 
 /** Sends the client a branded PDF of their submission, after a confirmation. */
-export function EmailClientButton({ submissionId, clientEmail }: { submissionId: string; clientEmail: string }) {
+export function EmailClientButton({
+  submissionId,
+  clientEmail,
+}: {
+  submissionId: string
+  clientEmail: string
+}) {
   const [open, setOpen] = useState(false)
   const [pending, startTransition] = useTransition()
 
   function send() {
     startTransition(async () => {
-      const result = await emailPdfToClientAction(submissionId)
+      let result
+      try {
+        result = await emailPdfToClientAction(submissionId)
+      } catch {
+        toast.error(
+          'Could not complete the email request. Please check the email log before retrying.',
+        )
+        return
+      }
       setOpen(false)
       if (!result.ok) {
         toast.error(result.error ?? 'Could not send the email')
         return
       }
       if (result.loggedOnly) {
-        toast.success(`PDF copy queued for ${clientEmail}`, {
-          description: 'No email provider is configured yet, so it was written to the email log instead of sent.',
+        toast.info('PDF email logged only', {
+          description:
+            'No email provider is configured. Nothing was sent or queued for later delivery.',
         })
         return
       }
-      toast.success(`PDF copy sent to ${clientEmail}`)
+      toast.success(`Resend accepted the PDF email for ${clientEmail}`)
     })
   }
 
   return (
     <>
-      <Button variant="outline" onClick={() => setOpen(true)}>
+      <Button variant="outline" onClick={() => setOpen(true)} disabled={pending}>
         <Send className="h-4 w-4" />
         Email PDF to client
       </Button>
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog
+        open={open}
+        onOpenChange={(value) => {
+          if (!pending) setOpen(value)
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Email a PDF copy to the client?</DialogTitle>
             <DialogDescription>
               A PDF of this submission, in your branding, will be emailed to{' '}
-              <span className="font-medium text-foreground">{clientEmail}</span>. Replies come to you.
+              <span className="font-medium text-foreground">{clientEmail}</span>. Replies come to
+              you.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -58,7 +79,11 @@ export function EmailClientButton({ submissionId, clientEmail }: { submissionId:
               Cancel
             </Button>
             <Button onClick={send} disabled={pending}>
-              {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              {pending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
               {pending ? 'Sending…' : 'Send PDF'}
             </Button>
           </DialogFooter>

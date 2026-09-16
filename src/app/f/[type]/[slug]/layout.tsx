@@ -2,6 +2,7 @@ import { PublicShell } from '@/components/public/public-shell'
 import { resolvePublicFactFind } from '@/lib/factfind-public'
 
 export const dynamic = 'force-dynamic'
+export const maxDuration = 60
 
 /**
  * Paints the client-facing page in the adviser's branding. A link that does
@@ -18,7 +19,7 @@ export default async function BrandedFactFindLayout({
   const form = await resolvePublicFactFind(type, slug)
 
   return (
-    <PublicShell logoUrl={form?.logo_url} brandColour={form?.brand_colour} companyName={form?.company_name}>
+    <PublicShell logoUrl={form?.logo_url} brandColour={form?.brand_colour} companyName={form?.company_name || form?.adviser_name}>
       {children}
     </PublicShell>
   )
