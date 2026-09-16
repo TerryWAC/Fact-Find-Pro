@@ -22,10 +22,17 @@
  * Exit code 1 on any unexplained difference.
  */
 import fs from 'node:fs'
-import { tsImport } from 'tsx/esm/api'
 
 // Exercise the same visibility functions used by the form and submission action.
-const { isFieldVisible, isStepVisible } = await tsImport('../src/lib/forms/engine.ts', import.meta.url)
+// The engine is TypeScript. When this script runs under a preloaded tsx
+// loader (`node --import tsx`, as verify-typeforms.mjs does) a plain import
+// works and a second, scoped loader would clash with it; when run directly,
+// load the engine through tsx's scoped API instead.
+const engineUrl = new URL('../src/lib/forms/engine.ts', import.meta.url).href
+const tsxPreloaded = process.execArgv.some((arg, i, all) => arg === 'tsx' || arg.endsWith('=tsx') || (arg === '--import' && all[i + 1] === 'tsx'))
+const { isFieldVisible, isStepVisible } = tsxPreloaded
+  ? await import(engineUrl)
+  : await (await import('tsx/esm/api')).tsImport(engineUrl, import.meta.url)
 
 const [, , exportPath, schemaPath] = process.argv
 if (!exportPath || !schemaPath) { console.error('usage: verify-typeform-import.mjs <export.json> <schema.json>'); process.exit(1) }
