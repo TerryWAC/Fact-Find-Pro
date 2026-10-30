@@ -276,6 +276,19 @@ export type AdviserImport = {
   created_at: string
 }
 
+/** A single-use activation link issued to a prepared adviser (only the token's hash is stored). */
+export type AdviserActivation = {
+  id: string
+  profile_id: string
+  token_hash: string
+  invited_by: string | null
+  sent_at: string
+  expires_at: string
+  used_at: string | null
+  accepted_terms_version: string | null
+  created_at: string
+}
+
 export type Database = {
   public: {
     Tables: {
@@ -283,6 +296,12 @@ export type Database = {
         Row: AdviserImport
         Insert: Omit<AdviserImport, 'created_at'> & { created_at?: string }
         Update: Partial<AdviserImport>
+        Relationships: []
+      }
+      adviser_activations: {
+        Row: AdviserActivation
+        Insert: Partial<AdviserActivation> & { profile_id: string; token_hash: string; expires_at: string }
+        Update: Partial<AdviserActivation>
         Relationships: []
       }
       profiles: {

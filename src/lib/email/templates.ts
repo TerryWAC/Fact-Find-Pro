@@ -6,6 +6,7 @@ export type EmailTemplateKey =
   | 'rejection'
   | 'submission_notification'
   | 'submission_client_copy'
+  | 'adviser_activation'
   | 'password_reset'
 
 export interface EmailTemplateDefinition {
@@ -144,6 +145,27 @@ If anything needs correcting, just reply to this email and {{adviser_name}} will
 {{company_name}}`,
     variables: ['client_name', 'adviser_name', 'company_name', 'form_type', 'reference', 'submitted_at'],
   },
+  adviser_activation: {
+    key: 'adviser_activation',
+    name: 'Account activation (to existing adviser)',
+    description: 'Sent to a prepared adviser with their single-use link to set a password and activate their account.',
+    subject: 'Activate your FactFind Pro account, {{name}}',
+    bodyHtml: `<h2>Your FactFind Pro account is ready</h2>
+<p>Hi {{name}},</p>
+<p>Wealthy Advisers Club has moved adviser fact finds to FactFind Pro. An account for <strong>{{company_name}}</strong> has been prepared for you.</p>
+<p>Use the link below to choose a password, check the details we hold and switch on your four client FactFind links.</p>
+<p><a href="{{activation_url}}">Activate my account</a></p>
+<p>The link is personal to you, can be used once and expires on {{expires_on}}. If you were not expecting this email, you can ignore it and nothing will change.</p>`,
+    bodyText: `Hi {{name}},
+
+Wealthy Advisers Club has moved adviser fact finds to FactFind Pro. An account for {{company_name}} has been prepared for you.
+
+Activate it, choose a password and check your details here:
+{{activation_url}}
+
+The link is personal to you, can be used once and expires on {{expires_on}}. If you were not expecting this email, ignore it and nothing will change.`,
+    variables: ['name', 'company_name', 'activation_url', 'expires_on'],
+  },
   password_reset: {
     key: 'password_reset',
     name: 'Password reset (to user)',
@@ -194,5 +216,6 @@ export interface EmailVariablesMap {
     submitted_at: string
     submission_url: string
   }
+  adviser_activation: { name: string; company_name: string; activation_url: string; expires_on: string }
   password_reset: { name: string; reset_url: string }
 }

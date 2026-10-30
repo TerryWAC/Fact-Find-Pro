@@ -11,7 +11,7 @@ Start by reading `docs/handover-findings-2026-09-15.md`, `docs/readiness.md` and
 - Internal Adviser Details, Client Source and Admin Notes must stay out of client PDFs, including legacy submission formats. Server ownership comes from the form link, not a typed adviser name.
 - Keep records until deletion is requested. There is no approved automatic 90-day purge.
 - White labelling uses adviser branding and the shared FactFind sending domain. Do not publish imported branding images before confirmation.
-- The 135 prepared adviser accounts and 540 links were dormant at the last verification. Activation is not implemented. Do not clear `import_pending`, unban accounts, approve them manually or send invitations as a shortcut.
+- The 135 prepared adviser accounts and 540 links were dormant at the last verification. Activation is implemented as admin-issued single-use links (`docs/existing-adviser-migration.md`, Activation section) and only an admin pressing Invite in the directory sends one. Do not clear `import_pending`, unban accounts, approve them manually or issue invitations from scripts or tools as a shortcut.
 - Keep keyboard focus, reduced-motion behaviour, stable inputs and responsive layouts when changing animations.
 
 ## Work safely

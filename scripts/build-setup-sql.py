@@ -24,6 +24,7 @@ TITLES = {
     '20260913211513_restrict_factfind_writes_to_validated_server.sql': 'Require validated server writes for completed FactFinds',
     '20260913232741_stage_existing_advisers.sql': 'Private existing-adviser directory and reserved FactFind accounts',
     '20260914003747_adviser_practice_contact.sql': 'Adviser practice details and public business contacts',
+    '20261030120000_adviser_activation.sql': 'Activation links for prepared adviser accounts',
 }
 
 HEADER = """/*

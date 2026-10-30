@@ -138,6 +138,32 @@ export const onboardingBrandSchema = brandingSchema
 export type OnboardingBrandValues = z.infer<typeof onboardingBrandSchema>
 
 /** Delivery preferences (onboarding step 4 and Settings). A webhook URL is required when the webhook is enabled. */
+/** Activation of a prepared adviser account: confirmed details, password, terms, delivery choices. */
+export const activationSchema = z
+  .object({
+    token: z.string().trim().min(40, 'This activation link is not valid').max(64),
+    name: z.string().trim().min(2, 'Enter your full name').max(120),
+    company_name: z.string().trim().min(2, 'Enter your company name').max(160),
+    phone: ukPhone,
+    job_title: optionalText(120),
+    website: optionalUrl,
+    business_location: optionalText(160),
+    password: passwordSchema,
+    confirm_password: z.string().min(1, 'Confirm your password'),
+    terms: z.literal(true, {
+      errorMap: () => ({ message: 'You must accept the terms to activate your account' }),
+    }),
+    delivery_email_copy: z.boolean(),
+    delivery_client_copy: z.boolean(),
+    use_photo: z.boolean(),
+    use_logo: z.boolean(),
+  })
+  .refine((values) => values.password === values.confirm_password, {
+    message: 'Passwords do not match',
+    path: ['confirm_password'],
+  })
+export type ActivationValues = z.infer<typeof activationSchema>
+
 export const deliverySchema = z
   .object({
     delivery_email_copy: z.boolean(),

@@ -4,7 +4,7 @@ import type { Database } from './database.types'
 import { isSupabaseConfigured, requireSupabaseEnv, supabaseConfigMessage } from '@/lib/env'
 
 /** Routes that never require a session. */
-const PUBLIC_PREFIXES = ['/login', '/signup', '/forgot-password', '/reset-password', '/pending', '/terms', '/privacy', '/f/', '/auth/']
+const PUBLIC_PREFIXES = ['/login', '/signup', '/forgot-password', '/reset-password', '/pending', '/terms', '/privacy', '/f/', '/auth/', '/activate/']
 
 const ADMIN_PREFIX = '/admin'
 
@@ -82,7 +82,7 @@ export async function updateSession(request: NextRequest) {
   const isAdmin = profile?.role === 'admin' && isApproved
 
   // Public FactFind pages stay public even for signed-in users.
-  if (pathname.startsWith('/f/') || pathname.startsWith('/auth/') || pathname === '/terms' || pathname === '/privacy' || pathname === '/reset-password') return response
+  if (pathname.startsWith('/f/') || pathname.startsWith('/auth/') || pathname.startsWith('/activate/') || pathname === '/terms' || pathname === '/privacy' || pathname === '/reset-password') return response
 
   if (!isApproved) {
     if (pathname === '/pending' || pathname === '/reset-password') return response

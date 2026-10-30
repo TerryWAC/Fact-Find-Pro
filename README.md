@@ -83,7 +83,7 @@ The Typeform-derived logic, documented source corrections, adviser-only note han
 
 The installable home-screen web app works online. Persistent drafts, cross-device resume, offline completion, shared-firm/client dashboards, CRM/spreadsheet delivery and an App Store binary are not implemented. Email has retries and logs, but no durable delivery queue. The dashboard is the submission record.
 
-Existing-adviser preparation is complete; activation is not released. Historical client submissions and legacy Typeform URLs have not been migrated. See [Existing advisers](docs/existing-adviser-migration.md).
+Existing-adviser preparation is complete and secure single-use activation links can be issued from Admin > Existing advisers; no invitation is sent until an admin confirms it there. Historical client submissions and legacy Typeform URLs have not been migrated. See [Existing advisers](docs/existing-adviser-migration.md).
 
 ## Code map
 

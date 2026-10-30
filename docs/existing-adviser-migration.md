@@ -8,7 +8,7 @@ Prepare a reviewed list from the **adviser signup** form, matching people by the
 
 After the owner approves a concrete invitation batch, each adviser should receive an individual activation link. They choose their own password, check the prefilled information, accept current terms and privacy information, and confirm their delivery preferences. The dashboard then gives them their four new form links. Never manufacture consent, share passwords, silently replace an existing account, or infer permission to email client PDFs from membership of the old service.
 
-The activation journey is proposed, not yet implemented. The current auth callback supports a PKCE code exchange; invitation links need their own verified implementation and testing before invitations are sent. The local preparation tools do not create accounts. A separate restricted provisioning tool now creates dormant accounts, reserves inactive forms and transfers inspection images to private admin storage.
+The activation journey is implemented; see [Activation](#activation) below. Activation links are issued only when an admin asks for them from the directory, so nothing is sent until the owner approves a batch. The local preparation tools do not create accounts. A separate restricted provisioning tool creates dormant accounts, reserves inactive forms and transfers inspection images to private admin storage.
 
 Historical client fact finds and legacy Typeform links are a separate migration decision. Adviser profile import does not transfer client submissions, redirect old Typeform URLs or grant access to an entire shared Drive folder.
 
@@ -109,4 +109,18 @@ Live verification confirmed all 135 accounts remain dormant, every adviser has e
 
 The directory is deployed at [Admin > Existing advisers](https://fact-find-pro.vercel.app/admin/imports). Authenticated live HTTP checks passed for the directory, filtering, pagination, adviser details, existing admin screens and all four preview routes. The live CSV contains 179 rows and 540 reserved links and sends private/no-store headers. Anonymous requests to the directory, detail, export and preview routes redirect to login. A fictional Home preview was completed in the browser and correctly blocked submission, leaving the mock submission count at zero. Mobile directory and detail layouts were checked at 390 px. Lint, typecheck, 23 provisioning/import tests, 56 unit tests and local/hosted production builds passed. Verification sent no email.
 
-**Preparation is complete; activation is not released.** Remaining work before invitations is to confirm current membership and held email identities, implement/test secure individual activation and transfer adviser-confirmed branding into public adviser storage. Current terms and delivery preferences must be confirmed during activation. Historical client submissions and the 793 legacy Typeform forms have not been migrated or fully reconciled.
+**Preparation is complete and activation is released; no invitation has been sent.** The owner still needs to confirm current membership and the held email identities before pressing the invite buttons. Historical client submissions and the 793 legacy Typeform forms have not been migrated or fully reconciled.
+
+## Activation
+
+Migration `20261030120000_adviser_activation.sql` adds `adviser_activations` and the `adviser_activation` email template. The table holds only a SHA-256 hash of each link token, who issued it, when it was sent, when it expires and when it was used. Advisers cannot read it; admins can read it and only the service role writes to it.
+
+Issuing links happens in Admin > Existing advisers:
+
+- **Invite all waiting advisers** issues a link to every prepared adviser (`import_pending`, decision `include`) who has no live link. It works through the list in batches of ten from the browser and reports sent, failed and remaining counts. Nothing is sent until the admin confirms the dialog.
+- **Send activation link** on an adviser's page issues one link, shows it for copying and resends it later if needed. Issuing a new link expires every earlier unused link for that adviser.
+- Directory badges show Not invited, Invited, Link expired and Activated, and the stat cards count Prepared, Invited and Activated.
+
+Each link is `/activate/<token>`: a 43-character random token, valid for 14 days, single use. The public page shows the prefilled details and the supplied photo and logo, and asks the adviser to choose a password, confirm their business details, pick delivery preferences and accept the current terms. Nothing is prefilled from the old service for consent, branding colours or delivery preferences. On submit, in order, the server sets the password and confirms the email, copies the chosen images into the adviser's public branding folder, approves the profile and clears `import_pending` (which activates the four reserved FactFinds), lifts the ban, marks the link used with the accepted terms version and logs `user.activated`. Each step is idempotent, so a retried submission finishes the account rather than duplicating anything. The adviser is then signed in and lands on their dashboard. Invalid, expired and used links show an explanation and a sign-in link without touching any account.
+
+Validation: `tests/e2e/adviser-activation.spec.ts` runs the whole journey against the isolated preview, including the single-use check and the admin badges, and `tests/unit/activation-token.spec.ts` covers token shape, hashing, expiry and status summaries. The setup script was re-applied twice to a scratch Postgres to confirm it remains idempotent. No live email was sent during verification.

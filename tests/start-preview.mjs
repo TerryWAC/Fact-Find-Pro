@@ -19,10 +19,19 @@ let failNext = false
 let failSubmissionReads = false
 let failAdminReads = false
 const profileEdits = new Map()
+// Activation of the prepared adviser: links issued, form edits and the
+// password the adviser chose, all in memory for the duration of the run.
+const activations = []
+const formEdits = new Map()
+let activatedCredentials = null
+const tinyPng = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64')
 const mock = http.createServer(async (req, res) => {
   const chunks = []
   for await (const chunk of req) chunks.push(chunk)
-  const body = chunks.length ? JSON.parse(Buffer.concat(chunks).toString()) : {}
+  let body = {}
+  if (chunks.length) {
+    try { body = JSON.parse(Buffer.concat(chunks).toString()) } catch { body = {} } // binary uploads are not JSON
+  }
   res.setHeader('Content-Type', 'application/json')
   const send = (data, status = 200) => {
     res.statusCode = status
@@ -37,6 +46,9 @@ const mock = http.createServer(async (req, res) => {
         if (value.startsWith('neq.')) return String(row[key]) !== value.slice(4)
         if (value.startsWith('in.(')) return value.slice(4, -1).split(',').includes(String(row[key]))
         if (value.startsWith('gte.')) return String(row[key]) >= value.slice(4)
+        if (value.startsWith('gt.')) return String(row[key]) > value.slice(3)
+        if (value === 'is.null') return row[key] == null
+        if (value === 'not.is.null') return row[key] != null
         if (key === 'or') {
           const expressions = [
             ...value.matchAll(/(client_name|client_email|reference|name|email|company_name)\.ilike\."((?:\\.|[^"\\])*)"/g),
@@ -82,14 +94,18 @@ const mock = http.createServer(async (req, res) => {
   const service = req.headers.apikey === 'local-preview-service-only'
   const user = sessions.get(bearer)
   if (pathname === '/auth/v1/token') {
+    // The prepared adviser can sign in only with the password chosen at activation.
+    const activated = Boolean(activatedCredentials && body.email === activatedCredentials.email && body.password === activatedCredentials.password)
     if (
-      !['admin@example.test', 'adviser@example.test'].includes(body.email) ||
-      body.password !== 'PreviewOnly!'
+      !activated &&
+      (!['admin@example.test', 'adviser@example.test'].includes(body.email) ||
+      body.password !== 'PreviewOnly!')
     )
       return send({ message: 'Invalid preview credentials' }, 400)
-    const role = body.email.startsWith('admin') ? 'admin' : 'adviser'
-    const id =
-      role === 'admin' ? '00000000-0000-4000-8000-000000000002' : '00000000-0000-4000-8000-000000000004'
+    const role = !activated && body.email.startsWith('admin') ? 'admin' : 'adviser'
+    const id = activated
+      ? preparedAdviserId
+      : role === 'admin' ? '00000000-0000-4000-8000-000000000002' : '00000000-0000-4000-8000-000000000004'
     const account = {
       id,
       email: body.email,
@@ -110,6 +126,14 @@ const mock = http.createServer(async (req, res) => {
       expires_in: 3600,
       user: account,
     })
+  }
+  if (pathname.startsWith('/auth/v1/admin/users/')) {
+    // Service-role account management used by activation: set password,
+    // confirm the email and lift the ban. Only the prepared adviser exists here.
+    if (!service) return send({ message: 'Not allowed' }, 403)
+    const id = pathname.split('/').pop()
+    if (req.method === 'PUT' && body.password) activatedCredentials = { id, email: 'prepared@example.test', password: body.password }
+    return send({ user: { id, email: 'prepared@example.test', email_confirmed_at: new Date().toISOString() } })
   }
   if (pathname === '/auth/v1/user') return user ? send(user) : send({ message: 'Not signed in' }, 401)
   if (pathname === '/auth/v1/logout') {
@@ -210,29 +234,54 @@ const mock = http.createServer(async (req, res) => {
         })),
     )
   }
+  if (pathname === '/rest/v1/activity_log' && req.method === 'POST') return send(null, 201)
   if (pathname === '/rest/v1/activity_log') return failAdminReads ? send({ code: 'XX000', message: 'Simulated activity failure' }, 503) : sendRows([])
   if (pathname === '/rest/v1/adviser_imports') {
     if (failAdminReads) return send({ code: 'XX000', message: 'Simulated directory failure' }, 503)
     const record = { source_form_id: 'fixture', batch_label: 'Fictional import fixture', batch_sha256: 'fixture', source_submitted_at: '2026-01-01T00:00:00Z', created_at: '2026-09-14T00:00:00Z', superseded_by: null, asset_paths: {}, follow_up: ['Confirm current details during activation.'], source_profile: { phone: '+447700900123' }, profile_prefill: { phone: '+447700900123', job_title: 'Mortgage adviser' } }
-    return sendRows(user?.profileRole === 'admin' ? [
-      { ...record, source_id: 'fixture-prepared', source_row: 1, name: 'Morgan Prepared', email: 'prepared@example.test', company_name: 'Morgan Financial', decision: 'include', decision_reason: 'Completed fictional signup reviewed.', profile_id: preparedAdviserId },
+    return sendRows(service || user?.profileRole === 'admin' ? [
+      { ...record, source_id: 'fixture-prepared', source_row: 1, name: 'Morgan Prepared', email: 'prepared@example.test', company_name: 'Morgan Financial', decision: 'include', decision_reason: 'Completed fictional signup reviewed.', profile_id: preparedAdviserId,
+        profile_prefill: { name: 'Morgan Prepared', email: 'prepared@example.test', company_name: 'Morgan Financial', phone: '+447700900123', job_title: 'Mortgage adviser', business_location: 'Leeds', website: 'https://morgan.example.test' },
+        asset_paths: { avatar_url: 'fixture-prepared/avatar.png', logo_url: 'fixture-prepared/logo.png' } },
       { ...record, source_id: 'fixture-held', source_row: 2, name: 'Jordan Held', email: 'held@example.test', company_name: 'Held Financial', decision: 'hold', decision_reason: 'Confirm the preferred email before creating an account.', profile_id: null },
       { ...record, source_id: 'fixture-excluded', source_row: 3, name: 'Demo Entry', email: 'demo@example.test', company_name: 'Demo Firm', decision: 'exclude_test', decision_reason: 'Explicit test entry.', profile_id: null },
     ] : [])
   }
+  if (pathname === '/rest/v1/adviser_activations') {
+    if (!service && user?.profileRole !== 'admin') return sendRows([])
+    if (req.method === 'POST') {
+      const row = { id: `act-${activations.length + 1}`, invited_by: null, used_at: null, accepted_terms_version: null, sent_at: new Date().toISOString(), created_at: new Date().toISOString(), ...body }
+      activations.push(row)
+      return send([row], 201)
+    }
+    if (req.method === 'PATCH') {
+      const rows = filterRows(activations)
+      rows.forEach((row) => Object.assign(row, body))
+      return sendRows(rows)
+    }
+    return sendRows(activations)
+  }
   if (pathname === '/rest/v1/factfind_forms') {
-    return sendRows(
-      user
-        ? ['mortgage', 'protection', 'medical', 'home'].flatMap((form_type, index) => [{
-            id: `00000000-0000-4000-8000-${String(200 + index).padStart(12, '0')}`,
-            adviser_id: user.id,
-            form_type,
-            unique_slug: 'preview',
-            is_active: true,
-            created_at: '2026-01-01T00:00:00Z',
-          }, ...(user.profileRole === 'admin' ? [{ id: `00000000-0000-4000-8000-${String(300 + index).padStart(12, '0')}`, adviser_id: preparedAdviserId, form_type, unique_slug: 'reservedmock', is_active: false, created_at: '2026-09-14T00:00:00Z' }] : [])])
-        : [],
-    )
+    const types = ['mortgage', 'protection', 'medical', 'home']
+    const ownForms = (adviserId) => types.map((form_type, index) => ({
+      id: `00000000-0000-4000-8000-${String(200 + index).padStart(12, '0')}`,
+      adviser_id: adviserId,
+      form_type,
+      unique_slug: 'preview',
+      is_active: true,
+      created_at: '2026-01-01T00:00:00Z',
+    }))
+    const preparedForms = types.map((form_type, index) => ({ id: `00000000-0000-4000-8000-${String(300 + index).padStart(12, '0')}`, adviser_id: preparedAdviserId, form_type, unique_slug: 'reservedmock', is_active: false, created_at: '2026-09-14T00:00:00Z' }))
+    let rows = []
+    if (user && user.id !== preparedAdviserId) rows.push(...ownForms(user.id))
+    if (service || user?.profileRole === 'admin' || user?.id === preparedAdviserId) rows.push(...preparedForms)
+    rows = rows.map((row) => ({ ...row, ...formEdits.get(row.id) }))
+    if (req.method === 'PATCH') {
+      if (!service) return send({ message: 'Not allowed' }, 403)
+      const updated = filterRows(rows).map((row) => { formEdits.set(row.id, { ...formEdits.get(row.id), ...body }); return { ...row, ...body } })
+      return sendRows(updated)
+    }
+    return sendRows(rows)
   }
   if (pathname === '/rest/v1/email_templates') {
     const key = requestUrl.searchParams.get('key')?.replace(/^eq\./, '')
@@ -294,6 +343,14 @@ const mock = http.createServer(async (req, res) => {
   }
   if (pathname === '/test/admin-read-error') { failAdminReads = Boolean(body.enabled); return send({ ok: true }) }
   if (pathname === '/test/reset-profiles') { profileEdits.clear(); return send({ ok: true }) }
+  if (pathname === '/test/reset-activation') {
+    // Each activation test starts from a prepared, uninvited adviser.
+    activations.length = 0
+    formEdits.clear()
+    activatedCredentials = null
+    profileEdits.delete(preparedAdviserId)
+    return send({ ok: true })
+  }
   if (req.url === '/test/fail-next') {
     failNext = true
     return send({ ok: true })
@@ -358,6 +415,25 @@ const mock = http.createServer(async (req, res) => {
         reference,
       },
     ])
+  }
+  // Private source images for the prepared adviser, and the branding bucket
+  // they are copied into on activation.
+  if (pathname.startsWith('/storage/v1/object/sign/adviser-imports/') && req.method === 'POST') {
+    if (!service && user?.profileRole !== 'admin') return send({ message: 'Not allowed' }, 403)
+    return send({ signedURL: `/object/sign/${pathname.replace('/storage/v1/object/sign/', '')}?token=preview` })
+  }
+  if (pathname.startsWith('/storage/v1/object/sign/adviser-imports/') && req.method === 'GET') {
+    res.setHeader('Content-Type', 'image/png')
+    return res.end(tinyPng)
+  }
+  if (pathname.startsWith('/storage/v1/object/adviser-imports/') && req.method === 'GET') {
+    if (!service) return send({ message: 'Not allowed' }, 403)
+    res.setHeader('Content-Type', 'image/png')
+    return res.end(tinyPng)
+  }
+  if (pathname.startsWith('/storage/v1/object/branding/') && req.method === 'POST') {
+    if (!service) return send({ message: 'Not allowed' }, 403)
+    return send({ Key: pathname.replace('/storage/v1/object/', ''), Id: 'preview-upload' })
   }
   return send({ message: 'Not available in local preview' }, 404)
 })
