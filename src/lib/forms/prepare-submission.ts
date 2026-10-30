@@ -3,7 +3,7 @@ import { clientIdentitySchema } from '../validations'
 import { answerableFields, buildSubmissionPayload, defaultValuesFor, extractClientIdentity, stepValidationSchema, visibleSteps } from './engine'
 import type { FormSchema, FormValues, SubmissionPayload } from './types'
 
-const submittedAnswers = z.record(z.union([z.string(), z.number().finite(), z.boolean(), z.array(z.string())]))
+const submittedAnswers = z.record(z.string(), z.union([z.string(), z.number().finite(), z.boolean(), z.array(z.string())]))
 
 type PreparedSubmission =
   | { ok: true; payload: SubmissionPayload; identity: z.infer<typeof clientIdentitySchema> }

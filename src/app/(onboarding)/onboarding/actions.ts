@@ -27,7 +27,7 @@ export interface OnboardingActionState {
   values?: Record<string, string | boolean>
 }
 
-function fieldErrorsFrom(error: { issues: { path: (string | number)[]; message: string }[] }) {
+function fieldErrorsFrom(error: { issues: { path: PropertyKey[]; message: string }[] }) {
   const fieldErrors: Record<string, string> = {}
   for (const issue of error.issues) {
     const key = String(issue.path[0] ?? '')

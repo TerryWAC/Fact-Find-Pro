@@ -29,9 +29,7 @@ export const signupSchema = z
     phone: ukPhone,
     password: passwordSchema,
     confirm_password: z.string().min(1, 'Confirm your password'),
-    terms: z.literal(true, {
-      errorMap: () => ({ message: 'You must accept the terms to continue' }),
-    }),
+    terms: z.literal(true, { error: 'You must accept the terms to continue' }),
   })
   .refine((values) => values.password === values.confirm_password, {
     message: 'Passwords do not match',
@@ -150,9 +148,7 @@ export const activationSchema = z
     business_location: optionalText(160),
     password: passwordSchema,
     confirm_password: z.string().min(1, 'Confirm your password'),
-    terms: z.literal(true, {
-      errorMap: () => ({ message: 'You must accept the terms to activate your account' }),
-    }),
+    terms: z.literal(true, { error: 'You must accept the terms to activate your account' }),
     delivery_email_copy: z.boolean(),
     delivery_client_copy: z.boolean(),
     use_photo: z.boolean(),

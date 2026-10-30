@@ -7,7 +7,7 @@ import { completeActivation } from '@/lib/adviser-activation'
 import { activationSchema } from '@/lib/validations'
 import type { ActionState } from '@/app/(auth)/actions'
 
-function fieldErrorsFrom(error: { issues: { path: (string | number)[]; message: string }[] }) {
+function fieldErrorsFrom(error: { issues: { path: PropertyKey[]; message: string }[] }) {
   const fieldErrors: Record<string, string> = {}
   for (const issue of error.issues) {
     const key = String(issue.path[0] ?? '')

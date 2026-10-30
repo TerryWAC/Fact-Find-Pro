@@ -104,7 +104,7 @@ function fieldSchema(field: FormField): z.ZodTypeAny {
   switch (field.type) {
     case 'checkbox':
       return field.required
-        ? z.literal(true, { errorMap: () => ({ message: v.message ?? 'Please confirm to continue' }) })
+        ? z.literal(true, { error: v.message ?? 'Please confirm to continue' })
         : z.boolean().optional()
 
     case 'checkbox-group': {
@@ -121,7 +121,7 @@ function fieldSchema(field: FormField): z.ZodTypeAny {
       )
       const base = z.string().refine(
         (value) => allowed.has(value) || (!field.required && value === ''),
-        (value) => ({ message: value === '' && field.required ? requiredMessage : 'Choose a listed option' }),
+        { error: (issue) => (issue.input === '' && field.required ? requiredMessage : 'Choose a listed option') },
       )
       return field.required ? base : base.optional()
     }
@@ -129,22 +129,22 @@ function fieldSchema(field: FormField): z.ZodTypeAny {
     case 'number':
     case 'currency':
     case 'percent': {
-      let base: z.ZodTypeAny = z
+      let base: z.ZodType<string> = z
         .string()
         .trim()
         .refine((value) => value === '' || Number.isFinite(Number(value)), 'Enter a finite number')
 
       if (v.min !== undefined) {
         const min = v.min
-        base = base.refine((value: string) => value === '' || Number(value) >= min, `Must be ${min} or more`)
+        base = base.refine((value) => value === '' || Number(value) >= min, `Must be ${min} or more`)
       }
       if (v.max !== undefined) {
         const max = v.max
-        base = base.refine((value: string) => value === '' || Number(value) <= max, `Must be ${max} or less`)
+        base = base.refine((value) => value === '' || Number(value) <= max, `Must be ${max} or less`)
       }
 
       return field.required
-        ? base.refine((value: string) => value !== '', requiredMessage)
+        ? base.refine((value) => value !== '', requiredMessage)
         : base.optional()
     }
 
@@ -161,7 +161,7 @@ function fieldSchema(field: FormField): z.ZodTypeAny {
         if (!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(value) || value.startsWith('0000')) return false
         const date = new Date(`${value}T00:00:00.000Z`)
         return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value
-      }, (value) => ({ message: value === '' ? requiredMessage : 'Enter a valid date' }))
+      }, { error: (issue) => (issue.input === '' ? requiredMessage : 'Enter a valid date') })
       return field.required ? base : base.optional()
     }
 
