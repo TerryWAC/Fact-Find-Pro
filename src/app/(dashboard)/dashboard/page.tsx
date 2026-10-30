@@ -19,19 +19,22 @@ import { PageHeader } from '@/components/shared/page-header'
 import { StatCard } from '@/components/shared/stat-card'
 import { FactFindTypeBadge } from '@/components/shared/status-badge'
 import { SubmissionLoadError } from '@/components/submissions/submission-load-error'
+import { FactFindOverview } from '@/components/dashboard/factfind-overview'
 import { requireApprovedUser } from '@/lib/auth'
-import { getRecentActivity, getSubmissionStats } from '@/lib/queries'
+import { getAdviserForms, getFactFindTypeStats, getRecentActivity, getSubmissionStats } from '@/lib/queries'
 import { createClient } from '@/lib/supabase/server'
-import { formatRelative, formatDate, initials } from '@/lib/utils'
+import { formatRelative, formatDate, getBaseUrl, initials } from '@/lib/utils'
 
 export const metadata: Metadata = { title: 'Dashboard' }
 
 export default async function DashboardPage() {
   const { id, profile } = await requireApprovedUser()
   const supabase = await createClient()
-  const [stats, activity, queue] = await Promise.all([
+  const [stats, activity, typeStats, forms, queue] = await Promise.all([
     getSubmissionStats(id),
     getRecentActivity(id, 4),
+    getFactFindTypeStats(id),
+    getAdviserForms(id),
     supabase
       .from('factfind_submissions')
       .select('id, reference, client_name, client_email, form_type, submitted_at')
@@ -126,6 +129,8 @@ export default async function DashboardPage() {
           Some totals are temporarily unavailable. You can still open your submissions below.
         </p>
       )}
+
+      <FactFindOverview stats={typeStats} forms={forms} baseUrl={getBaseUrl()} />
 
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]">
         <Card className="min-w-0 overflow-hidden" role="region" aria-labelledby="review-queue-title">

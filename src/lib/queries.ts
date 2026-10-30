@@ -2,7 +2,7 @@ import 'server-only'
 
 import { createClient } from '@/lib/supabase/server'
 import { FACTFIND_TYPES, SUBMISSION_STATUS_META } from '@/lib/constants'
-import type { SubmissionStatus } from '@/lib/supabase/database.types'
+import type { FactFindType, SubmissionStatus } from '@/lib/supabase/database.types'
 
 export interface AdviserStats {
   total: number | null
@@ -42,6 +42,33 @@ export async function getSubmissionStats(adviserId: string | null): Promise<Advi
     last30Days: last30Result.error ? null : last30Result.count,
     byStatus,
   }
+}
+
+export interface FactFindTypeStats {
+  total: number | null
+  needsReview: number | null
+  completed: number | null
+}
+
+/** Submission counts per FactFind for one adviser; a failed count is null, never zero. */
+export async function getFactFindTypeStats(adviserId: string): Promise<Record<FactFindType, FactFindTypeStats>> {
+  const supabase = await createClient()
+  const count = (type: FactFindType) =>
+    supabase.from('factfind_submissions').select('id', { count: 'exact', head: true }).eq('adviser_id', adviserId).eq('form_type', type)
+
+  const results = await Promise.all(
+    FACTFIND_TYPES.map((type) => Promise.all([count(type), count(type).eq('status', 'new'), count(type).eq('status', 'completed')])),
+  )
+  const value = (result: { error: unknown; count: number | null }) => (result.error ? null : result.count)
+
+  return FACTFIND_TYPES.reduce(
+    (acc, type, index) => {
+      const [total, needsReview, completed] = results[index]
+      acc[type] = { total: value(total), needsReview: value(needsReview), completed: value(completed) }
+      return acc
+    },
+    {} as Record<FactFindType, FactFindTypeStats>,
+  )
 }
 
 export interface AdminStats {
