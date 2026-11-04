@@ -31,6 +31,7 @@ export function NoticeAllButton({ pending }: NoticeAllButtonProps) {
   const [sent, setSent] = useState(0)
   const [failed, setFailed] = useState(0)
   const [notes, setNotes] = useState<string[]>([])
+  const [stopped, setStopped] = useState<string | null>(null)
   // The page revalidates after every batch, so `pending` falls while the run is
   // in progress; the figure shown is the one captured when the run started.
   const [planned, setPlanned] = useState(0)
@@ -41,22 +42,31 @@ export function NoticeAllButton({ pending }: NoticeAllButtonProps) {
     setPlanned(pending)
     setRunning(true)
     setDone(false)
+    setStopped(null)
     let totalSent = 0
     let totalFailed = 0
     const allNotes: string[] = []
+    // Advisers that failed in this run are skipped by later batches, so the run
+    // moves through everyone once instead of retrying the same few.
+    const attempted: string[] = []
     try {
       for (let guard = 0; guard < 100; guard++) {
-        const result = await noticeBatchAction()
+        const result = await noticeBatchAction(attempted)
         if (!result.ok) {
           toast.error(result.error ?? 'Sending stopped unexpectedly')
           break
         }
         totalSent += result.sent
         totalFailed += result.failed
+        attempted.push(...result.failedIds)
         allNotes.push(...result.notes)
         setSent(totalSent)
         setFailed(totalFailed)
         setNotes([...allNotes])
+        if (result.throttled) {
+          setStopped(`The mail provider is refusing further emails for now (rate or quota limit). ${result.remaining + result.failed} advisers are still to be sent. Run this again later and only they will be emailed.`)
+          break
+        }
         if (result.remaining === 0 || result.sent + result.failed === 0) break
       }
       setDone(true)
@@ -89,8 +99,9 @@ export function NoticeAllButton({ pending }: NoticeAllButtonProps) {
             <div className="space-y-2" aria-live="polite">
               <Progress value={total ? Math.round((processed / total) * 100) : 100} aria-label="Notice progress" />
               <p className="text-sm">
-                {done ? 'Finished.' : 'Sending…'} {sent} sent{failed ? `, ${failed} need attention` : ''} of {total}.
+                {done ? (stopped ? 'Stopped early.' : 'Finished.') : 'Sending…'} {sent} sent{failed ? `, ${failed} need attention` : ''} of {total}.
               </p>
+              {stopped && <p className="text-sm text-destructive" role="alert">{stopped}</p>}
               {notes.length > 0 && (
                 <ul className="max-h-40 space-y-1 overflow-auto rounded-md bg-muted/40 p-2 text-xs text-muted-foreground">
                   {notes.map((note, index) => (

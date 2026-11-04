@@ -23,12 +23,19 @@ function providerError(status: number, name?: string): string {
     return 'Resend could not authenticate. Check RESEND_API_KEY.'
   if (status === 403)
     return 'Resend refused this sender or recipient. Check the API key permissions and verify the EMAIL_FROM domain in Resend.'
+  if (status === 429 && name && /quota/i.test(name))
+    return 'Resend has reached its sending quota for this plan. Sending resumes when the quota resets (see Usage in Resend) or after the plan is upgraded.'
   if (status === 429) return 'Resend is temporarily rate limited. Please try again shortly.'
   if (status === 409)
     return 'This email request is already being processed or has changed. Check the email log before sending again.'
   if (status === 422 || status === 400)
     return 'Resend rejected the email details. Check the sender, recipient and attachment.'
   return 'Resend is temporarily unavailable. Check the email log before trying again.'
+}
+
+/** True when the provider is refusing because of rate or quota, so a bulk run should pause rather than push on. */
+export function isThrottledError(error?: string): boolean {
+  return Boolean(error && /rate limited|sending quota/i.test(error))
 }
 
 /** Retries the identical body once, with the same idempotency key, within a bounded time. */

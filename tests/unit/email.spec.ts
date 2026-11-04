@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { brandedSender, emailConfiguration, emailConfigurationStatus } from '../../src/lib/email/config'
-import { sendResendEmail, type OutgoingEmail } from '../../src/lib/email/transport'
+import { isThrottledError, sendResendEmail, type OutgoingEmail } from '../../src/lib/email/transport'
 import { interpolate, wrapHtml } from '../../src/lib/email/render'
 import { createTestEmail } from '../../src/lib/email/test-message'
 
@@ -113,6 +113,30 @@ test('authentication errors are not retried and raw provider text is not exposed
   expect(calls).toBe(1)
   expect(result.error).toContain('authenticate')
   expect(result.error).not.toContain('re_fake_test_key')
+})
+
+test('quota and rate refusals are told apart, retried once, and recognised as throttling', async () => {
+  let calls = 0
+  const quota = await sendResendEmail(config, message, 'one-request', {
+    sleep: noSleep,
+    fetch: async () => {
+      calls++
+      return Response.json({ name: 'daily_quota_exceeded', message: 'quota' }, { status: 429 })
+    },
+  })
+  expect(calls).toBe(2)
+  expect(quota.ok).toBe(false)
+  expect(quota.error).toContain('sending quota')
+  expect(isThrottledError(quota.error)).toBe(true)
+
+  const burst = await sendResendEmail(config, message, 'one-request', {
+    sleep: noSleep,
+    fetch: async () => Response.json({ name: 'rate_limit_exceeded' }, { status: 429 }),
+  })
+  expect(burst.error).toContain('rate limited')
+  expect(isThrottledError(burst.error)).toBe(true)
+  expect(isThrottledError('Resend rejected the email details.')).toBe(false)
+  expect(isThrottledError(undefined)).toBe(false)
 })
 
 test('an ambiguous successful response is not reported as accepted', async () => {

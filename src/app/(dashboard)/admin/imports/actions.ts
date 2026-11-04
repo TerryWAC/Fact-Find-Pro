@@ -6,6 +6,7 @@ import { requestOrigin } from '@/lib/auth-origin'
 import { inviteAdviser, nextUninvitedProfileIds } from '@/lib/adviser-activation'
 import { retirementNoticeProgress, sendRetirementNotice } from '@/lib/adviser-notices'
 import { emailOutcome } from '@/lib/email/outcome'
+import { isThrottledError } from '@/lib/email/transport'
 
 export interface InviteActionResult {
   ok: boolean
@@ -23,13 +24,27 @@ export interface InviteBatchResult {
   sent: number
   /** Advisers whose link could not be issued or emailed in this batch. */
   failed: number
-  /** Prepared advisers still waiting for a first link after this batch. */
+  /** Advisers still waiting after this batch, not counting those skipped this run. */
   remaining: number
+  /** Profile IDs that failed in this batch; the caller passes them back so the run moves on. */
+  failedIds: string[]
+  /** The mail provider refused for rate or quota reasons, so the run should stop and be resumed later. */
+  throttled?: boolean
   notes: string[]
 }
 
 /** The size of each bulk step; keeps every request well inside the function time limit. */
 const BATCH_SIZE = 10
+/** Resend accepts two requests a second; this spacing stays under it with the transport's own retry. */
+const SEND_SPACING_MS = 600
+
+const pause = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+/** Profile IDs the client has already attempted in this run; anything odd is ignored. */
+function excludedIds(input: unknown): Set<string> {
+  const ids = Array.isArray(input) ? input : []
+  return new Set(ids.filter((id): id is string => typeof id === 'string' && /^[0-9a-f-]{36}$/i.test(id)).slice(0, 5000))
+}
 
 async function requireAdminSession() {
   const session = await getSessionUser()
@@ -61,14 +76,18 @@ export async function inviteAdviserAction(profileId: string): Promise<InviteActi
  * The admin screen calls this repeatedly until `remaining` is zero, so a long
  * list is handled in short requests and progress is visible throughout.
  */
-export async function inviteBatchAction(): Promise<InviteBatchResult> {
+export async function inviteBatchAction(exclude: string[] = []): Promise<InviteBatchResult> {
   const session = await requireAdminSession()
-  if (!session) return { ok: false, error: 'You do not have permission to do that.', sent: 0, failed: 0, remaining: 0, notes: [] }
+  if (!session) return { ok: false, error: 'You do not have permission to do that.', sent: 0, failed: 0, remaining: 0, failedIds: [], notes: [] }
 
   const origin = await requestOrigin()
-  const { ids, remaining } = await nextUninvitedProfileIds(BATCH_SIZE)
+  const skip = excludedIds(exclude)
+  const { ids: candidates, remaining } = await nextUninvitedProfileIds(BATCH_SIZE + skip.size)
+  const ids = candidates.filter((id) => !skip.has(id)).slice(0, BATCH_SIZE)
   let sent = 0
   let failed = 0
+  let throttled = false
+  const failedIds: string[] = []
   const notes: string[] = []
 
   for (const id of ids) {
@@ -76,14 +95,17 @@ export async function inviteBatchAction(): Promise<InviteBatchResult> {
     if (result.ok && result.email?.ok) sent++
     else {
       failed++
-      notes.push(`${result.name ?? id}: ${result.error ?? result.email?.error ?? 'email not accepted'}`)
+      failedIds.push(id)
+      const error = result.error ?? result.email?.error ?? 'email not accepted'
+      notes.push(`${result.name ?? id}: ${error}`)
+      if (isThrottledError(error)) { throttled = true; break }
     }
-    // Space the sends out so the mail provider's per-second limit is never hit.
-    await new Promise((resolve) => setTimeout(resolve, 150))
+    await pause(SEND_SPACING_MS)
   }
 
   revalidatePath('/admin/imports', 'layout')
-  return { ok: true, sent, failed, remaining: Math.max(0, remaining - ids.length), notes }
+  const attempted = sent + failed
+  return { ok: true, sent, failed, failedIds, throttled, remaining: Math.max(0, remaining - skip.size - attempted), notes }
 }
 
 /**
@@ -91,15 +113,19 @@ export async function inviteBatchAction(): Promise<InviteBatchResult> {
  * who have not had it. The email log decides who is still waiting, so the
  * admin screen can call this until `remaining` is zero without duplicates.
  */
-export async function noticeBatchAction(): Promise<InviteBatchResult> {
+export async function noticeBatchAction(exclude: string[] = []): Promise<InviteBatchResult> {
   const session = await requireAdminSession()
-  if (!session) return { ok: false, error: 'You do not have permission to do that.', sent: 0, failed: 0, remaining: 0, notes: [] }
+  if (!session) return { ok: false, error: 'You do not have permission to do that.', sent: 0, failed: 0, remaining: 0, failedIds: [], notes: [] }
 
   const origin = await requestOrigin()
+  const skip = excludedIds(exclude)
   const progress = await retirementNoticeProgress()
-  const batch = progress.pending.slice(0, BATCH_SIZE)
+  const pending = progress.pending.filter((recipient) => !skip.has(recipient.id))
+  const batch = pending.slice(0, BATCH_SIZE)
   let sent = 0
   let failed = 0
+  let throttled = false
+  const failedIds: string[] = []
   const notes: string[] = []
 
   for (const recipient of batch) {
@@ -107,11 +133,15 @@ export async function noticeBatchAction(): Promise<InviteBatchResult> {
     if (result.ok && !result.skipped) sent++
     else {
       failed++
-      notes.push(`${recipient.name} (${recipient.email}): ${result.error ?? (result.skipped ? 'template is switched off' : 'email not accepted')}`)
+      failedIds.push(recipient.id)
+      const error = result.error ?? (result.skipped ? 'template is switched off' : 'email not accepted')
+      notes.push(`${recipient.name} (${recipient.email}): ${error}`)
+      if (isThrottledError(error)) { throttled = true; break }
     }
-    await new Promise((resolve) => setTimeout(resolve, 150))
+    await pause(SEND_SPACING_MS)
   }
 
   revalidatePath('/admin/imports', 'layout')
-  return { ok: true, sent, failed, remaining: Math.max(0, progress.pending.length - batch.length), notes }
+  const attempted = sent + failed
+  return { ok: true, sent, failed, failedIds, throttled, remaining: Math.max(0, pending.length - attempted), notes }
 }
