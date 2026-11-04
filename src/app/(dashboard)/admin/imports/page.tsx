@@ -11,8 +11,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { SubmissionLoadError } from '@/components/submissions/submission-load-error'
 import { InviteAllButton } from '@/components/admin/invite-all-button'
+import { NoticeAllButton } from '@/components/admin/notice-all-button'
 import { IMPORT_DECISIONS, importStatus } from '@/lib/adviser-directory'
 import { activationLabel, summariseActivation } from '@/lib/activation-status'
+import { retirementNoticeProgress } from '@/lib/adviser-notices'
 import { textSearchFilter } from '@/lib/postgrest-search'
 import { Pagination } from '@/components/shared/pagination'
 import { submissionPage } from '@/lib/submission-search'
@@ -52,6 +54,7 @@ export default async function AdviserDirectoryPage({ searchParams }: { searchPar
       ])
     : [{ data: [], error: null }, { data: [], error: null }]
   const activation = summariseActivation(preparedIds, liveProfiles.data ?? [], activations.data ?? [])
+  const notice = preparedIds.length ? await retirementNoticeProgress() : { total: 0, notified: 0, pending: [] }
   return <>
     <PageHeader title="Existing advisers" description="The complete Typeform signup directory, with every record accounted for." actions={<Button variant="outline" asChild><a href="/admin/imports/export" download><Download className="h-4 w-4" />Download full list</a></Button>} />
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -72,6 +75,17 @@ export default async function AdviserDirectoryPage({ searchParams }: { searchPar
       </div>
       <InviteAllButton waiting={activation.waiting} />
     </div>
+    {notice.total > 0 && <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border p-5 text-sm" data-testid="notice-panel">
+      <div className="min-w-0 flex-1">
+        <strong>Version 1 retirement notice</strong>
+        <p className="mt-1 text-muted-foreground">
+          {notice.pending.length === 0
+            ? `Every prepared adviser has been sent the notice (${notice.notified} of ${notice.total}).`
+            : `${notice.pending.length} of ${notice.total} prepared ${notice.pending.length === 1 ? 'adviser has' : 'advisers have'} not been sent the notice that Version 1 is being discontinued. Send the activation links first so the notice is accurate when it says they have been sent.`}
+        </p>
+      </div>
+      <NoticeAllButton pending={notice.pending.length} />
+    </div>}
     <Card className="overflow-hidden p-0">
       <form className="flex flex-wrap items-end gap-3 border-b p-4" action="/admin/imports">
         <label className="min-w-48 flex-1 text-xs font-medium">Search advisers<Input name="q" defaultValue={params.q} placeholder="Name, firm or email" className="mt-1" /></label>

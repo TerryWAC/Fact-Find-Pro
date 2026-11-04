@@ -26,6 +26,7 @@ TITLES = {
     '20260914003747_adviser_practice_contact.sql': 'Adviser practice details and public business contacts',
     '20261030120000_adviser_activation.sql': 'Activation links for prepared adviser accounts',
     '20261104120000_adviser_activation_v2_wording.sql': 'Activation email describes the v1 to v2 move',
+    '20261104130000_v1_retirement_notice.sql': 'Version 1 retirement notice template',
 }
 
 HEADER = """/*

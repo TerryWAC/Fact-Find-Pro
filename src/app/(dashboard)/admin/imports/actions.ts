@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { getSessionUser, isAdmin } from '@/lib/auth'
 import { requestOrigin } from '@/lib/auth-origin'
 import { inviteAdviser, nextUninvitedProfileIds } from '@/lib/adviser-activation'
+import { retirementNoticeProgress, sendRetirementNotice } from '@/lib/adviser-notices'
 import { emailOutcome } from '@/lib/email/outcome'
 
 export interface InviteActionResult {
@@ -83,4 +84,34 @@ export async function inviteBatchAction(): Promise<InviteBatchResult> {
 
   revalidatePath('/admin/imports', 'layout')
   return { ok: true, sent, failed, remaining: Math.max(0, remaining - ids.length), notes }
+}
+
+/**
+ * Sends the Version 1 retirement notice to the next batch of prepared advisers
+ * who have not had it. The email log decides who is still waiting, so the
+ * admin screen can call this until `remaining` is zero without duplicates.
+ */
+export async function noticeBatchAction(): Promise<InviteBatchResult> {
+  const session = await requireAdminSession()
+  if (!session) return { ok: false, error: 'You do not have permission to do that.', sent: 0, failed: 0, remaining: 0, notes: [] }
+
+  const origin = await requestOrigin()
+  const progress = await retirementNoticeProgress()
+  const batch = progress.pending.slice(0, BATCH_SIZE)
+  let sent = 0
+  let failed = 0
+  const notes: string[] = []
+
+  for (const recipient of batch) {
+    const result = await sendRetirementNotice(recipient, origin)
+    if (result.ok && !result.skipped) sent++
+    else {
+      failed++
+      notes.push(`${recipient.name} (${recipient.email}): ${result.error ?? (result.skipped ? 'template is switched off' : 'email not accepted')}`)
+    }
+    await new Promise((resolve) => setTimeout(resolve, 150))
+  }
+
+  revalidatePath('/admin/imports', 'layout')
+  return { ok: true, sent, failed, remaining: Math.max(0, progress.pending.length - batch.length), notes }
 }

@@ -291,11 +291,12 @@ const mock = http.createServer(async (req, res) => {
         : [],
     )
   }
-  if (pathname === '/rest/v1/email_log' && (emailTests || liveEmailTest)) {
-    if (req.method === 'POST' && service) {
-      emailLog.push(body)
-      return send(null, 201)
-    }
+  if (pathname === '/rest/v1/email_log' && req.method === 'POST' && service) {
+    // Every send is recorded, as in production; the notice run reads this back to avoid duplicates.
+    emailLog.push({ id: `log-${emailLog.length + 1}`, created_at: new Date().toISOString(), ...body })
+    return send(null, 201)
+  }
+  if (pathname === '/rest/v1/email_log' && (service || emailTests || liveEmailTest)) {
     return sendRows(service || user?.profileRole === 'admin' ? emailLog : [])
   }
   if (pathname === '/rest/v1/email_log')
@@ -349,6 +350,8 @@ const mock = http.createServer(async (req, res) => {
     formEdits.clear()
     activatedCredentials = null
     profileEdits.delete(preparedAdviserId)
+    // The retirement notice is deduplicated through the email log.
+    for (let index = emailLog.length - 1; index >= 0; index--) if (emailLog[index].template_key === 'v1_retirement_notice') emailLog.splice(index, 1)
     return send({ ok: true })
   }
   if (req.url === '/test/fail-next') {

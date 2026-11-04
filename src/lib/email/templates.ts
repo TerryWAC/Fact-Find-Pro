@@ -7,6 +7,7 @@ export type EmailTemplateKey =
   | 'submission_notification'
   | 'submission_client_copy'
   | 'adviser_activation'
+  | 'v1_retirement_notice'
   | 'password_reset'
 
 export interface EmailTemplateDefinition {
@@ -166,6 +167,46 @@ Activate it, choose a password and check your details here:
 The link is personal to you, can be used once and expires on {{expires_on}}. If you were not expecting this email, ignore it and nothing will change.`,
     variables: ['name', 'company_name', 'activation_url', 'expires_on'],
   },
+  v1_retirement_notice: {
+    key: 'v1_retirement_notice',
+    name: 'Version 1 retirement notice (to existing adviser)',
+    description: 'One-off notice to every prepared adviser that Fact Find Version 1 is being discontinued and Version 2 is the only platform.',
+    subject: 'Important Notice: Fact Find Version 1 Retiring Tomorrow – Please Switch to Version 2',
+    bodyHtml: `<h2>Fact Find Version 1 retires tomorrow</h2>
+<p>Dear {{name}},</p>
+<p>We are writing to let you know that <strong>Fact Find Version 1 will be discontinued from tomorrow, 5 November 2026.</strong> From this date, Version 1 will no longer be accessible or operational.</p>
+<p>We have now moved to <strong>Fact Find Version 2</strong>, which will be the only version available going forward.</p>
+<p><strong>How to access Fact Find Version 2</strong></p>
+<p>We have already sent an email to all members with instructions on how to log in and access the new Version 2 platform. If you haven't received this email, please check your junk or spam folder.</p>
+<p>Alternatively, you can register directly using the link below:</p>
+<p><a href="{{signup_url}}">Sign Up for Fact Find Version 2</a></p>
+<p>Please ensure you have registered and can access Version 2 before Version 1 is discontinued tomorrow to avoid any disruption to your work.</p>
+<p>If you experience any issues accessing the new platform or need assistance, please get in touch with our team.</p>
+<p>Thank you for your cooperation.</p>
+<p>Kind regards,<br>The Club Team</p>`,
+    bodyText: `Dear {{name}},
+
+We are writing to let you know that Fact Find Version 1 will be discontinued from tomorrow, 5 November 2026. From this date, Version 1 will no longer be accessible or operational.
+
+We have now moved to Fact Find Version 2, which will be the only version available going forward.
+
+How to access Fact Find Version 2
+
+We have already sent an email to all members with instructions on how to log in and access the new Version 2 platform. If you haven't received this email, please check your junk or spam folder.
+
+Alternatively, you can register directly here:
+{{signup_url}}
+
+Please ensure you have registered and can access Version 2 before Version 1 is discontinued tomorrow to avoid any disruption to your work.
+
+If you experience any issues accessing the new platform or need assistance, please get in touch with our team.
+
+Thank you for your cooperation.
+
+Kind regards,
+The Club Team`,
+    variables: ['name', 'signup_url'],
+  },
   password_reset: {
     key: 'password_reset',
     name: 'Password reset (to user)',
@@ -217,5 +258,6 @@ export interface EmailVariablesMap {
     submission_url: string
   }
   adviser_activation: { name: string; company_name: string; activation_url: string; expires_on: string }
+  v1_retirement_notice: { name: string; signup_url: string }
   password_reset: { name: string; reset_url: string }
 }
