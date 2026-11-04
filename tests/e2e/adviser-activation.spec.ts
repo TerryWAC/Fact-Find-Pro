@@ -77,6 +77,23 @@ test('admin invites a prepared adviser and the adviser activates with the one-ti
   await expect(page.getByTestId('activation-panel')).toContainText('Every prepared adviser has been sent an activation link')
 })
 
+test('bulk invite works through everyone waiting and reports the planned total throughout', async ({ page }) => {
+  await page.request.post('http://127.0.0.1:45439/test/reset-activation')
+  await page.goto('/login?redirectTo=/admin/imports')
+  await page.getByLabel('Email', { exact: false }).fill('admin@example.test')
+  await page.getByLabel('Password', { exact: true }).fill('PreviewOnly!')
+  await page.getByRole('button', { name: 'Sign in', exact: true }).click()
+
+  await page.getByTestId('invite-all').click()
+  await expect(page.getByRole('dialog')).toContainText('Email activation links to 1 advisers?')
+  await page.getByTestId('confirm-invite-all').click()
+  // The page revalidates mid-run; the dialog keeps the total it started with.
+  await expect(page.getByRole('dialog')).toContainText('Finished. 1 sent of 1.')
+  await page.getByRole('button', { name: 'Close and refresh' }).click()
+  await expect(page.getByTestId('activation-panel')).toContainText('Every prepared adviser has been sent an activation link')
+  await expect(page.getByRole('link', { name: /Morgan Prepared/ })).toContainText('Invited')
+})
+
 test('a malformed or unknown activation link explains itself without touching any account', async ({ page }) => {
   await page.goto('/activate/not-a-real-token')
   await expect(page.getByRole('heading', { name: 'This activation link is not valid' })).toBeVisible()

@@ -31,10 +31,14 @@ export function InviteAllButton({ waiting }: InviteAllButtonProps) {
   const [sent, setSent] = useState(0)
   const [failed, setFailed] = useState(0)
   const [notes, setNotes] = useState<string[]>([])
-  const total = waiting
+  // The page revalidates after every batch, so `waiting` falls while the run is
+  // in progress; the figure shown is the one captured when the run started.
+  const [planned, setPlanned] = useState(0)
+  const total = running || done ? planned : waiting
   const processed = sent + failed
 
   async function run() {
+    setPlanned(waiting)
     setRunning(true)
     setDone(false)
     let totalSent = 0

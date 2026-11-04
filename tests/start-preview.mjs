@@ -440,6 +440,11 @@ const mock = http.createServer(async (req, res) => {
   }
   return send({ message: 'Not available in local preview' }, 404)
 })
+// Playwright reuses pooled connections between test steps that can pause for
+// longer than Node's five-second keep-alive default; a longer window means the
+// client never writes to a socket the server has just closed.
+mock.keepAliveTimeout = 120_000
+mock.headersTimeout = 125_000
 mock.listen(45439, '127.0.0.1', () => {
   if (liveEmailTest) {
     process.loadEnvFile('.env.local')
