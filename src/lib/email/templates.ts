@@ -149,16 +149,16 @@ If anything needs correcting, just reply to this email and {{adviser_name}} will
     key: 'adviser_activation',
     name: 'Account activation (to existing adviser)',
     description: 'Sent to a prepared adviser with their single-use link to set a password and activate their account.',
-    subject: 'Activate your FactFind Pro account, {{name}}',
-    bodyHtml: `<h2>Your FactFind Pro account is ready</h2>
+    subject: 'Your FactFind Pro v2 account is ready, {{name}}',
+    bodyHtml: `<h2>Welcome to FactFind Pro v2</h2>
 <p>Hi {{name}},</p>
-<p>Wealthy Advisers Club has moved adviser fact finds to FactFind Pro. An account for <strong>{{company_name}}</strong> has been prepared for you.</p>
-<p>Use the link below to choose a password, check the details we hold and switch on your four client FactFind links.</p>
-<p><a href="{{activation_url}}">Activate my account</a></p>
+<p>Wealthy Advisers Club has moved adviser fact finds from FactFind Pro v1 to FactFind Pro v2. Your v2 account for <strong>{{company_name}}</strong> has been prepared for you.</p>
+<p>Use the link below to choose a password, check the details we hold and switch on your four new v2 client FactFind links.</p>
+<p><a href="{{activation_url}}">Activate my v2 account</a></p>
 <p>The link is personal to you, can be used once and expires on {{expires_on}}. If you were not expecting this email, you can ignore it and nothing will change.</p>`,
     bodyText: `Hi {{name}},
 
-Wealthy Advisers Club has moved adviser fact finds to FactFind Pro. An account for {{company_name}} has been prepared for you.
+Wealthy Advisers Club has moved adviser fact finds from FactFind Pro v1 to FactFind Pro v2. Your v2 account for {{company_name}} has been prepared for you.
 
 Activate it, choose a password and check your details here:
 {{activation_url}}

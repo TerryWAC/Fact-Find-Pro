@@ -79,10 +79,11 @@ export function ActivationForm({ token, email, expiresOn, defaults, images }: Ac
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">Activate your FactFind Pro account</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Activate your FactFind Pro v2 account</h1>
         <p className="text-sm text-muted-foreground">
-          Check the details we hold for you, choose a password and your account is live, with four client
-          FactFind links ready to share. This link expires on {expiresOn}.
+          Wealthy Advisers Club has moved from FactFind Pro v1 to v2. Check the details we hold for you, choose a
+          password and your v2 account is live, with four new client FactFind links ready to share. This link
+          expires on {expiresOn}.
         </p>
       </div>
 

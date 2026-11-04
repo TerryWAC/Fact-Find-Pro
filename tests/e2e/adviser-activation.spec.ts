@@ -37,7 +37,7 @@ test('admin invites a prepared adviser and the adviser activates with the one-ti
   const adviserContext = await browser.newContext()
   const adviser = await adviserContext.newPage()
   await adviser.goto(activationUrl)
-  await expect(adviser.getByRole('heading', { name: 'Activate your FactFind Pro account' })).toBeVisible()
+  await expect(adviser.getByRole('heading', { name: 'Activate your FactFind Pro v2 account' })).toBeVisible()
   await expect(adviser.getByLabel('Full name')).toHaveValue('Morgan Prepared')
   await expect(adviser.getByLabel('Company name')).toHaveValue('Morgan Financial')
   await expect(adviser.getByLabel('Email address')).toHaveValue('prepared@example.test')

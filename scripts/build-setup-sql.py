@@ -25,6 +25,7 @@ TITLES = {
     '20260913232741_stage_existing_advisers.sql': 'Private existing-adviser directory and reserved FactFind accounts',
     '20260914003747_adviser_practice_contact.sql': 'Adviser practice details and public business contacts',
     '20261030120000_adviser_activation.sql': 'Activation links for prepared adviser accounts',
+    '20261104120000_adviser_activation_v2_wording.sql': 'Activation email describes the v1 to v2 move',
 }
 
 HEADER = """/*
