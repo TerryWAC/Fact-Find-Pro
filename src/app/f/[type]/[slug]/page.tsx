@@ -58,6 +58,8 @@ export default async function PublicFactFindPage({
       companyName={form.company_name}
       adviserPhotoUrl={form.avatar_url}
       practice={form}
+      // Absent until the question-markers migration has run; the default keeps the marker.
+      hideOptionalMarkers={form.hide_optional_markers ?? false}
     />
   )
 }

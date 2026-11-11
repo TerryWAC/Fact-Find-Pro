@@ -48,7 +48,7 @@
    ==========================================================================
 */
 
-/* ======================= PART 1 of 15  Schema, RLS, triggers and public RPCs ======================= */
+/* ======================= PART 1 of 16  Schema, RLS, triggers and public RPCs ======================= */
 
 /*
    =============================================================================
@@ -657,7 +657,7 @@ grant execute on function public.submit_factfind(public.factfind_type, text, tex
 grant execute on function public.is_admin() to authenticated;
 grant execute on function public.is_approved() to authenticated;
 
-/* ======================= PART 2 of 15  Default notification email templates ======================= */
+/* ======================= PART 2 of 16  Default notification email templates ======================= */
 
 /*
    =============================================================================
@@ -741,7 +741,7 @@ values
   )
 on conflict (key) do nothing;
 
-/* ======================= PART 3 of 15  Storage buckets and their policies ======================= */
+/* ======================= PART 3 of 16  Storage buckets and their policies ======================= */
 
 /*
    =============================================================================
@@ -792,7 +792,7 @@ create policy "submission_uploads_admin_all" on storage.objects
   using (bucket_id = 'submission-uploads' and public.is_admin())
   with check (bucket_id = 'submission-uploads' and public.is_admin());
 
-/* ======================= PART 4 of 15  Onboarding fields and the team roster ======================= */
+/* ======================= PART 4 of 16  Onboarding fields and the team roster ======================= */
 
 /*
    =============================================================================
@@ -885,7 +885,7 @@ create policy "team_members_admin_all" on public.team_members
 
 grant select, insert, update, delete on public.team_members to authenticated, service_role;
 
-/* ======================= PART 5 of 15  Admin allowlist (auto-approves the first admin) ======================= */
+/* ======================= PART 5 of 16  Admin allowlist (auto-approves the first admin) ======================= */
 
 /*
    ==========================================================================
@@ -1017,7 +1017,7 @@ begin
   end loop;
 end $$;
 
-/* ======================= PART 6 of 15  Adviser branding (colour check, adviser photo on public links) ======================= */
+/* ======================= PART 6 of 16  Adviser branding (colour check, adviser photo on public links) ======================= */
 
 /*
    =============================================================================
@@ -1072,7 +1072,7 @@ $$;
 revoke all on function public.resolve_factfind_form(public.factfind_type, text) from public;
 grant execute on function public.resolve_factfind_form(public.factfind_type, text) to anon, authenticated;
 
-/* ======================= PART 7 of 15  PDF copy to the client (preference and email template) ======================= */
+/* ======================= PART 7 of 16  PDF copy to the client (preference and email template) ======================= */
 
 /*
    =============================================================================
@@ -1108,7 +1108,7 @@ values
   )
 on conflict (key) do nothing;
 
-/* ======================= PART 8 of 15  Internal function access and fixed search paths ======================= */
+/* ======================= PART 8 of 16  Internal function access and fixed search paths ======================= */
 
 /* Internal helpers run through owner-executed triggers/functions, never the Data API. */
 revoke execute on function public.generate_adviser_slug() from public, anon, authenticated;
@@ -1127,7 +1127,7 @@ alter function public.touch_updated_at() set search_path = pg_catalog, public;
    resolve_factfind_form and submit_factfind enforce the active adviser link.
  */
 
-/* ======================= PART 9 of 15  Require validated server writes for completed FactFinds ======================= */
+/* ======================= PART 9 of 16  Require validated server writes for completed FactFinds ======================= */
 
 /*
    Apply after deploying the server action that uses the server-only key.
@@ -1140,7 +1140,7 @@ grant execute on function public.submit_factfind(public.factfind_type, text, tex
 comment on function public.submit_factfind(public.factfind_type, text, text, text, text, jsonb, jsonb) is
   'Server-only persistence after validation against the trusted Typeform-derived schema. Public link ownership and active-account checks remain enforced.';
 
-/* ======================= PART 10 of 15  Private existing-adviser directory and reserved FactFind accounts ======================= */
+/* ======================= PART 10 of 16  Private existing-adviser directory and reserved FactFind accounts ======================= */
 
 /* Imported advisers are prepared privately until their individual activation is released. */
 alter table public.profiles add column if not exists import_pending boolean not null default false;
@@ -1222,7 +1222,7 @@ drop policy if exists adviser_import_assets_admin_read on storage.objects;
 create policy adviser_import_assets_admin_read on storage.objects for select to authenticated
   using (bucket_id = 'adviser-imports' and (select public.is_admin()));
 
-/* ======================= PART 11 of 15  Adviser practice details and public business contacts ======================= */
+/* ======================= PART 11 of 16  Adviser practice details and public business contacts ======================= */
 
 /* Optional, adviser-authored practice details. Existing accounts are not changed. */
 alter table public.profiles
@@ -1262,7 +1262,7 @@ grant execute on function public.resolve_factfind_form(public.factfind_type, tex
 comment on column public.profiles.contact_email is 'Optional public business contact and client-copy Reply-To; account email is unchanged.';
 notify pgrst, 'reload schema';
 
-/* ======================= PART 12 of 15  Activation links for prepared adviser accounts ======================= */
+/* ======================= PART 12 of 16  Activation links for prepared adviser accounts ======================= */
 
 /*
    =============================================================================
@@ -1318,7 +1318,7 @@ values
   )
 on conflict (key) do nothing;
 
-/* ======================= PART 13 of 15  Activation email describes the v1 to v2 move ======================= */
+/* ======================= PART 13 of 16  Activation email describes the v1 to v2 move ======================= */
 
 /*
   Activation email: describe the move as FactFind Pro v1 to v2.
@@ -1342,7 +1342,7 @@ set
   updated_at = now()
 where key = 'adviser_activation';
 
-/* ======================= PART 14 of 15  Version 1 retirement notice template ======================= */
+/* ======================= PART 14 of 16  Version 1 retirement notice template ======================= */
 
 /*
   One-off notice to existing advisers that Fact Find Version 1 is being
@@ -1374,7 +1374,7 @@ values
   )
 on conflict (key) do nothing;
 
-/* ======================= PART 15 of 15  Per-link question-set variants ======================= */
+/* ======================= PART 15 of 16  Per-link question-set variants ======================= */
 
 /*
   Per-link question-set variants.
@@ -1409,6 +1409,51 @@ as $$
     p.brand_colour, f.form_type, f.is_active, p.job_title, p.website,
     p.business_location, p.phone, p.contact_email, p.services, p.client_focus,
     f.variant
+  from public.factfind_forms f
+  join public.profiles p on p.id = f.adviser_id
+  where f.form_type = p_form_type and f.unique_slug = p_slug
+    and f.is_active and p.status = 'approved' and not p.import_pending
+  limit 1;
+$$;
+revoke all on function public.resolve_factfind_form(public.factfind_type, text) from public;
+grant execute on function public.resolve_factfind_form(public.factfind_type, text) to anon, authenticated;
+notify pgrst, 'reload schema';
+
+/* ======================= PART 16 of 16  Per-adviser "Optional" question markers ======================= */
+
+/*
+  Per-adviser question markers.
+
+  Every question card shows "Required" or "Optional". An adviser can ask for
+  the "Optional" marker to be left off their links so clients are not nudged
+  to skip questions (Supreme Financial Solutions, 11 November 2026); required
+  questions still say "Required" and nothing becomes mandatory. The flag is
+  resolved with the link, like branding. Default false: no change for anyone
+  until an admin sets it for that adviser. Safe to re-run.
+*/
+
+alter table public.profiles
+  add column if not exists hide_optional_markers boolean not null default false;
+
+comment on column public.profiles.hide_optional_markers is 'Leave the "Optional" marker off this adviser''s FactFind questions; required questions are still marked.';
+
+drop function if exists public.resolve_factfind_form(public.factfind_type, text);
+
+create function public.resolve_factfind_form(p_form_type public.factfind_type, p_slug text)
+returns table (
+  form_id uuid, adviser_id uuid, adviser_name text, company_name text,
+  logo_url text, avatar_url text, brand_colour text,
+  form_type public.factfind_type, is_active boolean,
+  job_title text, website text, business_location text,
+  contact_phone text, contact_email text, services text, client_focus text,
+  variant text, hide_optional_markers boolean
+)
+language sql stable security definer set search_path = ''
+as $$
+  select f.id, f.adviser_id, p.name, p.company_name, p.logo_url, p.avatar_url,
+    p.brand_colour, f.form_type, f.is_active, p.job_title, p.website,
+    p.business_location, p.phone, p.contact_email, p.services, p.client_focus,
+    f.variant, p.hide_optional_markers
   from public.factfind_forms f
   join public.profiles p on p.id = f.adviser_id
   where f.form_type = p_form_type and f.unique_slug = p_slug

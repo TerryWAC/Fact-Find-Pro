@@ -46,6 +46,7 @@ type ProfileRow = {
   delivery_downloads: boolean
   delivery_webhook_enabled: boolean
   delivery_webhook_url: string | null
+  hide_optional_markers: boolean
   onboarding_step: number
   onboarding_completed_at: string | null
   created_at: string
@@ -78,6 +79,7 @@ type ProfileInsert = {
   business_location?: string | null
   delivery_email_copy?: boolean
   delivery_client_copy?: boolean
+  hide_optional_markers?: boolean
   delivery_downloads?: boolean
   delivery_webhook_enabled?: boolean
   delivery_webhook_url?: string | null
@@ -384,6 +386,7 @@ export type Database = {
           services: string | null
           client_focus: string | null
           variant: string | null
+          hide_optional_markers: boolean
         }[]
       }
       submit_factfind: {

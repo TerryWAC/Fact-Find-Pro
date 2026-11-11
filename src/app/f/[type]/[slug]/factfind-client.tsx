@@ -30,6 +30,8 @@ interface FactFindClientProps {
   adviserPhotoUrl?: string | null
   practice?: PracticeDetails
   previewOnly?: boolean
+  /** The adviser has asked for the "Optional" marker to be left off their questions. */
+  hideOptionalMarkers?: boolean
 }
 
 const PREPARATION: Record<FactFindType, string[]> = {
@@ -64,6 +66,7 @@ export function FactFindClient({
   adviserPhotoUrl,
   practice = {},
   previewOnly = false,
+  hideOptionalMarkers = false,
 }: FactFindClientProps) {
   const [started, setStarted] = useState(false)
   const [reference, setReference] = useState<string | null>(null)
@@ -201,6 +204,7 @@ export function FactFindClient({
           adviserName={adviserName}
           onSubmitAction={previewOnly ? async () => ({ ok: false, error: 'This is an admin preview. No submission was saved and no email was sent.' }) : submitFactFind}
           onComplete={setReference}
+          hideOptionalMarkers={hideOptionalMarkers}
         />
       </div>
     )

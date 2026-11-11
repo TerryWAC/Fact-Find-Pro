@@ -67,6 +67,8 @@ interface FactFindFormProps {
     submissionData: unknown
   }) => Promise<FactFindSubmitResult>
   onComplete: (reference: string) => void
+  /** Leave the "Optional" marker off question cards (an adviser preference). */
+  hideOptionalMarkers?: boolean
 }
 
 export function FactFindForm({
@@ -76,6 +78,7 @@ export function FactFindForm({
   adviserName,
   onSubmitAction,
   onComplete,
+  hideOptionalMarkers = false,
 }: FactFindFormProps) {
   const [activeStepId, setActiveStepId] = useState(schema.steps[0]?.id ?? '')
   const [reviewing, setReviewing] = useState(false)
@@ -468,7 +471,7 @@ export function FactFindForm({
                         error={errors[field.id]?.message as string | undefined}
                       />
                     ) : (
-                      <QuestionCard key={field.id} field={field} number={questionNumbers.get(field.id)!}>
+                      <QuestionCard key={field.id} field={field} number={questionNumbers.get(field.id)!} hideOptionalMarker={hideOptionalMarkers}>
                         <FieldRenderer
                           field={field}
                           control={control}

@@ -144,7 +144,7 @@ const mock = http.createServer(async (req, res) => {
     if (service && requestUrl.searchParams.has('id')) adviserReads++
     const requestedId = requestUrl.searchParams.get('id')?.replace(/^eq\./, '')
     if (failAdminReads && !requestedId) return send({ code: 'XX000', message: 'Simulated admin read failure' }, 503)
-    const defaults = { name: 'Alex Morgan', status: 'approved', role: 'adviser', import_pending: false, company_name: 'Morgan Financial', phone: '', avatar_url: null, logo_url: null, brand_colour: '#6D28D9', adviser_slug: 'preview', created_at: '2026-01-01T00:00:00Z', onboarding_completed_at: '2026-01-01T00:00:00Z', delivery_email_copy: emailScenario.adviserCopy ?? true, delivery_client_copy: emailScenario.clientCopy ?? true, delivery_webhook_enabled: false, delivery_webhook_url: null }
+    const defaults = { name: 'Alex Morgan', status: 'approved', role: 'adviser', import_pending: false, company_name: 'Morgan Financial', phone: '', avatar_url: null, logo_url: null, brand_colour: '#6D28D9', adviser_slug: 'preview', created_at: '2026-01-01T00:00:00Z', onboarding_completed_at: '2026-01-01T00:00:00Z', delivery_email_copy: emailScenario.adviserCopy ?? true, delivery_client_copy: emailScenario.clientCopy ?? true, delivery_webhook_enabled: false, delivery_webhook_url: null, hide_optional_markers: false }
     const rows = [
       { ...defaults, id: testAdviserId, email: liveEmailTest ? process.env.EMAIL_TEST_TO : 'adviser@example.test', ...(emailScenario.branding ?? {}) },
       { ...defaults, id: '00000000-0000-4000-8000-000000000002', role: 'admin', email: 'admin@example.test' },
@@ -365,11 +365,13 @@ const mock = http.createServer(async (req, res) => {
   if (req.url === '/rest/v1/rpc/resolve_factfind_form') {
     // 'bespoke' is the test adviser's mortgage link that serves the Future Perfect question set.
     const bespoke = body.p_slug === 'bespoke' && body.p_form_type === 'mortgage'
-    if (!['preview', 'violet'].includes(body.p_slug) && !bespoke) return send([])
+    if (!['preview', 'violet', 'focused'].includes(body.p_slug) && !bespoke) return send([])
     const practice = profileEdits.get(testAdviserId) ?? {}
     return send([
       {
         variant: bespoke ? 'future_perfect' : null,
+        // 'focused' belongs to an adviser who leaves the "Optional" marker off.
+        hide_optional_markers: body.p_slug === 'focused',
         form_id: bespoke ? '00000000-0000-4000-8000-000000000400' : '00000000-0000-4000-8000-000000000001',
         adviser_id: '00000000-0000-4000-8000-000000000002',
         adviser_name: 'Alex Morgan',
