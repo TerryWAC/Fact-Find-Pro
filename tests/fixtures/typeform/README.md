@@ -10,7 +10,7 @@ These snapshots were read from the `form` JSON embedded in the four existing pub
 | Home | [R3CNRtla](https://form.typeform.com/to/R3CNRtla) | 30 | 1 | 1 |
 | **Total** | | **400** | **16** | **49,937** |
 
-`sources.json` records the capture date, public URLs and SHA-256 hashes of these snapshots. Medical has one additional email question in the app, for 401 app questions overall.
+`sources.json` records the capture date, public URLs and SHA-256 hashes of these snapshots. Medical has one additional email question in the app, and Mortgage has 24 additional loans and credit-card questions (below), for 425 app questions overall.
 
 `future-perfect-mortgage.json` is separate from the four standard forms: it is the definition of "Tom Hunt - Mortgage" (`qd0zpSvg`) read on 11 November 2026, questions and jump logic only, no responses. It feeds `scripts/build-mortgage-future-perfect.mjs`, which produces that adviser's bespoke question set (see `docs/future-perfect-mortgage-variant.md`). It is not part of the 400-question comparison.
 
@@ -25,6 +25,8 @@ These are a fixed reference, not a live sync. When the business edits a Typeform
 ## Existing platform differences retained
 
 The user's completion-rule decision is to use the existing Typeforms. All source required flags are preserved; other source questions remain optional. The existing platform requires the client's name and email for submission identity and delivery, including an added Medical email field. No extra mandatory routing or follow-up questions were introduced in this pass. A blank answer means not provided, not No.
+
+**Mortgage loans and credit cards (owner request, 11 November 2026).** The Version 1 per-adviser Mortgage forms were created from a later template than the published master `AE8RkxUT`, and that template asks "Do you have any loans?" (loan 1–4 company name, monthly payment and outstanding balance, plus an additional-loans box) and "Do you have a credit card(s) or store card(s)?" (card 1–3 name, outstanding balance and repayments) between the monthly expenses and the CCJ question. Advisers expected them in Version 2, so the importer adds them to the standard Mortgage schema for every adviser with the template's wording and help text, as optional questions with `source: factfind-pro:<id>`. The verifier accepts exactly these ids as additions. Two deliberate differences from the template: its jump rules were slips (Yes skipped the loan details and No skipped the card question) and are not reproduced, so Yes shows the details and No moves on; and "balamce" is spelled "balance". The master snapshot itself is unchanged and remains the comparison reference.
 
 The import has these documented corrections, enforced by `KNOWN_DEVIATIONS` in the verifier:
 

@@ -13,7 +13,7 @@ const code = value => `\`${String(value).replace(/`/g, '\\`')}\``
 const lines = [
   '# FactFind Pro — complete question catalogue', '',
   'Generated from the executable app schemas with `node scripts/export-question-catalogue.mjs`. Contains question definitions only, never client answers. Do not edit this generated file; update the reviewed schema and regenerate it.', '',
-  'The four original Typeforms contain 400 questions; the app adds a required Medical email question, for 401. The original snapshots were captured on 13 September 2026. Approved wording/routing repairs are documented in [the source notes](../tests/fixtures/typeform/README.md).', '',
+  'The four original Typeforms contain 400 questions; the app adds a required Medical email question and, at the owner\'s request of 11 November 2026, the Mortgage loans and credit-card questions from the Version 1 per-adviser template (24 optional questions), for 425. The original snapshots were captured on 13 September 2026. Approved wording/routing repairs are documented in [the source notes](../tests/fixtures/typeform/README.md).', '',
   'Each field is shown only when both its section condition and its own field condition match. A missing condition means no extra visibility restriction at that level. Conditions use the stored answer values listed below. All conditions are evaluated by `src/lib/forms/engine.ts`; blank optional answers mean not provided, not No.', '',
   'The stored schemas and original JSON fixtures remain authoritative; this Markdown is a review aid.', '',
 ]

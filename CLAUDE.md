@@ -6,7 +6,7 @@ Start by reading `docs/handover-findings-2026-09-15.md`, `docs/readiness.md` and
 
 - No outgoing emails, invitations, signup/recovery messages or Typeform export requests are authorised during this handover. Use the isolated preview/captured-mail tests. Do not run `--live-email-test` or `email:test --send` without new explicit recipient approval.
 - Preserve Terry's specific Typeform wording, choices, help text and required flags, with the already approved corrections documented in `tests/fixtures/typeform/README.md`. Do not replace the questionnaires with generic questions or alter the source fixtures to make tests pass.
-- The four captured originals contain 400 questions. The app contains 401 because Medical has an added client email field. Original source JSON is in `tests/fixtures/typeform/`; executable schemas are in `src/lib/forms/schemas/`.
+- The four captured originals contain 400 questions. The app contains 425: Medical has an added client email field, and Mortgage has the 24 optional loans and credit-card questions from the Version 1 per-adviser template, which Terry asked to carry over for every adviser on 11 November 2026 (see `tests/fixtures/typeform/README.md`). Original source JSON is in `tests/fixtures/typeform/`; executable schemas are in `src/lib/forms/schemas/`.
 - Keep automatic adviser/client PDF emails governed by each adviser's saved preferences. Selecting Adviser while completing a form must not change delivery preferences.
 - Internal Adviser Details, Client Source and Admin Notes must stay out of client PDFs, including legacy submission formats. Server ownership comes from the form link, not a typed adviser name.
 - Keep records until deletion is requested. There is no approved automatic 90-day purge.

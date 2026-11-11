@@ -87,7 +87,14 @@ const INTRO_RE = /^(My name is|We're delighted)/i
 const GROUP_TYPES = new Set(['inline_group', 'group', 'contact_info'])
 const isHeader = (tf) => tf.type === 'statement' && !INTRO_RE.test(tf.title)
 const headerless = !top.some(isHeader)
-const ADDITIONS = { 'factfind-pro:client_email': 'client_email' } // fields the platform adds when the template lacks them
+// Fields the platform adds when the template lacks them (source → id):
+// Medical's client email, and the owner-approved Mortgage loans and credit
+// cards carried over from the Version 1 per-adviser template (11 Nov 2026).
+const CREDIT_ADDITIONS = ['has_loans', 'loans_heading',
+  ...[1, 2, 3, 4].flatMap((k) => [`loan${k}_company_name`, `loan${k}_monthly_payment`, `loan${k}_outstanding_balance`]),
+  'additional_loans_details', 'has_credit_cards', 'credit_cards_heading',
+  ...[1, 2, 3].flatMap((k) => [`cc${k}_name`, `cc${k}_outstanding_balance`, `cc${k}_repayments`])]
+const ADDITIONS = Object.fromEntries(['client_email', ...(schema.type === 'mortgage' ? CREDIT_ADDITIONS : [])].map((id) => [`factfind-pro:${id}`, id]))
 /** ref → { tf, topIdx, parent, childIdx } for every top-level field and group child. */
 const srcByRef = new Map()
 top.forEach((tf, i) => {
@@ -351,11 +358,12 @@ deviations.forEach((d, k) => { if (!seen[k]) fail(`documented deviation never ob
 console.log(`${src.title} (${src.id}) ↔ ${schemaPath}`)
 console.log(`  questions      ${stats.questions} matched by ref (0 missing, 0 invented)`)
 console.log(headerless ? `  groups         ${schema.steps.length} question groups → steps` : `  groups         ${stats.groups} → headings, children kept together`)
-if (additions.length) console.log(`  added          ${additions.join(', ')} (not in the Typeform template; required by the platform)`)
+if (additions.length) console.log(`  added          ${additions.join(', ')} (not in the Typeform template; added by the platform)`)
+const requiredAdditions = additions.filter((id) => schemaFields.find((e) => e.f.id === id)?.f.required)
 console.log(`  statements     ${stats.statements} in-section notes verbatim · ${stats.dropped} intro statements dropped (adviser copy)`)
 console.log(`  sections       ${stats.sections} → ${schema.steps.length} steps`)
 console.log(`  choice lists   ${stats.choiceLists} identical, label for label`)
-console.log(`  required       ${stats.required} carried (+ ${stats.requiredExtra.concat(additions).join(', ')})`)
+console.log(`  required       ${stats.required} carried (+ ${stats.requiredExtra.concat(requiredAdditions).join(', ')})`)
 console.log(`  help texts     ${stats.help} carried`)
 console.log(`  label repairs  ${stats.repairs.length}`); stats.repairs.forEach((r) => console.log(`                 ${r}`))
 console.log(`  branching      ${src.logic?.length ?? 0} jump rules · ${gateRefs.length} source gates + ${engineOnlyGates.length} engine gates · ${scenarioCount} answer combinations simulated`)

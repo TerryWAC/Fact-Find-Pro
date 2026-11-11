@@ -470,6 +470,55 @@ if (!LOGIC[formType]) throw new Error(`no branching rules defined for form type 
 LOGIC[formType]()
 
 // ---------------------------------------------------------------------------
+// Platform additions (owner-approved questions that the published master
+// template lacks). Their `source` is `factfind-pro:<id>` so the verifier can
+// tell them from Typeform questions; it lists the same ids in ADDITIONS.
+// ---------------------------------------------------------------------------
+const ADDITIONS = {
+  mortgage() {
+    // Loans and credit/store cards. The Version 1 per-adviser Mortgage forms
+    // were built from a later template than the published master and ask
+    // these between the monthly expenses and the CCJ question; the owner asked
+    // for them in Version 2 for every adviser (11 November 2026). Wording is
+    // the Version 1 template's. Its own jump rules were slips (Yes skipped the
+    // loan details, No skipped the card question) and are not reproduced:
+    // Yes shows the details, No moves on.
+    const step = stepByTitle(/^Monthly Expenditure$/)
+    const anchor = step.fields.find((f) => f.id === 'has_ccj')
+    if (!anchor) throw new Error('Monthly Expenditure has no CCJ question to anchor the credit additions')
+    const add = (f) => {
+      if (usedIds.has(f.id)) throw new Error(`addition ${f.id} clashes with a template question`)
+      usedIds.add(f.id); f.source = `factfind-pro:${f.id}`
+      step.fields.splice(step.fields.indexOf(anchor), 0, f); all.splice(all.indexOf(anchor), 0, f)
+    }
+    const loans = yes('has_loans'), cards = yes('has_credit_cards')
+    add({ id: 'has_loans', label: 'Do you have any loans?', type: 'yesno', colSpan: 2,
+      helpText: 'This includes personal loans, vehicles on finance, furniture or electrical items on monthly payments. Any other credit commitments.' })
+    add({ id: 'loans_heading', type: 'heading', label: 'Loan details', colSpan: 2, visibleWhen: loans })
+    for (const k of [1, 2, 3, 4]) {
+      add({ id: `loan${k}_company_name`, label: `Loan ${k} Company name`, type: 'text', colSpan: 1, visibleWhen: loans })
+      add({ id: `loan${k}_monthly_payment`, label: `Loan ${k} Monthly payment`, type: 'currency', colSpan: 1, visibleWhen: loans })
+      add({ id: `loan${k}_outstanding_balance`, label: `Loan ${k} Outstanding balance`, type: 'currency', colSpan: 1, visibleWhen: loans })
+    }
+    add({ id: 'additional_loans_details', type: 'textarea', colSpan: 2, rows: 3, visibleWhen: loans,
+      label: 'If you have any additional loans or credit please enter the name of the company, monthly payment & outstanding balance',
+      helpText: 'Enter all other loans below, personal, car finance, furniture & electricals you pay monthly for' })
+    add({ id: 'has_credit_cards', label: 'Do you have a credit card(s) or store card(s)?', type: 'yesno', colSpan: 2 })
+    add({ id: 'credit_cards_heading', type: 'heading', label: 'Credit and store card details', colSpan: 2, visibleWhen: cards })
+    for (const k of [1, 2, 3]) {
+      add({ id: `cc${k}_name`, label: `Name of credit card ${k}`, type: 'text', colSpan: 1, visibleWhen: cards })
+      // "balamce" in the Version 1 template is spelled "balance" here.
+      add({ id: `cc${k}_outstanding_balance`, label: `Current outstanding balance credit card ${k}`, type: 'currency', colSpan: 1, visibleWhen: cards })
+      add({ id: `cc${k}_repayments`, type: 'text', colSpan: 2, visibleWhen: cards,
+        label: `Credit card repayments credit card ${k} (Paid off in full, minimum monthly, regular repayment. Please enter below)` })
+    }
+    audit.added.push('has_loans, loan1–4 company/monthly payment/outstanding balance, additional_loans_details, has_credit_cards, cc1–3 name/outstanding balance/repayments: '
+      + 'carried over from the Version 1 per-adviser Mortgage template at the owner\'s request; shown for Yes, before the CCJ question')
+  },
+}
+ADDITIONS[formType]?.()
+
+// ---------------------------------------------------------------------------
 // Emit
 // ---------------------------------------------------------------------------
 for (const s of steps) delete s._internal
@@ -481,6 +530,10 @@ const COPY = {
   medical: { subtitle: 'Your health and lifestyle details, so your adviser can find the right cover for you.', minutes: 10 },
   home: { subtitle: 'A few details about you and your property, so your adviser can arrange the right home insurance.', minutes: 5 },
 }
+const out = output ?? `src/lib/forms/schemas/${formType}.json`
+// The checked-in snapshots omit Typeform's thank-you screen; keep the message
+// already in the schema being regenerated rather than falling back.
+const previous = fs.existsSync(out) ? JSON.parse(fs.readFileSync(out, 'utf8')) : null
 const schema = {
   type: formType,
   version: `1.0.0-typeform-${src.id}`,
@@ -491,11 +544,10 @@ const schema = {
   placeholder: false,
   submitLabel: 'Submit FactFind',
   successTitle: 'Thank you — your FactFind has been submitted',
-  successMessage: (src.thankyou_screens?.[0]?.title) || 'Your adviser will be in touch shortly.',
+  successMessage: (src.thankyou_screens?.[0]?.title) || previous?.successMessage || 'Your adviser will be in touch shortly.',
   steps,
 }
 
-const out = output ?? `src/lib/forms/schemas/${formType}.json`
 fs.writeFileSync(out, JSON.stringify(schema, null, 2) + '\n')
 
 const leaf = all.filter((f) => !['heading', 'paragraph', 'divider'].includes(f.type))

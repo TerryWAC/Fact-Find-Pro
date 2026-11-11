@@ -1050,6 +1050,311 @@
           "colSpan": 1
         },
         {
+          "id": "has_loans",
+          "label": "Do you have any loans?",
+          "type": "yesno",
+          "colSpan": 2,
+          "helpText": "This includes personal loans, vehicles on finance, furniture or electrical items on monthly payments. Any other credit commitments.",
+          "source": "factfind-pro:has_loans"
+        },
+        {
+          "id": "loans_heading",
+          "type": "heading",
+          "label": "Loan details",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "factfind-pro:loans_heading"
+        },
+        {
+          "id": "loan1_company_name",
+          "label": "Loan 1 Company name",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "factfind-pro:loan1_company_name"
+        },
+        {
+          "id": "loan1_monthly_payment",
+          "label": "Loan 1 Monthly payment",
+          "type": "currency",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "factfind-pro:loan1_monthly_payment"
+        },
+        {
+          "id": "loan1_outstanding_balance",
+          "label": "Loan 1 Outstanding balance",
+          "type": "currency",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "factfind-pro:loan1_outstanding_balance"
+        },
+        {
+          "id": "loan2_company_name",
+          "label": "Loan 2 Company name",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "factfind-pro:loan2_company_name"
+        },
+        {
+          "id": "loan2_monthly_payment",
+          "label": "Loan 2 Monthly payment",
+          "type": "currency",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "factfind-pro:loan2_monthly_payment"
+        },
+        {
+          "id": "loan2_outstanding_balance",
+          "label": "Loan 2 Outstanding balance",
+          "type": "currency",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "factfind-pro:loan2_outstanding_balance"
+        },
+        {
+          "id": "loan3_company_name",
+          "label": "Loan 3 Company name",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "factfind-pro:loan3_company_name"
+        },
+        {
+          "id": "loan3_monthly_payment",
+          "label": "Loan 3 Monthly payment",
+          "type": "currency",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "factfind-pro:loan3_monthly_payment"
+        },
+        {
+          "id": "loan3_outstanding_balance",
+          "label": "Loan 3 Outstanding balance",
+          "type": "currency",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "factfind-pro:loan3_outstanding_balance"
+        },
+        {
+          "id": "loan4_company_name",
+          "label": "Loan 4 Company name",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "factfind-pro:loan4_company_name"
+        },
+        {
+          "id": "loan4_monthly_payment",
+          "label": "Loan 4 Monthly payment",
+          "type": "currency",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "factfind-pro:loan4_monthly_payment"
+        },
+        {
+          "id": "loan4_outstanding_balance",
+          "label": "Loan 4 Outstanding balance",
+          "type": "currency",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "factfind-pro:loan4_outstanding_balance"
+        },
+        {
+          "id": "additional_loans_details",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "label": "If you have any additional loans or credit please enter the name of the company, monthly payment & outstanding balance",
+          "helpText": "Enter all other loans below, personal, car finance, furniture & electricals you pay monthly for",
+          "source": "factfind-pro:additional_loans_details"
+        },
+        {
+          "id": "has_credit_cards",
+          "label": "Do you have a credit card(s) or store card(s)?",
+          "type": "yesno",
+          "colSpan": 2,
+          "source": "factfind-pro:has_credit_cards"
+        },
+        {
+          "id": "credit_cards_heading",
+          "type": "heading",
+          "label": "Credit and store card details",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "has_credit_cards",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "factfind-pro:credit_cards_heading"
+        },
+        {
+          "id": "cc1_name",
+          "label": "Name of credit card 1",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_credit_cards",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "factfind-pro:cc1_name"
+        },
+        {
+          "id": "cc1_outstanding_balance",
+          "label": "Current outstanding balance credit card 1",
+          "type": "currency",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_credit_cards",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "factfind-pro:cc1_outstanding_balance"
+        },
+        {
+          "id": "cc1_repayments",
+          "type": "text",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "has_credit_cards",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "label": "Credit card repayments credit card 1 (Paid off in full, minimum monthly, regular repayment. Please enter below)",
+          "source": "factfind-pro:cc1_repayments"
+        },
+        {
+          "id": "cc2_name",
+          "label": "Name of credit card 2",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_credit_cards",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "factfind-pro:cc2_name"
+        },
+        {
+          "id": "cc2_outstanding_balance",
+          "label": "Current outstanding balance credit card 2",
+          "type": "currency",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_credit_cards",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "factfind-pro:cc2_outstanding_balance"
+        },
+        {
+          "id": "cc2_repayments",
+          "type": "text",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "has_credit_cards",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "label": "Credit card repayments credit card 2 (Paid off in full, minimum monthly, regular repayment. Please enter below)",
+          "source": "factfind-pro:cc2_repayments"
+        },
+        {
+          "id": "cc3_name",
+          "label": "Name of credit card 3",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_credit_cards",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "factfind-pro:cc3_name"
+        },
+        {
+          "id": "cc3_outstanding_balance",
+          "label": "Current outstanding balance credit card 3",
+          "type": "currency",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_credit_cards",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "factfind-pro:cc3_outstanding_balance"
+        },
+        {
+          "id": "cc3_repayments",
+          "type": "text",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "has_credit_cards",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "label": "Credit card repayments credit card 3 (Paid off in full, minimum monthly, regular repayment. Please enter below)",
+          "source": "factfind-pro:cc3_repayments"
+        },
+        {
           "id": "has_ccj",
           "label": "Have you ever had a CCJ?",
           "source": "8d1e0757-775a-4d9e-a8be-dd2102410555",

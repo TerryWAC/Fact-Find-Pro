@@ -42,6 +42,8 @@ function expectedField(type: string, field: FormField, values: FormValues) {
   if (id.startsWith('dep_') || id === 'if_you_have_any_more_children_please_provide_det') return values.has_dependants === 'yes'
   if (id === 'pension_do_you_understand_the_consequences_if_you_don_t') return values.pension_has_will === 'no'
   if (type === 'mortgage') {
+    if (/^(loan[1-4]_|loans_heading$|additional_loans_details$)/.test(id)) return values.has_loans === 'yes'
+    if (/^(cc[1-3]_|credit_cards_heading$)/.test(id)) return values.has_credit_cards === 'yes'
     if (id.startsWith('ccj_')) return values.has_ccj === 'yes'
     if (id.startsWith('bk_')) return values.has_bankruptcy === 'yes'
     if (id.startsWith('purchase_')) return values.mortgage_type === 'purchase'
@@ -108,13 +110,36 @@ for (const type of ['mortgage', 'protection'] as const) {
 test('mortgage: independent credit questions and purchase/remortgage/BTL switching', () => {
   const schema = getFormSchema('mortgage')
   const values = populated(schema)
-  for (const ccj of ['', 'no', 'yes'])
-    for (const bankruptcy of ['', 'no', 'yes'])
-      assertRouting(schema, { ...values, has_ccj: ccj, has_bankruptcy: bankruptcy })
+  for (const loans of ['', 'no', 'yes'])
+    for (const cards of ['', 'no', 'yes'])
+      for (const ccj of ['', 'no', 'yes'])
+        for (const bankruptcy of ['', 'no', 'yes'])
+          assertRouting(schema, { ...values, has_loans: loans, has_credit_cards: cards, has_ccj: ccj, has_bankruptcy: bankruptcy })
   for (const mortgage of ['', 'purchase', 'remortgage'])
     for (const btl of ['', 'no', 'yes'])
       for (const count of ['', '1', '2', '3'])
         assertRouting(schema, { ...values, mortgage_type: mortgage, has_btl: btl, btl_count: count })
+})
+
+test('mortgage: loans and credit cards are asked of every client, between expenses and the CCJ question', () => {
+  const step = getFormSchema('mortgage').steps.find((candidate) => candidate.id === 's8_monthly_expenditure')!
+  expect(step.visibleWhen).toBeUndefined()
+  const ids = step.fields.map((field) => field.id)
+  expect(ids.indexOf('exp_approx_total_monthly_expenditure')).toBeLessThan(ids.indexOf('has_loans'))
+  expect(ids.indexOf('has_loans')).toBeLessThan(ids.indexOf('loan1_company_name'))
+  expect(ids.indexOf('loan4_outstanding_balance')).toBeLessThan(ids.indexOf('additional_loans_details'))
+  expect(ids.indexOf('additional_loans_details')).toBeLessThan(ids.indexOf('has_credit_cards'))
+  expect(ids.indexOf('cc3_repayments')).toBeLessThan(ids.indexOf('has_ccj'))
+  const byId = new Map(step.fields.map((field) => [field.id, field]))
+  expect(byId.get('has_loans')).toMatchObject({ type: 'yesno', label: 'Do you have any loans?', source: 'factfind-pro:has_loans' })
+  expect(byId.get('has_loans')!.helpText).toMatch(/personal loans, vehicles on finance/)
+  expect(byId.get('has_credit_cards')).toMatchObject({ type: 'yesno', label: 'Do you have a credit card(s) or store card(s)?' })
+  expect(byId.get('loan2_monthly_payment')).toMatchObject({ type: 'currency', label: 'Loan 2 Monthly payment', visibleWhen: { field: 'has_loans', operator: 'eq', value: 'yes' } })
+  expect(byId.get('cc3_outstanding_balance')).toMatchObject({ type: 'currency', label: 'Current outstanding balance credit card 3', visibleWhen: { field: 'has_credit_cards', operator: 'eq', value: 'yes' } })
+  expect(byId.get('cc1_repayments')!.label).toBe('Credit card repayments credit card 1 (Paid off in full, minimum monthly, regular repayment. Please enter below)')
+  // Optional, like the rest of the section: nothing new blocks a client.
+  for (const id of ['has_loans', 'loan1_company_name', 'additional_loans_details', 'has_credit_cards', 'cc1_name']) expect(byId.get(id)!.required).toBeFalsy()
+  expect(validateStep(step, { ...defaultValuesFor(getFormSchema('mortgage')), has_loans: 'yes', has_credit_cards: 'yes' }).errors).toEqual({})
 })
 
 test('medical: all 14 follow-ups respond independently; GP is never skipped', () => {

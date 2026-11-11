@@ -2,17 +2,17 @@
 
 Generated from the executable app schemas with `node scripts/export-question-catalogue.mjs`. Contains question definitions only, never client answers. Do not edit this generated file; update the reviewed schema and regenerate it.
 
-The four original Typeforms contain 400 questions; the app adds a required Medical email question, for 401. The original snapshots were captured on 13 September 2026. Approved wording/routing repairs are documented in [the source notes](../tests/fixtures/typeform/README.md).
+The four original Typeforms contain 400 questions; the app adds a required Medical email question and, at the owner's request of 11 November 2026, the Mortgage loans and credit-card questions from the Version 1 per-adviser template (24 optional questions), for 425. The original snapshots were captured on 13 September 2026. Approved wording/routing repairs are documented in [the source notes](../tests/fixtures/typeform/README.md).
 
 Each field is shown only when both its section condition and its own field condition match. A missing condition means no extra visibility restriction at that level. Conditions use the stored answer values listed below. All conditions are evaluated by `src/lib/forms/engine.ts`; blank optional answers mean not provided, not No.
 
-Question counts: mortgage 219, protection 104, medical 48, home 30; total **401**.
+Question counts: mortgage 243, protection 104, medical 48, home 30; total **425**.
 
 The stored schemas and original JSON fixtures remain authoritative; this Markdown is a review aid.
 
 ## Mortgage FactFind
 
-Schema version: `1.0.0-typeform-AE8RkxUT`. Parsed-JSON SHA-256 (JSON.stringify, independent of checkout line endings): `2eb06669a7e5df7e780e2e4336332f04cc508b2d08c012f3fa71b7a9eee60eec`.
+Schema version: `1.0.0-typeform-AE8RkxUT`. Parsed-JSON SHA-256 (JSON.stringify, independent of checkout line endings): `4ff6b0b9d2f170f56b0fa8e367c1cdaad131557d999da22b34485d59e8f5aaad`.
 
 Source: `AE8RkxUT`. Sections: 13.
 
@@ -823,7 +823,245 @@ Section visibility: Always available.
 - Input: `currency`; required: **No**
 - Field visibility: No additional condition.
 
-#### 91. Have you ever had a CCJ?
+#### 91. Do you have any loans?
+
+- Field ID: `has_loans`
+- Source reference: `factfind-pro:has_loans`
+- Input: `yesno`; required: **No**
+- Field visibility: No additional condition.
+
+Choices (label → stored value), in display order:
+
+- Yes → `yes`
+- No → `no`
+
+Help text:
+
+> This includes personal loans, vehicles on finance, furniture or electrical items on monthly payments. Any other credit commitments.
+
+Platform addition; no original Typeform question.
+
+**Group heading:** Loan details
+
+#### 92. Loan 1 Company name
+
+- Field ID: `loan1_company_name`
+- Source reference: `factfind-pro:loan1_company_name`
+- Input: `text`; required: **No**
+- Field visibility: `{"field":"has_loans","operator":"eq","value":"yes"}`
+
+Platform addition; no original Typeform question.
+
+#### 93. Loan 1 Monthly payment
+
+- Field ID: `loan1_monthly_payment`
+- Source reference: `factfind-pro:loan1_monthly_payment`
+- Input: `currency`; required: **No**
+- Field visibility: `{"field":"has_loans","operator":"eq","value":"yes"}`
+
+Platform addition; no original Typeform question.
+
+#### 94. Loan 1 Outstanding balance
+
+- Field ID: `loan1_outstanding_balance`
+- Source reference: `factfind-pro:loan1_outstanding_balance`
+- Input: `currency`; required: **No**
+- Field visibility: `{"field":"has_loans","operator":"eq","value":"yes"}`
+
+Platform addition; no original Typeform question.
+
+#### 95. Loan 2 Company name
+
+- Field ID: `loan2_company_name`
+- Source reference: `factfind-pro:loan2_company_name`
+- Input: `text`; required: **No**
+- Field visibility: `{"field":"has_loans","operator":"eq","value":"yes"}`
+
+Platform addition; no original Typeform question.
+
+#### 96. Loan 2 Monthly payment
+
+- Field ID: `loan2_monthly_payment`
+- Source reference: `factfind-pro:loan2_monthly_payment`
+- Input: `currency`; required: **No**
+- Field visibility: `{"field":"has_loans","operator":"eq","value":"yes"}`
+
+Platform addition; no original Typeform question.
+
+#### 97. Loan 2 Outstanding balance
+
+- Field ID: `loan2_outstanding_balance`
+- Source reference: `factfind-pro:loan2_outstanding_balance`
+- Input: `currency`; required: **No**
+- Field visibility: `{"field":"has_loans","operator":"eq","value":"yes"}`
+
+Platform addition; no original Typeform question.
+
+#### 98. Loan 3 Company name
+
+- Field ID: `loan3_company_name`
+- Source reference: `factfind-pro:loan3_company_name`
+- Input: `text`; required: **No**
+- Field visibility: `{"field":"has_loans","operator":"eq","value":"yes"}`
+
+Platform addition; no original Typeform question.
+
+#### 99. Loan 3 Monthly payment
+
+- Field ID: `loan3_monthly_payment`
+- Source reference: `factfind-pro:loan3_monthly_payment`
+- Input: `currency`; required: **No**
+- Field visibility: `{"field":"has_loans","operator":"eq","value":"yes"}`
+
+Platform addition; no original Typeform question.
+
+#### 100. Loan 3 Outstanding balance
+
+- Field ID: `loan3_outstanding_balance`
+- Source reference: `factfind-pro:loan3_outstanding_balance`
+- Input: `currency`; required: **No**
+- Field visibility: `{"field":"has_loans","operator":"eq","value":"yes"}`
+
+Platform addition; no original Typeform question.
+
+#### 101. Loan 4 Company name
+
+- Field ID: `loan4_company_name`
+- Source reference: `factfind-pro:loan4_company_name`
+- Input: `text`; required: **No**
+- Field visibility: `{"field":"has_loans","operator":"eq","value":"yes"}`
+
+Platform addition; no original Typeform question.
+
+#### 102. Loan 4 Monthly payment
+
+- Field ID: `loan4_monthly_payment`
+- Source reference: `factfind-pro:loan4_monthly_payment`
+- Input: `currency`; required: **No**
+- Field visibility: `{"field":"has_loans","operator":"eq","value":"yes"}`
+
+Platform addition; no original Typeform question.
+
+#### 103. Loan 4 Outstanding balance
+
+- Field ID: `loan4_outstanding_balance`
+- Source reference: `factfind-pro:loan4_outstanding_balance`
+- Input: `currency`; required: **No**
+- Field visibility: `{"field":"has_loans","operator":"eq","value":"yes"}`
+
+Platform addition; no original Typeform question.
+
+#### 104. If you have any additional loans or credit please enter the name of the company, monthly payment & outstanding balance
+
+- Field ID: `additional_loans_details`
+- Source reference: `factfind-pro:additional_loans_details`
+- Input: `textarea`; required: **No**
+- Field visibility: `{"field":"has_loans","operator":"eq","value":"yes"}`
+
+Help text:
+
+> Enter all other loans below, personal, car finance, furniture & electricals you pay monthly for
+
+Platform addition; no original Typeform question.
+
+#### 105. Do you have a credit card(s) or store card(s)?
+
+- Field ID: `has_credit_cards`
+- Source reference: `factfind-pro:has_credit_cards`
+- Input: `yesno`; required: **No**
+- Field visibility: No additional condition.
+
+Choices (label → stored value), in display order:
+
+- Yes → `yes`
+- No → `no`
+
+Platform addition; no original Typeform question.
+
+**Group heading:** Credit and store card details
+
+#### 106. Name of credit card 1
+
+- Field ID: `cc1_name`
+- Source reference: `factfind-pro:cc1_name`
+- Input: `text`; required: **No**
+- Field visibility: `{"field":"has_credit_cards","operator":"eq","value":"yes"}`
+
+Platform addition; no original Typeform question.
+
+#### 107. Current outstanding balance credit card 1
+
+- Field ID: `cc1_outstanding_balance`
+- Source reference: `factfind-pro:cc1_outstanding_balance`
+- Input: `currency`; required: **No**
+- Field visibility: `{"field":"has_credit_cards","operator":"eq","value":"yes"}`
+
+Platform addition; no original Typeform question.
+
+#### 108. Credit card repayments credit card 1 (Paid off in full, minimum monthly, regular repayment. Please enter below)
+
+- Field ID: `cc1_repayments`
+- Source reference: `factfind-pro:cc1_repayments`
+- Input: `text`; required: **No**
+- Field visibility: `{"field":"has_credit_cards","operator":"eq","value":"yes"}`
+
+Platform addition; no original Typeform question.
+
+#### 109. Name of credit card 2
+
+- Field ID: `cc2_name`
+- Source reference: `factfind-pro:cc2_name`
+- Input: `text`; required: **No**
+- Field visibility: `{"field":"has_credit_cards","operator":"eq","value":"yes"}`
+
+Platform addition; no original Typeform question.
+
+#### 110. Current outstanding balance credit card 2
+
+- Field ID: `cc2_outstanding_balance`
+- Source reference: `factfind-pro:cc2_outstanding_balance`
+- Input: `currency`; required: **No**
+- Field visibility: `{"field":"has_credit_cards","operator":"eq","value":"yes"}`
+
+Platform addition; no original Typeform question.
+
+#### 111. Credit card repayments credit card 2 (Paid off in full, minimum monthly, regular repayment. Please enter below)
+
+- Field ID: `cc2_repayments`
+- Source reference: `factfind-pro:cc2_repayments`
+- Input: `text`; required: **No**
+- Field visibility: `{"field":"has_credit_cards","operator":"eq","value":"yes"}`
+
+Platform addition; no original Typeform question.
+
+#### 112. Name of credit card 3
+
+- Field ID: `cc3_name`
+- Source reference: `factfind-pro:cc3_name`
+- Input: `text`; required: **No**
+- Field visibility: `{"field":"has_credit_cards","operator":"eq","value":"yes"}`
+
+Platform addition; no original Typeform question.
+
+#### 113. Current outstanding balance credit card 3
+
+- Field ID: `cc3_outstanding_balance`
+- Source reference: `factfind-pro:cc3_outstanding_balance`
+- Input: `currency`; required: **No**
+- Field visibility: `{"field":"has_credit_cards","operator":"eq","value":"yes"}`
+
+Platform addition; no original Typeform question.
+
+#### 114. Credit card repayments credit card 3 (Paid off in full, minimum monthly, regular repayment. Please enter below)
+
+- Field ID: `cc3_repayments`
+- Source reference: `factfind-pro:cc3_repayments`
+- Input: `text`; required: **No**
+- Field visibility: `{"field":"has_credit_cards","operator":"eq","value":"yes"}`
+
+Platform addition; no original Typeform question.
+
+#### 115. Have you ever had a CCJ?
 
 - Field ID: `has_ccj`
 - Source reference: `8d1e0757-775a-4d9e-a8be-dd2102410555`
@@ -837,35 +1075,35 @@ Choices (label → stored value), in display order:
 
 **Group heading:** CCJ information below
 
-#### 92. Company name
+#### 116. Company name
 
 - Field ID: `ccj_company_name`
 - Source reference: `6af23774-1835-40ec-bb90-d8e9a501205e`
 - Input: `text`; required: **No**
 - Field visibility: `{"field":"has_ccj","operator":"eq","value":"yes"}`
 
-#### 93. CCJ amount
+#### 117. CCJ amount
 
 - Field ID: `ccj_ccj_amount`
 - Source reference: `437c23e9-74b6-4a1f-bf75-ccde3490fa16`
 - Input: `currency`; required: **No**
 - Field visibility: `{"field":"has_ccj","operator":"eq","value":"yes"}`
 
-#### 94. Date of CCJ and when it was discharged
+#### 118. Date of CCJ and when it was discharged
 
 - Field ID: `ccj_date_of_ccj_and_when_it_was_discharged`
 - Source reference: `cf2a1e0a-1193-4777-a36b-6758b0efc425`
 - Input: `text`; required: **No**
 - Field visibility: `{"field":"has_ccj","operator":"eq","value":"yes"}`
 
-#### 95. How many months missed
+#### 119. How many months missed
 
 - Field ID: `ccj_how_many_months_missed`
 - Source reference: `06f8a70d-4e75-462b-ac05-e9b6659cf59d`
 - Input: `number`; required: **No**
 - Field visibility: `{"field":"has_ccj","operator":"eq","value":"yes"}`
 
-#### 96. Have you ever been made bankrupt?
+#### 120. Have you ever been made bankrupt?
 
 - Field ID: `has_bankruptcy`
 - Source reference: `482f4f17-853b-416a-bc27-2359b86f4810`
@@ -879,14 +1117,14 @@ Choices (label → stored value), in display order:
 
 **Group heading:** Bankruptcy info
 
-#### 97. Date of Bankruptcy and discharge.
+#### 121. Date of Bankruptcy and discharge.
 
 - Field ID: `bk_date_of_bankruptcy_and_discharge`
 - Source reference: `7b0fa519-6ba3-4e8e-903a-d87f88aa4f4f`
 - Input: `text`; required: **No**
 - Field visibility: `{"field":"has_bankruptcy","operator":"eq","value":"yes"}`
 
-#### 98. Is it spent?
+#### 122. Is it spent?
 
 - Field ID: `bk_is_it_spent`
 - Source reference: `548e0cba-ea24-4f44-a1d0-0f5a3ef4cbec`
@@ -904,7 +1142,7 @@ Section ID: `s9_mortgage_info`.
 
 Section visibility: Always available.
 
-#### 99. Is this a purchase or a remortgage?
+#### 123. Is this a purchase or a remortgage?
 
 - Field ID: `mortgage_type`
 - Source reference: `e730ad61-aefe-4a7c-87be-97d3c6ed2d32`
@@ -918,28 +1156,28 @@ Choices (label → stored value), in display order:
 
 **Group heading:** Mortgage purchase
 
-#### 100. Purchase amount
+#### 124. Purchase amount
 
 - Field ID: `purchase_purchase_amount`
 - Source reference: `e8c39cff-a13b-4e28-85b0-8c0da0d7744d`
 - Input: `currency`; required: **No**
 - Field visibility: `{"field":"mortgage_type","operator":"eq","value":"purchase"}`
 
-#### 101. Purchase address
+#### 125. Purchase address
 
 - Field ID: `purchase_purchase_address`
 - Source reference: `0ad97821-b4b3-4c1d-8acc-94b47eb0ab56`
 - Input: `text`; required: **No**
 - Field visibility: `{"field":"mortgage_type","operator":"eq","value":"purchase"}`
 
-#### 102. Source of deposit
+#### 126. Source of deposit
 
 - Field ID: `purchase_source_of_deposit`
 - Source reference: `61ec7b09-c9d8-48f9-9c0b-63a9aae28985`
 - Input: `text`; required: **No**
 - Field visibility: `{"field":"mortgage_type","operator":"eq","value":"purchase"}`
 
-#### 103. Property type
+#### 127. Property type
 
 - Field ID: `purchase_property_type`
 - Source reference: `b2b06d86-1f6e-4e99-abb6-b80c4a311dba`
@@ -956,7 +1194,7 @@ Choices (label → stored value), in display order:
 - Bungalow → `bungalow`
 - Other → `other`
 
-#### 104. Tenure
+#### 128. Tenure
 
 - Field ID: `purchase_property_type_2`
 - Source reference: `ef1d9316-9550-4e1e-bf05-8f84c0abb98f`
@@ -972,14 +1210,14 @@ Original Typeform question title before the documented label repair:
 
 > Property Type
 
-#### 105. Year of build
+#### 129. Year of build
 
 - Field ID: `purchase_year_of_build`
 - Source reference: `7427873d-3a63-4c31-b07d-266a0253789f`
 - Input: `number`; required: **No**
 - Field visibility: `{"field":"mortgage_type","operator":"eq","value":"purchase"}`
 
-#### 106. Type of construction
+#### 130. Type of construction
 
 - Field ID: `purchase_type_of_construction`
 - Source reference: `e1d89d1e-cdb9-4dd1-909d-4c5633ed473e`
@@ -992,35 +1230,35 @@ Choices (label → stored value), in display order:
 - Non standard → `non_standard`
 - Other → `other`
 
-#### 107. Number of bedrooms
+#### 131. Number of bedrooms
 
 - Field ID: `purchase_number_of_bedrooms`
 - Source reference: `e1a84876-88d2-4ff2-af62-621469aed014`
 - Input: `number`; required: **No**
 - Field visibility: `{"field":"mortgage_type","operator":"eq","value":"purchase"}`
 
-#### 108. Number of bathrooms
+#### 132. Number of bathrooms
 
 - Field ID: `purchase_number_of_bathrooms`
 - Source reference: `5c9c51da-7a92-4f0e-af42-947a65044be7`
 - Input: `number`; required: **No**
 - Field visibility: `{"field":"mortgage_type","operator":"eq","value":"purchase"}`
 
-#### 109. Estate agents details
+#### 133. Estate agents details
 
 - Field ID: `purchase_estate_agents_details`
 - Source reference: `0a9f6a27-c8f7-4f4d-b9db-352962784c82`
 - Input: `textarea`; required: **No**
 - Field visibility: `{"field":"mortgage_type","operator":"eq","value":"purchase"}`
 
-#### 110. Solicitor's details
+#### 134. Solicitor's details
 
 - Field ID: `purchase_solicitor_s_details`
 - Source reference: `mort_solicitor`
 - Input: `textarea`; required: **No**
 - Field visibility: `{"field":"mortgage_type","operator":"eq","value":"purchase"}`
 
-#### 111. Any other relevant information
+#### 135. Any other relevant information
 
 - Field ID: `purchase_any_other_relevant_information`
 - Source reference: `a02a2244-ee5b-431b-bf35-a3696de5aee9`
@@ -1029,63 +1267,63 @@ Choices (label → stored value), in display order:
 
 **Group heading:** Remortgage
 
-#### 112. Estimated value
+#### 136. Estimated value
 
 - Field ID: `remortgage_estimated_value`
 - Source reference: `33cd2ed1-043b-4763-a92f-408c2a739502`
 - Input: `currency`; required: **No**
 - Field visibility: `{"field":"mortgage_type","operator":"eq","value":"remortgage"}`
 
-#### 113. Address of the mortgage property
+#### 137. Address of the mortgage property
 
 - Field ID: `remortgage_address_of_the_mortgage_property`
 - Source reference: `remort_property_address`
 - Input: `text`; required: **Yes**
 - Field visibility: `{"field":"mortgage_type","operator":"eq","value":"remortgage"}`
 
-#### 114. Current mortgage account number
+#### 138. Current mortgage account number
 
 - Field ID: `remortgage_current_mortgage_account_number`
 - Source reference: `remort_account_no`
 - Input: `text`; required: **Yes**
 - Field visibility: `{"field":"mortgage_type","operator":"eq","value":"remortgage"}`
 
-#### 115. If leasehold, remaining term of lease
+#### 139. If leasehold, remaining term of lease
 
 - Field ID: `remortgage_if_leasehold_remaining_term_of_lease`
 - Source reference: `remort_lease_term`
 - Input: `text`; required: **No**
 - Field visibility: `{"field":"mortgage_type","operator":"eq","value":"remortgage"}`
 
-#### 116. Outstanding loan amount
+#### 140. Outstanding loan amount
 
 - Field ID: `remortgage_outstanding_loan_amount`
 - Source reference: `eda1488a-2a02-44d0-bfb4-c51830e92e1d`
 - Input: `currency`; required: **No**
 - Field visibility: `{"field":"mortgage_type","operator":"eq","value":"remortgage"}`
 
-#### 117. Current lender
+#### 141. Current lender
 
 - Field ID: `remortgage_current_lender`
 - Source reference: `c13a4fc5-348c-4c64-b820-742aba67b859`
 - Input: `text`; required: **No**
 - Field visibility: `{"field":"mortgage_type","operator":"eq","value":"remortgage"}`
 
-#### 118. Current interest rate
+#### 142. Current interest rate
 
 - Field ID: `remortgage_current_interest_rate`
 - Source reference: `06b3cca2-ee2b-4746-9000-98ebaf1ed6d4`
 - Input: `percent`; required: **No**
 - Field visibility: `{"field":"mortgage_type","operator":"eq","value":"remortgage"}`
 
-#### 119. End of fixed rate
+#### 143. End of fixed rate
 
 - Field ID: `remortgage_end_of_fixed_rate`
 - Source reference: `7f2a68a0-29db-48dc-94e4-bcac300c2acb`
 - Input: `text`; required: **No**
 - Field visibility: `{"field":"mortgage_type","operator":"eq","value":"remortgage"}`
 
-#### 120. Property type
+#### 144. Property type
 
 - Field ID: `remortgage_property_type`
 - Source reference: `6fda05cb-beb1-41e9-8924-8d688ec38e57`
@@ -1102,7 +1340,7 @@ Choices (label → stored value), in display order:
 - Bungalow → `bungalow`
 - Other → `other`
 
-#### 121. Tenure
+#### 145. Tenure
 
 - Field ID: `remortgage_property_type_2`
 - Source reference: `0a477473-93c0-49ac-a868-57ae34a8c481`
@@ -1118,14 +1356,14 @@ Original Typeform question title before the documented label repair:
 
 > Property Type
 
-#### 122. Year of build
+#### 146. Year of build
 
 - Field ID: `remortgage_year_of_build`
 - Source reference: `ca0b8555-a9b8-4f8c-ba64-fbdaf53f0a3e`
 - Input: `number`; required: **No**
 - Field visibility: `{"field":"mortgage_type","operator":"eq","value":"remortgage"}`
 
-#### 123. Type of construction
+#### 147. Type of construction
 
 - Field ID: `remortgage_type_of_construction`
 - Source reference: `cd7d3194-8356-4ff7-9b5d-6a2816d5d007`
@@ -1138,28 +1376,28 @@ Choices (label → stored value), in display order:
 - Non standard → `non_standard`
 - Other → `other`
 
-#### 124. Number of bedrooms
+#### 148. Number of bedrooms
 
 - Field ID: `remortgage_number_of_bedrooms`
 - Source reference: `9a6f8b82-ed3f-4250-8507-4776f41c7b67`
 - Input: `number`; required: **No**
 - Field visibility: `{"field":"mortgage_type","operator":"eq","value":"remortgage"}`
 
-#### 125. Number of bathrooms
+#### 149. Number of bathrooms
 
 - Field ID: `remortgage_number_of_bathrooms`
 - Source reference: `3c012369-9d65-49e5-9b99-b4c9664b66ca`
 - Input: `number`; required: **No**
 - Field visibility: `{"field":"mortgage_type","operator":"eq","value":"remortgage"}`
 
-#### 126. Any other relevant information
+#### 150. Any other relevant information
 
 - Field ID: `remortgage_any_other_relevant_information`
 - Source reference: `eb608365-f03a-4ce8-9c42-a80599b80caf`
 - Input: `textarea`; required: **No**
 - Field visibility: `{"field":"mortgage_type","operator":"eq","value":"remortgage"}`
 
-#### 127. Do you have any background buy-to-let properties?
+#### 151. Do you have any background buy-to-let properties?
 
 - Field ID: `has_btl`
 - Source reference: `btl_has`
@@ -1171,7 +1409,7 @@ Choices (label → stored value), in display order:
 - Yes → `yes`
 - No → `no`
 
-#### 128. If yes, how many?
+#### 152. If yes, how many?
 
 - Field ID: `btl_count`
 - Source reference: `btl_count`
@@ -1186,63 +1424,63 @@ Choices (label → stored value), in display order:
 
 **Group heading:** Buy-to-let property 1
 
-#### 129. Estimated value
+#### 153. Estimated value
 
 - Field ID: `btl1_estimated_value`
 - Source reference: `9b3070a3-da52-4cb6-9c36-44b996f8b2b0`
 - Input: `currency`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["1","2","3"]}]}`
 
-#### 130. Address of the mortgage property
+#### 154. Address of the mortgage property
 
 - Field ID: `btl1_address_of_the_mortgage_property`
 - Source reference: `a1b2eb65-8793-4f3b-90d9-920a433cf087`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["1","2","3"]}]}`
 
-#### 131. Current mortgage account number
+#### 155. Current mortgage account number
 
 - Field ID: `btl1_current_mortgage_account_number`
 - Source reference: `8d0a5ebb-5d46-497a-8d49-3cfd383c7b42`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["1","2","3"]}]}`
 
-#### 132. If leasehold, remaining term of lease
+#### 156. If leasehold, remaining term of lease
 
 - Field ID: `btl1_if_leasehold_remaining_term_of_lease`
 - Source reference: `d52ed878-62b8-41f6-8be9-3e6a230529ca`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["1","2","3"]}]}`
 
-#### 133. Outstanding loan amount
+#### 157. Outstanding loan amount
 
 - Field ID: `btl1_outstanding_loan_amount`
 - Source reference: `8b42dc09-2c92-4ea7-8b31-2961e045b5b1`
 - Input: `currency`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["1","2","3"]}]}`
 
-#### 134. Current lender
+#### 158. Current lender
 
 - Field ID: `btl1_current_lender`
 - Source reference: `afc79edc-b2ff-4db9-bcbc-b9fe931dc7d0`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["1","2","3"]}]}`
 
-#### 135. Current interest rate
+#### 159. Current interest rate
 
 - Field ID: `btl1_current_interest_rate`
 - Source reference: `5631d14b-01b8-4072-94fd-bddb522d2bc0`
 - Input: `percent`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["1","2","3"]}]}`
 
-#### 136. End of fixed rate
+#### 160. End of fixed rate
 
 - Field ID: `btl1_end_of_fixed_rate`
 - Source reference: `89f3ba90-8951-40d1-9400-27631f0ad50a`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["1","2","3"]}]}`
 
-#### 137. Property type
+#### 161. Property type
 
 - Field ID: `btl1_property_type`
 - Source reference: `9f6471f6-aa0c-40c8-95c9-eb9011943d5e`
@@ -1259,7 +1497,7 @@ Choices (label → stored value), in display order:
 - Bungalow → `bungalow`
 - Other → `other`
 
-#### 138. Tenure
+#### 162. Tenure
 
 - Field ID: `btl1_property_type_2`
 - Source reference: `fbf67122-4d95-4e86-9761-a201cf1d2ff5`
@@ -1275,14 +1513,14 @@ Original Typeform question title before the documented label repair:
 
 > Property Type
 
-#### 139. Year of build
+#### 163. Year of build
 
 - Field ID: `btl1_year_of_build`
 - Source reference: `7cd9dc1f-8e66-49d2-a0dc-6044c49ac94c`
 - Input: `number`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["1","2","3"]}]}`
 
-#### 140. Type of construction
+#### 164. Type of construction
 
 - Field ID: `btl1_type_of_construction`
 - Source reference: `c83066f6-cee5-4ddc-a137-69ef1424c6b8`
@@ -1295,49 +1533,49 @@ Choices (label → stored value), in display order:
 - Non standard → `non_standard`
 - Other → `other`
 
-#### 141. Number of bedrooms
+#### 165. Number of bedrooms
 
 - Field ID: `btl1_number_of_bedrooms`
 - Source reference: `8782d161-3f72-4af8-84e6-a08dc42a4ceb`
 - Input: `number`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["1","2","3"]}]}`
 
-#### 142. Number of bathrooms
+#### 166. Number of bathrooms
 
 - Field ID: `btl1_number_of_bathrooms`
 - Source reference: `2f3fc17a-18f3-43ee-b83a-ca94ed3c890a`
 - Input: `number`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["1","2","3"]}]}`
 
-#### 143. Any other relevant information
+#### 167. Any other relevant information
 
 - Field ID: `btl1_any_other_relevant_information`
 - Source reference: `f7cc8ce2-defe-4abe-ad31-f38404b1c01b`
 - Input: `textarea`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["1","2","3"]}]}`
 
-#### 144. BTL 1: address of property
+#### 168. BTL 1: address of property
 
 - Field ID: `btl1_btl_1_address_of_property`
 - Source reference: `1a795b27-129a-433e-910c-7b5dfe7df3b8`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["1","2","3"]}]}`
 
-#### 145. BTL 1: current mortgage account number
+#### 169. BTL 1: current mortgage account number
 
 - Field ID: `btl1_btl_1_current_mortgage_account_number`
 - Source reference: `c055bb3f-501f-41fd-a5a5-871b3d4c8614`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["1","2","3"]}]}`
 
-#### 146. BTL 1: if leasehold, remaining term of lease
+#### 170. BTL 1: if leasehold, remaining term of lease
 
 - Field ID: `btl1_btl_1_if_leasehold_remaining_term_of_lease`
 - Source reference: `1be67a03-da89-4fce-999d-47924c21db3a`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["1","2","3"]}]}`
 
-#### 147. BTL 1: monthly rental income received
+#### 171. BTL 1: monthly rental income received
 
 - Field ID: `btl1_btl_1_monthly_rental_income_received`
 - Source reference: `c62fb0d9-934e-44b1-90eb-58c2af5ec2fe`
@@ -1346,63 +1584,63 @@ Choices (label → stored value), in display order:
 
 **Group heading:** Buy-to-let property 2
 
-#### 148. Estimated value
+#### 172. Estimated value
 
 - Field ID: `btl2_estimated_value`
 - Source reference: `a5d9cbe6-335a-45fb-8215-f5fe668d86ed`
 - Input: `currency`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["2","3"]}]}`
 
-#### 149. Address of the mortgage property
+#### 173. Address of the mortgage property
 
 - Field ID: `btl2_address_of_the_mortgage_property`
 - Source reference: `21a36461-b730-4d09-a844-6c41b6e5aab1`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["2","3"]}]}`
 
-#### 150. Current mortgage account number
+#### 174. Current mortgage account number
 
 - Field ID: `btl2_current_mortgage_account_number`
 - Source reference: `02a8a253-f63a-46e1-bc34-1ddd2c5bc698`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["2","3"]}]}`
 
-#### 151. If leasehold, remaining term of lease
+#### 175. If leasehold, remaining term of lease
 
 - Field ID: `btl2_if_leasehold_remaining_term_of_lease`
 - Source reference: `07de44e7-ea76-468d-870f-87a6b9924529`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["2","3"]}]}`
 
-#### 152. Outstanding loan amount
+#### 176. Outstanding loan amount
 
 - Field ID: `btl2_outstanding_loan_amount`
 - Source reference: `7b62124d-d8f7-4832-ad62-2a207d418484`
 - Input: `currency`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["2","3"]}]}`
 
-#### 153. Current lender
+#### 177. Current lender
 
 - Field ID: `btl2_current_lender`
 - Source reference: `4a09639d-5883-43c1-8d93-993407768367`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["2","3"]}]}`
 
-#### 154. Current interest rate
+#### 178. Current interest rate
 
 - Field ID: `btl2_current_interest_rate`
 - Source reference: `48a3f29d-da28-4a45-8d9e-a2f423614481`
 - Input: `percent`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["2","3"]}]}`
 
-#### 155. End of fixed rate
+#### 179. End of fixed rate
 
 - Field ID: `btl2_end_of_fixed_rate`
 - Source reference: `d2ded01a-a32a-463e-bc22-ea886459b57a`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["2","3"]}]}`
 
-#### 156. Property type
+#### 180. Property type
 
 - Field ID: `btl2_property_type`
 - Source reference: `52a736ac-c38b-44a5-a72d-457676334460`
@@ -1419,7 +1657,7 @@ Choices (label → stored value), in display order:
 - Bungalow → `bungalow`
 - Other → `other`
 
-#### 157. Tenure
+#### 181. Tenure
 
 - Field ID: `btl2_property_type_2`
 - Source reference: `cbced12f-70fe-46db-990c-5e4130aeec6f`
@@ -1435,14 +1673,14 @@ Original Typeform question title before the documented label repair:
 
 > Property Type
 
-#### 158. Year of build
+#### 182. Year of build
 
 - Field ID: `btl2_year_of_build`
 - Source reference: `378c79a2-adaf-4239-af6f-4061bef6290e`
 - Input: `number`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["2","3"]}]}`
 
-#### 159. Type of construction
+#### 183. Type of construction
 
 - Field ID: `btl2_type_of_construction`
 - Source reference: `ecf4de53-1282-4a0b-912a-38669102a772`
@@ -1455,49 +1693,49 @@ Choices (label → stored value), in display order:
 - Non standard → `non_standard`
 - Other → `other`
 
-#### 160. Number of bedrooms
+#### 184. Number of bedrooms
 
 - Field ID: `btl2_number_of_bedrooms`
 - Source reference: `40a12bbf-e259-4682-a267-aacdb0f74d01`
 - Input: `number`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["2","3"]}]}`
 
-#### 161. Number of bathrooms
+#### 185. Number of bathrooms
 
 - Field ID: `btl2_number_of_bathrooms`
 - Source reference: `dca1442b-35d6-42b0-bdba-584bbfecbac6`
 - Input: `number`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["2","3"]}]}`
 
-#### 162. Any other relevant information
+#### 186. Any other relevant information
 
 - Field ID: `btl2_any_other_relevant_information`
 - Source reference: `5cd82966-9406-464e-8088-775c498176d8`
 - Input: `textarea`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["2","3"]}]}`
 
-#### 163. BTL 2: address of property
+#### 187. BTL 2: address of property
 
 - Field ID: `btl2_btl_2_address_of_property`
 - Source reference: `d9c82564-1813-4361-a1f5-6e71f2fd2ff1`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["2","3"]}]}`
 
-#### 164. BTL 2: current mortgage account number
+#### 188. BTL 2: current mortgage account number
 
 - Field ID: `btl2_btl_2_current_mortgage_account_number`
 - Source reference: `556e00c3-c055-4417-bcf6-d2746fbc2d19`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["2","3"]}]}`
 
-#### 165. BTL 2: if leasehold, remaining term of lease
+#### 189. BTL 2: if leasehold, remaining term of lease
 
 - Field ID: `btl2_btl_2_if_leasehold_remaining_term_of_lease`
 - Source reference: `12c761fd-edb5-4e5c-8af0-6fdcddc47b86`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["2","3"]}]}`
 
-#### 166. BTL 2: monthly rental income received
+#### 190. BTL 2: monthly rental income received
 
 - Field ID: `btl2_btl_2_monthly_rental_income_received`
 - Source reference: `f2d612d0-fd20-42ec-99cf-14576a0f0683`
@@ -1506,63 +1744,63 @@ Choices (label → stored value), in display order:
 
 **Group heading:** Buy-to-let property 3
 
-#### 167. Estimated value
+#### 191. Estimated value
 
 - Field ID: `btl3_estimated_value`
 - Source reference: `3173279e-3f73-4af8-a6b7-7b2502d24db6`
 - Input: `currency`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["3"]}]}`
 
-#### 168. Address of the mortgage property
+#### 192. Address of the mortgage property
 
 - Field ID: `btl3_address_of_the_mortgage_property`
 - Source reference: `5d30b4b1-ae66-41d5-8de4-db0af957d17e`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["3"]}]}`
 
-#### 169. Current mortgage account number
+#### 193. Current mortgage account number
 
 - Field ID: `btl3_current_mortgage_account_number`
 - Source reference: `b023ec30-c9cb-45ae-9b82-144b7a11f85f`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["3"]}]}`
 
-#### 170. If leasehold, remaining term of lease
+#### 194. If leasehold, remaining term of lease
 
 - Field ID: `btl3_if_leasehold_remaining_term_of_lease`
 - Source reference: `cb8b3e31-19f9-451a-af4f-450673f65e2a`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["3"]}]}`
 
-#### 171. Outstanding loan amount
+#### 195. Outstanding loan amount
 
 - Field ID: `btl3_outstanding_loan_amount`
 - Source reference: `0e036182-8892-462c-ac24-5e3cb9dff8c3`
 - Input: `currency`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["3"]}]}`
 
-#### 172. Current lender
+#### 196. Current lender
 
 - Field ID: `btl3_current_lender`
 - Source reference: `d8f9681f-6d3c-455e-b198-15a4137e2243`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["3"]}]}`
 
-#### 173. Current interest rate
+#### 197. Current interest rate
 
 - Field ID: `btl3_current_interest_rate`
 - Source reference: `473172be-3a35-452b-be30-3df96c72d504`
 - Input: `percent`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["3"]}]}`
 
-#### 174. End of fixed rate
+#### 198. End of fixed rate
 
 - Field ID: `btl3_end_of_fixed_rate`
 - Source reference: `da8a06e4-2c73-48d1-bdb0-8ad0514bc74f`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["3"]}]}`
 
-#### 175. Property type
+#### 199. Property type
 
 - Field ID: `btl3_property_type`
 - Source reference: `dfd430bd-431a-40dc-951c-44d16dd288d0`
@@ -1579,7 +1817,7 @@ Choices (label → stored value), in display order:
 - Bungalow → `bungalow`
 - Other → `other`
 
-#### 176. Tenure
+#### 200. Tenure
 
 - Field ID: `btl3_property_type_2`
 - Source reference: `8ec12003-08cc-48b1-85b5-f5afb455f7d1`
@@ -1595,14 +1833,14 @@ Original Typeform question title before the documented label repair:
 
 > Property Type
 
-#### 177. Year of build
+#### 201. Year of build
 
 - Field ID: `btl3_year_of_build`
 - Source reference: `e3dee114-ecb8-434f-b7f9-7ea47b9aada7`
 - Input: `number`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["3"]}]}`
 
-#### 178. Type of construction
+#### 202. Type of construction
 
 - Field ID: `btl3_type_of_construction`
 - Source reference: `c8da30c7-9af7-4ca9-b090-63dc45cfc916`
@@ -1615,49 +1853,49 @@ Choices (label → stored value), in display order:
 - Non standard → `non_standard`
 - Other → `other`
 
-#### 179. Number of bedrooms
+#### 203. Number of bedrooms
 
 - Field ID: `btl3_number_of_bedrooms`
 - Source reference: `f3bb1f1f-7d83-4395-b1a9-ba4cc7a5c453`
 - Input: `number`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["3"]}]}`
 
-#### 180. Number of bathrooms
+#### 204. Number of bathrooms
 
 - Field ID: `btl3_number_of_bathrooms`
 - Source reference: `f6ce7828-11f2-4a69-91aa-84aecb7acf87`
 - Input: `number`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["3"]}]}`
 
-#### 181. Any other relevant information
+#### 205. Any other relevant information
 
 - Field ID: `btl3_any_other_relevant_information`
 - Source reference: `0686abbf-f24d-4087-88ea-3b38ebdd40b3`
 - Input: `textarea`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["3"]}]}`
 
-#### 182. BTL 3: address of property
+#### 206. BTL 3: address of property
 
 - Field ID: `btl3_btl_3_address_of_property`
 - Source reference: `1f1ad7cf-e885-43ae-b554-cd62add842ee`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["3"]}]}`
 
-#### 183. BTL 3: current mortgage account number
+#### 207. BTL 3: current mortgage account number
 
 - Field ID: `btl3_btl_3_current_mortgage_account_number`
 - Source reference: `a8cb9e6c-e4ba-481f-b9e7-b1c4135d31a3`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["3"]}]}`
 
-#### 184. BTL 3: if leasehold, remaining term of lease
+#### 208. BTL 3: if leasehold, remaining term of lease
 
 - Field ID: `btl3_btl_3_if_leasehold_remaining_term_of_lease`
 - Source reference: `19b345e3-7dfb-4087-b86a-d8c142823848`
 - Input: `text`; required: **No**
 - Field visibility: `{"all":[{"field":"has_btl","operator":"eq","value":"yes"},{"field":"btl_count","operator":"in","value":["3"]}]}`
 
-#### 185. BTL 3: monthly rental income received
+#### 209. BTL 3: monthly rental income received
 
 - Field ID: `btl3_btl_3_monthly_rental_income_received`
 - Source reference: `2f1f5c13-e687-4591-adbf-65c388eba424`
@@ -1672,14 +1910,14 @@ Section visibility: Always available.
 
 **Group heading:** Applicant 1
 
-#### 186. Do you receive any sick pay?
+#### 210. Do you receive any sick pay?
 
 - Field ID: `sp1_do_you_receive_any_sick_pay`
 - Source reference: `132aa2d3-b65d-4c83-831d-430745cd68dd`
 - Input: `text`; required: **No**
 - Field visibility: No additional condition.
 
-#### 187. If yes, How much sick pay do you receive?
+#### 211. If yes, How much sick pay do you receive?
 
 - Field ID: `sp1_if_yes_how_much_sick_pay_do_you_receive`
 - Source reference: `9589bb3a-0aa4-4013-ad8a-0a5419087aec`
@@ -1690,7 +1928,7 @@ Help text:
 
 > Monetary amount
 
-#### 188. How long is sick pay received for?
+#### 212. How long is sick pay received for?
 
 - Field ID: `sp1_how_long_is_sick_pay_received_for`
 - Source reference: `6e3b88b1-dc7b-4987-b85b-f3bf8621729e`
@@ -1701,7 +1939,7 @@ Help text:
 
 > Duration in months
 
-#### 189. Do you have any savings or other income that would help you pay your monthly bills?
+#### 213. Do you have any savings or other income that would help you pay your monthly bills?
 
 - Field ID: `sp1_do_you_have_any_savings_or_other_income_that_wou`
 - Source reference: `cfa130f8-08a9-43c9-ac5d-1697423899c3`
@@ -1712,7 +1950,7 @@ Help text:
 
 > Duration in months
 
-#### 190. If your income stopped but your bills continued. How long would you be able to pay your monthly bills for?
+#### 214. If your income stopped but your bills continued. How long would you be able to pay your monthly bills for?
 
 - Field ID: `sp1_if_your_income_stopped_but_your_bills_continued`
 - Source reference: `36d9b5bb-e034-4d33-8c55-52b03e8f6a8c`
@@ -1723,7 +1961,7 @@ Help text:
 
 > Duration in months
 
-#### 191. After your savings have run out, how long could you continue to pay your bills for, after this?
+#### 215. After your savings have run out, how long could you continue to pay your bills for, after this?
 
 - Field ID: `sp1_after_your_savings_have_run_out_how_long_could_y`
 - Source reference: `6b4229f6-f1d4-414c-9260-7eaac3f39a60`
@@ -1736,14 +1974,14 @@ Help text:
 
 **Group heading:** Applicant 2
 
-#### 192. Do you receive any sick pay?
+#### 216. Do you receive any sick pay?
 
 - Field ID: `sp2_do_you_receive_any_sick_pay`
 - Source reference: `6ead8dc9-6e20-4bba-8615-fe26aa1c2341`
 - Input: `text`; required: **No**
 - Field visibility: `{"field":"joint_case","operator":"eq","value":"yes"}`
 
-#### 193. If yes, How much sick pay do you receive?
+#### 217. If yes, How much sick pay do you receive?
 
 - Field ID: `sp2_if_yes_how_much_sick_pay_do_you_receive`
 - Source reference: `97bf9b15-4b7e-4bdc-bfb1-79784f0671af`
@@ -1754,7 +1992,7 @@ Help text:
 
 > Monetary amount
 
-#### 194. How long is sick pay received for?
+#### 218. How long is sick pay received for?
 
 - Field ID: `sp2_how_long_is_sick_pay_received_for`
 - Source reference: `d2f8e270-fadf-46cb-9805-10fc56f758dd`
@@ -1765,7 +2003,7 @@ Help text:
 
 > Duration in months
 
-#### 195. Do you have any savings or other income that would help you pay your monthly bills?
+#### 219. Do you have any savings or other income that would help you pay your monthly bills?
 
 - Field ID: `sp2_do_you_have_any_savings_or_other_income_that_wou`
 - Source reference: `8e00a699-751b-4283-8a89-10b526396cd0`
@@ -1776,7 +2014,7 @@ Help text:
 
 > Duration in months
 
-#### 196. If your income stopped but your bills continued. How long would you be able to pay your monthly bills for?
+#### 220. If your income stopped but your bills continued. How long would you be able to pay your monthly bills for?
 
 - Field ID: `sp2_if_your_income_stopped_but_your_bills_continued`
 - Source reference: `40ff2361-f3f1-4a9b-bd87-2461dfbb3b2c`
@@ -1787,7 +2025,7 @@ Help text:
 
 > Duration in months
 
-#### 197. After your savings have run out, how long could you continue to pay your bills for, after this?
+#### 221. After your savings have run out, how long could you continue to pay your bills for, after this?
 
 - Field ID: `sp2_after_your_savings_have_run_out_how_long_could_y`
 - Source reference: `a2538608-e855-4594-ad18-cdb3b2a6a596`
@@ -1806,7 +2044,7 @@ Section visibility: Always available.
 
 **Group heading:** Current protection plans
 
-#### 198. Do you have anything that pays out a lump sum upon death?
+#### 222. Do you have anything that pays out a lump sum upon death?
 
 - Field ID: `prot_do_you_have_anything_that_pays_out_a_lump_sum_up`
 - Source reference: `e4ea1924-aa5e-405e-9307-9c402244e3b3`
@@ -1818,7 +2056,7 @@ Choices (label → stored value), in display order:
 - Yes → `yes`
 - No → `no`
 
-#### 199. Do you have anything that pays out a lump sum upon diagnosis of cancer, heart attack, stroke, M.S etc?
+#### 223. Do you have anything that pays out a lump sum upon diagnosis of cancer, heart attack, stroke, M.S etc?
 
 - Field ID: `prot_do_you_have_anything_that_pays_out_a_lump_sum_up_2`
 - Source reference: `34658e91-9bd5-4a73-bde6-b43d45140ecb`
@@ -1830,7 +2068,7 @@ Choices (label → stored value), in display order:
 - Yes → `yes`
 - No → `no`
 
-#### 200. Do you have anything that pays off your mortgage if either applicant was to die or get ill?
+#### 224. Do you have anything that pays off your mortgage if either applicant was to die or get ill?
 
 - Field ID: `prot_do_you_have_anything_that_pays_off_your_mortgage`
 - Source reference: `a979fd62-81e8-4614-80c1-36805c343fdd`
@@ -1843,7 +2081,7 @@ Choices (label → stored value), in display order:
 - No → `no`
 - I don't have a mortgage → `i_don_t_have_a_mortgage`
 
-#### 201. Do you have anything in place that pays your wage if you are unable to work due to an accident or sickness?
+#### 225. Do you have anything in place that pays your wage if you are unable to work due to an accident or sickness?
 
 - Field ID: `prot_do_you_have_anything_in_place_that_pays_your_wag`
 - Source reference: `fe94570c-3a3e-43ab-8d4d-1208f6a43e7f`
@@ -1855,7 +2093,7 @@ Choices (label → stored value), in display order:
 - Yes → `yes`
 - No → `no`
 
-#### 202. Enter details of any existing policies you have.
+#### 226. Enter details of any existing policies you have.
 
 - Field ID: `prot_do_you_have_anything_in_place_that_pays_your_wag_details`
 - Source reference: `c74e921c-2396-4bd1-8151-8a7818b0e136`
@@ -1868,7 +2106,7 @@ Help text:
 
 **Group heading:** Pension information
 
-#### 203. Do you have pensions or investments?
+#### 227. Do you have pensions or investments?
 
 - Field ID: `pension_do_you_have_pensions_or_investments`
 - Source reference: `b4ae0ff1-3bac-4c4e-989e-46c3002b49ac`
@@ -1880,7 +2118,7 @@ Choices (label → stored value), in display order:
 - Yes → `yes`
 - No → `no`
 
-#### 204. Have your pensions/investments been reviewed?
+#### 228. Have your pensions/investments been reviewed?
 
 - Field ID: `pension_have_your_pensions_investments_been_reviewed`
 - Source reference: `9b885d5a-7ef8-4994-9984-51517918a1cb`
@@ -1892,7 +2130,7 @@ Choices (label → stored value), in display order:
 - Yes → `yes`
 - No → `no`
 
-#### 205. Are you happy with your pensions/investments?
+#### 229. Are you happy with your pensions/investments?
 
 - Field ID: `pension_are_you_happy_with_your_pensions_investments`
 - Source reference: `d9f74a72-14c2-4ae2-af3a-b2739d174746`
@@ -1904,7 +2142,7 @@ Choices (label → stored value), in display order:
 - Yes → `yes`
 - No → `no`
 
-#### 206. Do you have a will?
+#### 230. Do you have a will?
 
 - Field ID: `pension_has_will`
 - Source reference: `361f54d4-5991-48ed-92f3-660f43cc8a85`
@@ -1916,7 +2154,7 @@ Choices (label → stored value), in display order:
 - Yes → `yes`
 - No → `no`
 
-#### 207. Do you understand the consequences if you don't have a will?
+#### 231. Do you understand the consequences if you don't have a will?
 
 - Field ID: `pension_do_you_understand_the_consequences_if_you_don_t`
 - Source reference: `af32757d-08b0-4644-8fbc-b94f9599a116`
@@ -1928,7 +2166,7 @@ Choices (label → stored value), in display order:
 - Yes → `yes`
 - No → `no`
 
-#### 208. Are you concerned about care fees?
+#### 232. Are you concerned about care fees?
 
 - Field ID: `pension_are_you_concerned_about_care_fees`
 - Source reference: `0b99a5c7-4cb3-4669-b197-b19d7b92f0eb`
@@ -1946,14 +2184,14 @@ Section ID: `s12_additional_services`.
 
 Section visibility: Always available.
 
-#### 209. Is there anything specific that you would like your adviser to look at to protect you and your family?
+#### 233. Is there anything specific that you would like your adviser to look at to protect you and your family?
 
 - Field ID: `is_there_anything_specific_that_you_would_like_y`
 - Source reference: `65c5c695-42e2-40ed-b5c4-57a5de6ae3f3`
 - Input: `textarea`; required: **No**
 - Field visibility: No additional condition.
 
-#### 210. Please ensure that all information you have provided is true, accurate, and complete. Providing incorrect or incomplete information may affect your mortgage application and protection insurance recommendations. Ultimately, it could prevent you from obtaining a mortgage or invalidate a future insurance claim, so it is essential that all details are correct. — I understand
+#### 234. Please ensure that all information you have provided is true, accurate, and complete. Providing incorrect or incomplete information may affect your mortgage application and protection insurance recommendations. Ultimately, it could prevent you from obtaining a mortgage or invalidate a future insurance claim, so it is essential that all details are correct. — I understand
 
 - Field ID: `please_ensure_that_all_information_you_have_prov`
 - Source reference: `01404e5d-41e4-4547-827d-179234d97819`
@@ -1978,70 +2216,70 @@ Section guidance:
 
 **Group heading:** Adviser notes for admin
 
-#### 211. What is the reason for this meeting? (Tell the story)
+#### 235. What is the reason for this meeting? (Tell the story)
 
 - Field ID: `admin_what_is_the_reason_for_this_meeting_tell_the_sto`
 - Source reference: `f81dc490-aabc-411a-8037-c72cf374e202`
 - Input: `textarea`; required: **No**
 - Field visibility: No additional condition.
 
-#### 212. What is the protection product recommended and why?
+#### 236. What is the protection product recommended and why?
 
 - Field ID: `admin_what_is_the_protection_product_recommended_and_w`
 - Source reference: `d11eb674-9a19-4b69-86d7-8cd246273d33`
 - Input: `textarea`; required: **No**
 - Field visibility: No additional condition.
 
-#### 213. What is the mortgage product recommended and why?
+#### 237. What is the mortgage product recommended and why?
 
 - Field ID: `admin_what_is_the_mortgage_product_recommended_and_why`
 - Source reference: `b3473eda-fbef-42e5-925d-b93b4b7af54b`
 - Input: `textarea`; required: **No**
 - Field visibility: No additional condition.
 
-#### 214. Reason for the lender and fixed term?
+#### 238. Reason for the lender and fixed term?
 
 - Field ID: `admin_reason_for_the_lender_and_fixed_term`
 - Source reference: `599a38c7-c10b-4fec-8c47-30189ac3f1ca`
 - Input: `textarea`; required: **No**
 - Field visibility: No additional condition.
 
-#### 215. Reason for recommended protection sum assured
+#### 239. Reason for recommended protection sum assured
 
 - Field ID: `admin_reason_for_recommended_protection_sum_assured`
 - Source reference: `0ddf6614-70b4-40ba-a5fb-f62f4f36a9a5`
 - Input: `textarea`; required: **No**
 - Field visibility: No additional condition.
 
-#### 216. Reason for protection term length
+#### 240. Reason for protection term length
 
 - Field ID: `admin_reason_for_protection_term_length`
 - Source reference: `f4e5ef3b-a9e2-4089-ac4a-4287868896d0`
 - Input: `textarea`; required: **No**
 - Field visibility: No additional condition.
 
-#### 217. Reason for mortgage term length
+#### 241. Reason for mortgage term length
 
 - Field ID: `admin_reason_for_mortgage_term_length`
 - Source reference: `e98365fe-011f-43fa-b2d0-5591785d4be0`
 - Input: `textarea`; required: **No**
 - Field visibility: No additional condition.
 
-#### 218. Reason for provider choice
+#### 242. Reason for provider choice
 
 - Field ID: `admin_reason_for_provider_choice`
 - Source reference: `f921e425-8633-4834-ae1a-e741da27ab91`
 - Input: `textarea`; required: **No**
 - Field visibility: No additional condition.
 
-#### 219. Additional internal notes
+#### 243. Additional internal notes
 
 - Field ID: `admin_additional_internal_notes`
 - Source reference: `1c7d42a2-e8f6-46de-84e5-c592a0ba288b`
 - Input: `textarea`; required: **No**
 - Field visibility: No additional condition.
 
-**Mortgage FactFind: 219 app questions.**
+**Mortgage FactFind: 243 app questions.**
 
 ## Protection FactFind
 

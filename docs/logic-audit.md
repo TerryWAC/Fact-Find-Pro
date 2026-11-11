@@ -8,6 +8,7 @@ The initial 12 September pass checked the schemas, server action, rendered forms
 | Joint applications | Applicant 2 details, employment and sick pay appear only for joint cases. Switching to a single application excludes those answers from review and the saved payload. |
 | Dependants | Dependant details appear only when the answer is Yes. Hidden required dates do not block submission. |
 | Bankruptcy/CCJ | The questions are independent. CCJ=No does not skip bankruptcy. Each Yes answer shows its own details; changing it to No removes those details from the submission. |
+| Mortgage loans and credit cards | "Do you have any loans?" = Yes shows the loan 1–4 details and the additional-loans box; "Do you have a credit card(s) or store card(s)?" = Yes shows the card 1–3 details. Both are optional and sit between the monthly expenses and the CCJ question. Added for every adviser at the owner's request (11 November 2026) from the Version 1 per-adviser template; a No or blank answer removes the details from the review and the submission like every other gate. |
 | Mortgage purpose and properties | Purchase/remortgage selects the relevant block. Background buy-to-let questions remain available for either purpose; property blocks follow the selected count of 1–3. |
 | Medical | All 14 Yes/No follow-up gates are checked individually. Parent-death details appear for No or One Deceased. GP information remains reachable even when the overseas-travel answer is No. |
 | Will | The consequences question appears when the client says they do not have a will. |
