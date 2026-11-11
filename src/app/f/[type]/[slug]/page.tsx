@@ -46,7 +46,8 @@ export default async function PublicFactFindPage({
   const form = await resolvePublicFactFind(type, slug)
   if (!form) notFound()
 
-  const schema = getFormSchema(type)
+  // A link may carry a bespoke question set; everything else about it is standard.
+  const schema = getFormSchema(type, form.variant)
 
   return (
     <FactFindClient

@@ -1,0 +1,2345 @@
+{
+  "type": "mortgage",
+  "version": "2026.11-future-perfect.1",
+  "title": "Mortgage FactFind",
+  "subtitle": "A few sections so your adviser can find the right mortgage and protection for you.",
+  "intro": "Your answers are saved when you submit and go straight to your adviser. Sections that do not apply to you are skipped automatically.",
+  "estimatedMinutes": 20,
+  "steps": [
+    {
+      "id": "s1_introduction",
+      "title": "Introduction",
+      "fields": [
+        {
+          "id": "who_completing",
+          "label": "Who is completing this form?",
+          "options": [
+            {
+              "value": "adviser",
+              "label": "Adviser"
+            },
+            {
+              "value": "client",
+              "label": "Client"
+            }
+          ],
+          "type": "radio",
+          "colSpan": 2,
+          "defaultValue": "client",
+          "helpText": "Choose \"Adviser\" to unlock the internal sections."
+        }
+      ]
+    },
+    {
+      "id": "s2_internal_details",
+      "title": "Internal Details",
+      "fields": [
+        {
+          "id": "date_of_appointment",
+          "label": "Date of Appointment",
+          "type": "date",
+          "colSpan": 2
+        },
+        {
+          "id": "source",
+          "label": "Source",
+          "options": [
+            {
+              "value": "existing_client",
+              "label": "Existing Client"
+            },
+            {
+              "value": "referral",
+              "label": "Referral"
+            },
+            {
+              "value": "social_media",
+              "label": "Social media"
+            },
+            {
+              "value": "event",
+              "label": "Event"
+            },
+            {
+              "value": "family",
+              "label": "Family"
+            },
+            {
+              "value": "cold_call",
+              "label": "Cold Call"
+            },
+            {
+              "value": "company_lead",
+              "label": "Company Lead"
+            },
+            {
+              "value": "other",
+              "label": "Other"
+            }
+          ],
+          "type": "select",
+          "colSpan": 2
+        },
+        {
+          "id": "if_other_please_specify_source_details",
+          "label": "If 'Other', please specify source details",
+          "type": "text",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "source",
+            "operator": "eq",
+            "value": "other"
+          }
+        }
+      ],
+      "description": "Adviser use only — not shown to clients.",
+      "visibleWhen": {
+        "field": "who_completing",
+        "operator": "eq",
+        "value": "adviser"
+      }
+    },
+    {
+      "id": "s3_applicant_1_details",
+      "title": "Applicant 1 Details",
+      "fields": [
+        {
+          "id": "a1_heading",
+          "type": "heading",
+          "label": "Applicant 1 details",
+          "colSpan": 2
+        },
+        {
+          "id": "a1_title",
+          "type": "text",
+          "label": "Title",
+          "colSpan": 1
+        },
+        {
+          "id": "client_name",
+          "label": "Full Name",
+          "type": "text",
+          "colSpan": 1,
+          "identity": "client_name",
+          "required": true
+        },
+        {
+          "id": "a1_date_of_birth",
+          "type": "date",
+          "label": "Date of Birth",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_gender",
+          "type": "text",
+          "label": "Gender",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_nationality",
+          "type": "text",
+          "label": "Nationality",
+          "colSpan": 1,
+          "source": "baa22df7-0ccf-42d7-81aa-29a2316fa8b9"
+        },
+        {
+          "id": "client_phone",
+          "label": "Phone Number",
+          "type": "tel",
+          "colSpan": 1,
+          "identity": "client_phone"
+        },
+        {
+          "id": "client_email",
+          "label": "Email",
+          "type": "email",
+          "colSpan": 1,
+          "identity": "client_email",
+          "required": true
+        },
+        {
+          "id": "a1_address",
+          "type": "text",
+          "label": "Address",
+          "colSpan": 2
+        },
+        {
+          "id": "a1_previous_addresses",
+          "type": "textarea",
+          "label": "If you have lived here less than 3 years, please provide your previous addresses",
+          "colSpan": 2,
+          "rows": 3,
+          "source": "719204d9-85dd-43d0-b798-3853fc1e3803"
+        },
+        {
+          "id": "a1_marital_status",
+          "type": "text",
+          "label": "Marital Status",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_health_heading",
+          "type": "heading",
+          "label": "Applicant 1 Health Details",
+          "colSpan": 2
+        },
+        {
+          "id": "a1_health_smoker_vaper_status",
+          "type": "text",
+          "label": "Smoker/Vaper status (include amount/vape)",
+          "colSpan": 2
+        },
+        {
+          "id": "a1_health_height",
+          "type": "text",
+          "label": "Height",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_health_weight",
+          "type": "text",
+          "label": "Weight",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_health_serious_health_issues",
+          "type": "textarea",
+          "label": "Have you had any serious health issues in the past which may stop you from getting insurance? (Cancer, Heart Attack, Stroke, M.S, etc)",
+          "colSpan": 2,
+          "rows": 3
+        },
+        {
+          "id": "joint_case",
+          "label": "Is this a joint case?",
+          "type": "yesno",
+          "colSpan": 2
+        }
+      ]
+    },
+    {
+      "id": "s4_applicant_2_details",
+      "title": "Applicant 2 Details",
+      "fields": [
+        {
+          "id": "a2_heading",
+          "type": "heading",
+          "label": "Applicant 2 details",
+          "colSpan": 2
+        },
+        {
+          "id": "a2_title",
+          "type": "text",
+          "label": "Title",
+          "colSpan": 1
+        },
+        {
+          "id": "a2_full_name",
+          "type": "text",
+          "label": "Full Name",
+          "colSpan": 1
+        },
+        {
+          "id": "a2_date_of_birth",
+          "type": "date",
+          "label": "Date of Birth",
+          "colSpan": 1
+        },
+        {
+          "id": "a2_gender",
+          "type": "text",
+          "label": "Gender",
+          "colSpan": 1
+        },
+        {
+          "id": "a2_nationality",
+          "type": "text",
+          "label": "Nationality",
+          "colSpan": 1,
+          "source": "566b698a-c3c1-45a4-8be3-11aa7531ad96"
+        },
+        {
+          "id": "a2_phone_number",
+          "type": "tel",
+          "label": "Phone Number",
+          "colSpan": 1
+        },
+        {
+          "id": "a2_email",
+          "type": "email",
+          "label": "Email",
+          "colSpan": 1
+        },
+        {
+          "id": "a2_address",
+          "type": "text",
+          "label": "Address",
+          "colSpan": 2
+        },
+        {
+          "id": "a2_previous_addresses",
+          "type": "textarea",
+          "label": "If you have lived here less than 3 years, please provide your previous addresses",
+          "colSpan": 2,
+          "rows": 3,
+          "source": "0e478353-82be-4aa8-9f34-499a768632f4"
+        },
+        {
+          "id": "a2_marital_status",
+          "type": "text",
+          "label": "Marital Status",
+          "colSpan": 1
+        },
+        {
+          "id": "a2_health_heading",
+          "type": "heading",
+          "label": "Applicant 2 Health Details",
+          "colSpan": 2
+        },
+        {
+          "id": "a2_health_smoker_vaper_status",
+          "type": "text",
+          "label": "Smoker/Vaper status (include amount/vape)",
+          "colSpan": 2
+        },
+        {
+          "id": "a2_health_height",
+          "type": "text",
+          "label": "Height",
+          "colSpan": 1
+        },
+        {
+          "id": "a2_health_weight",
+          "type": "text",
+          "label": "Weight",
+          "colSpan": 1
+        },
+        {
+          "id": "a2_health_serious_health_issues",
+          "type": "textarea",
+          "label": "Have you had any serious health issues in the past which may stop you from getting insurance? (Cancer, Heart Attack, Stroke, M.S, etc)",
+          "colSpan": 2,
+          "rows": 3
+        }
+      ],
+      "visibleWhen": {
+        "field": "joint_case",
+        "operator": "eq",
+        "value": "yes"
+      }
+    },
+    {
+      "id": "s5_dependants",
+      "title": "Children and Dependants",
+      "fields": [
+        {
+          "id": "has_dependants",
+          "type": "yesno",
+          "label": "Do you have any children or other dependants?",
+          "colSpan": 2,
+          "source": "3ce63c97-f454-40f6-8de9-031eb984dc57"
+        },
+        {
+          "id": "dep_heading",
+          "type": "heading",
+          "label": "Dependant details",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "has_dependants",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "dep_name",
+          "type": "text",
+          "label": "Dependant’s name",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_dependants",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "dep_date_of_birth",
+          "type": "date",
+          "label": "Dependant’s date of birth",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_dependants",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "dep_relationship_to_client",
+          "type": "text",
+          "label": "Relationship to client",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_dependants",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "dep_dependent_on",
+          "type": "text",
+          "label": "Dependent on (Applicant 1, Applicant 2 or Both)",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_dependants",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "dep_dependent_until_age",
+          "type": "number",
+          "label": "Dependant on you until what age?",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_dependants",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "more_dependants_details",
+          "type": "textarea",
+          "label": "If you have any more children or dependants, please provide details below for ALL of them.",
+          "colSpan": 2,
+          "rows": 6,
+          "helpText": "Name, relationship to client(s), date of birth and dependant until what age",
+          "visibleWhen": {
+            "field": "has_dependants",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "7f479f50-73ee-4077-9a0b-cdfacb7fc475"
+        }
+      ]
+    },
+    {
+      "id": "s6_employment_info",
+      "title": "Employment Info",
+      "fields": [
+        {
+          "id": "a1_emp_heading",
+          "type": "heading",
+          "label": "Applicant 1 Employment Status",
+          "colSpan": 2
+        },
+        {
+          "id": "a1_emp_status",
+          "label": "Applicant 1 Employment Status",
+          "options": [
+            {
+              "value": "employed",
+              "label": "Employed"
+            },
+            {
+              "value": "self_employed",
+              "label": "Self Employed"
+            },
+            {
+              "value": "unemployed",
+              "label": "Unemployed"
+            },
+            {
+              "value": "retired",
+              "label": "Retired"
+            }
+          ],
+          "type": "select",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_emp_applicant_1_occupation",
+          "label": "Applicant 1 Occupation",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_emp_applicant_1_employer_name",
+          "label": "Applicant 1 Employer Name",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_emp_applicant_1_full_time_or_part_time",
+          "label": "Applicant 1 Full time or part time?",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_emp_applicant_1_start_of_employment_date_or_company",
+          "label": "Applicant 1 Start of employment date (or company setup date for self employed)",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "if_you_have_worked_there_less_than_2_years_pleas",
+          "label": "If you have worked there less than 2 years please enter previous employers details below",
+          "helpText": "Company name, job title, start and end date, income/salary",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 4
+        },
+        {
+          "id": "a1_pay_heading",
+          "type": "heading",
+          "label": "Applicant 1 Employment Info",
+          "colSpan": 2
+        },
+        {
+          "id": "a1_pay_applicant_1_gross_annual_pay",
+          "label": "Applicant 1 Gross Annual Pay",
+          "type": "currency",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_pay_applicant_1_net_monthly_pay",
+          "label": "Applicant 1 Net Monthly Pay",
+          "type": "currency",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_pay_applicant_1_benefits_received",
+          "label": "Applicant 1 Benefits received",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_pay_applicant_1_anticipated_retirement_age",
+          "label": "Applicant 1 Anticipated Retirement Age",
+          "type": "number",
+          "colSpan": 1
+        },
+        {
+          "id": "a1_pay_please_state_any_additional_income_below_applica",
+          "label": "Please state any additional income below (Applicant 1).",
+          "type": "text",
+          "colSpan": 2
+        },
+        {
+          "id": "a2_emp_heading",
+          "type": "heading",
+          "label": "Applicant 2 Employment Status",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "a2_emp_applicant_2_employment_status",
+          "label": "Applicant 2 Employment Status",
+          "options": [
+            {
+              "value": "employed",
+              "label": "Employed"
+            },
+            {
+              "value": "self_employed",
+              "label": "Self Employed"
+            },
+            {
+              "value": "unemployed",
+              "label": "Unemployed"
+            },
+            {
+              "value": "retired",
+              "label": "Retired"
+            }
+          ],
+          "type": "select",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "a2_emp_applicant_2_occupation",
+          "label": "Applicant 2 Occupation",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "a2_emp_applicant_2_employer_name",
+          "label": "Applicant 2 Employer Name",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "a2_emp_applicant_2_full_time_or_part_time",
+          "label": "Applicant 2 Full time or part time?",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "a2_emp_applicant_2_start_of_employment_date_or_company",
+          "label": "Applicant 2 Start of employment date (or company setup date for self employed)",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "if_you_have_worked_there_less_than_2_years_pleas_2",
+          "label": "If you have worked there less than 2 years please enter previous employers details below",
+          "helpText": "Company name, job title, start and end date, income/salary",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 4,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "a2_pay_heading",
+          "type": "heading",
+          "label": "Applicant 2 Employment Info",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "a2_pay_applicant_2_gross_annual_pay",
+          "label": "Applicant 2 Gross Annual Pay",
+          "type": "currency",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "a2_pay_applicant_2_net_monthly_pay",
+          "label": "Applicant 2 Net Monthly Pay",
+          "type": "currency",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "a2_pay_applicant_2_benefits_received",
+          "label": "Applicant 2 Benefits received",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "a2_pay_applicant_2_anticipated_retirement_age",
+          "label": "Applicant 2 Anticipated Retirement Age",
+          "type": "number",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "a2_pay_please_state_any_additional_income_below_applica",
+          "label": "Please state any additional income below (Applicant 2).",
+          "type": "text",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        }
+      ]
+    },
+    {
+      "id": "s7_loans",
+      "title": "Loans",
+      "fields": [
+        {
+          "id": "has_loans",
+          "type": "yesno",
+          "label": "Do you have any loans?",
+          "colSpan": 2,
+          "source": "4fd3324c-66b1-4526-b876-dbe8fd6c9aed",
+          "helpText": "This includes personal loans, vehicles on finance, furniture or electrical items on monthly payments. Any other credit commitments."
+        },
+        {
+          "id": "loans_heading",
+          "type": "heading",
+          "label": "Loan details",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "loan1_company_name",
+          "type": "text",
+          "label": "Loan 1 Company name",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "4bf1741d-4cd7-48bc-b477-588d8daa92f8"
+        },
+        {
+          "id": "loan1_monthly_payment",
+          "type": "currency",
+          "label": "Loan 1 Monthly payment",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "69182b37-a42e-494e-be06-adc56f0abdcd"
+        },
+        {
+          "id": "loan1_outstanding_balance",
+          "type": "currency",
+          "label": "Loan 1 Outstanding balance",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "a8775ff9-a4d0-4816-b14f-a6663d8eff4f"
+        },
+        {
+          "id": "loan2_company_name",
+          "type": "text",
+          "label": "Loan 2 Company name",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "601e782c-8554-4248-acf5-0aa0692ad876"
+        },
+        {
+          "id": "loan2_monthly_payment",
+          "type": "currency",
+          "label": "Loan 2 Monthly payment",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "ed4fd7f2-881d-41c2-be61-4850d873384a"
+        },
+        {
+          "id": "loan2_outstanding_balance",
+          "type": "currency",
+          "label": "Loan 2 Outstanding balance",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "23ac5e60-6706-42a0-b814-25b2e8293d4e"
+        },
+        {
+          "id": "loan3_company_name",
+          "type": "text",
+          "label": "Loan 3 Company name",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "945d7a32-efcf-4a90-b5fe-ef7901300534"
+        },
+        {
+          "id": "loan3_monthly_payment",
+          "type": "currency",
+          "label": "Loan 3 Monthly payment",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "cfb53e40-1bae-4036-9a93-1bac41ea327c"
+        },
+        {
+          "id": "loan3_outstanding_balance",
+          "type": "currency",
+          "label": "Loan 3 Outstanding balance",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "f3650be1-7278-4f12-9824-7c2345a3dd72"
+        },
+        {
+          "id": "loan4_company_name",
+          "type": "text",
+          "label": "Loan 4 Company name",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "6c8ab29e-db47-4ff7-976d-b2f2678921df"
+        },
+        {
+          "id": "loan4_monthly_payment",
+          "type": "currency",
+          "label": "Loan 4 Monthly payment",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "1f792242-3d2b-43b1-a054-7a73911ac056"
+        },
+        {
+          "id": "loan4_outstanding_balance",
+          "type": "currency",
+          "label": "Loan 4 Outstanding balance",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "a3fd6572-f3fe-4f8c-a34d-7a3ce6e7e152"
+        },
+        {
+          "id": "additional_loans_details",
+          "type": "textarea",
+          "label": "If you have any additional loans or credit please enter the name of the company, monthly payment & outstanding balance",
+          "colSpan": 2,
+          "source": "32b9bf85-7301-4111-b0b6-8b43daaeb28c",
+          "visibleWhen": {
+            "field": "has_loans",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "helpText": "Enter all other loans below, personal, car finance, furniture & electricals you pay monthly for",
+          "rows": 6
+        }
+      ]
+    },
+    {
+      "id": "s8_credit_cards",
+      "title": "Credit Cards",
+      "fields": [
+        {
+          "id": "has_credit_cards",
+          "type": "yesno",
+          "label": "Do you have a credit card(s) or store card(s)?",
+          "colSpan": 2,
+          "source": "6ba6bed4-d697-41a1-a5eb-fb2769d7cf8a"
+        },
+        {
+          "id": "credit_cards_heading",
+          "type": "heading",
+          "label": "Credit and store card details",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "has_credit_cards",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "cc1_name",
+          "type": "text",
+          "label": "Name of credit card 1",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_credit_cards",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "e56e26bb-e3fb-42fe-b365-a045b02e9f80"
+        },
+        {
+          "id": "cc1_outstanding_balance",
+          "type": "currency",
+          "label": "Current outstanding balance credit card 1",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_credit_cards",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "44accb6b-d675-4348-9786-efd844fb638f"
+        },
+        {
+          "id": "cc1_repayments",
+          "type": "text",
+          "label": "Credit card repayments credit card 1 (paid off in full, minimum monthly, regular repayment)",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "has_credit_cards",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "df81220d-8eab-42ca-84fc-9efa25537021"
+        },
+        {
+          "id": "cc2_name",
+          "type": "text",
+          "label": "Name of credit card 2",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_credit_cards",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "f0803db2-c034-4ce8-b52e-f866e2579ad0"
+        },
+        {
+          "id": "cc2_outstanding_balance",
+          "type": "currency",
+          "label": "Current outstanding balance credit card 2",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_credit_cards",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "dbcda03e-dfa8-47d5-87ed-8e81c9385f31"
+        },
+        {
+          "id": "cc2_repayments",
+          "type": "text",
+          "label": "Credit card repayments credit card 2 (paid off in full, minimum monthly, regular repayment)",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "has_credit_cards",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "2fd0a66e-42dd-4dd7-8c19-5b32a726ac0f"
+        },
+        {
+          "id": "cc3_name",
+          "type": "text",
+          "label": "Name of credit card 3",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_credit_cards",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "0d8f660f-a028-47b7-ad03-27905c711907"
+        },
+        {
+          "id": "cc3_outstanding_balance",
+          "type": "currency",
+          "label": "Current outstanding balance credit card 3",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_credit_cards",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "927e9be2-8c6d-4f9e-88b6-5f6e80a3cd21"
+        },
+        {
+          "id": "cc3_repayments",
+          "type": "text",
+          "label": "Credit card repayments credit card 3 (paid off in full, minimum monthly, regular repayment)",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "has_credit_cards",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "source": "800cb373-2937-40f1-b3fe-c27339bdac61"
+        },
+        {
+          "id": "credit_cards_additional_details",
+          "type": "textarea",
+          "label": "Further cards or additional information",
+          "colSpan": 2,
+          "rows": 6,
+          "helpText": "Optional. Any further cards, balances and repayments, or anything else relevant.",
+          "visibleWhen": {
+            "field": "has_credit_cards",
+            "operator": "eq",
+            "value": "yes"
+          }
+        }
+      ]
+    },
+    {
+      "id": "s9_credit_issues",
+      "title": "Credit Issues",
+      "fields": [
+        {
+          "id": "has_credit_issues",
+          "type": "yesno",
+          "label": "Are there any credit issues?",
+          "colSpan": 2
+        },
+        {
+          "id": "credit_issues_details",
+          "type": "textarea",
+          "label": "Please provide details of all credit issues.",
+          "colSpan": 2,
+          "rows": 8,
+          "visibleWhen": {
+            "field": "has_credit_issues",
+            "operator": "eq",
+            "value": "yes"
+          }
+        }
+      ]
+    },
+    {
+      "id": "s10_existing_properties",
+      "title": "Existing Properties",
+      "fields": [
+        {
+          "id": "owns_properties",
+          "type": "yesno",
+          "label": "Do you own any properties?",
+          "colSpan": 2
+        },
+        {
+          "id": "prop1_heading",
+          "type": "heading",
+          "label": "Property 1",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "owns_properties",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "prop1_address",
+          "type": "text",
+          "label": "Address",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "owns_properties",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "prop1_estimated_value",
+          "type": "currency",
+          "label": "Estimated value",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "owns_properties",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "prop1_mortgage_outstanding",
+          "type": "currency",
+          "label": "Mortgage outstanding",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "owns_properties",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "prop1_current_lender",
+          "type": "text",
+          "label": "Current lender",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "owns_properties",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "prop1_buy_to_let",
+          "type": "yesno",
+          "label": "Is this property a buy-to-let?",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "owns_properties",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "prop1_rental_income",
+          "type": "currency",
+          "label": "Rental income (monthly)",
+          "colSpan": 1,
+          "visibleWhen": {
+            "all": [
+              {
+                "field": "owns_properties",
+                "operator": "eq",
+                "value": "yes"
+              },
+              {
+                "field": "prop1_buy_to_let",
+                "operator": "eq",
+                "value": "yes"
+              }
+            ]
+          }
+        },
+        {
+          "id": "prop1_notes",
+          "type": "textarea",
+          "label": "Property 1 notes",
+          "colSpan": 2,
+          "rows": 6,
+          "helpText": "Anything else about this property, its mortgage or its tenancy.",
+          "visibleWhen": {
+            "field": "owns_properties",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "owns_additional_properties",
+          "type": "yesno",
+          "label": "Do you own any other additional properties?",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "owns_properties",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "additional_properties_details",
+          "type": "textarea",
+          "label": "Additional properties",
+          "colSpan": 2,
+          "rows": 8,
+          "helpText": "For each additional property: address, estimated value, mortgage outstanding, current lender, whether it is let and the rental income.",
+          "visibleWhen": {
+            "all": [
+              {
+                "field": "owns_properties",
+                "operator": "eq",
+                "value": "yes"
+              },
+              {
+                "field": "owns_additional_properties",
+                "operator": "eq",
+                "value": "yes"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "s11_mortgage_info",
+      "title": "Purchase or Remortgage",
+      "fields": [
+        {
+          "id": "mortgage_type",
+          "label": "Is this a purchase or a remortgage?",
+          "options": [
+            {
+              "value": "purchase",
+              "label": "Purchase"
+            },
+            {
+              "value": "remortgage",
+              "label": "Remortgage"
+            }
+          ],
+          "type": "radio",
+          "colSpan": 2
+        },
+        {
+          "id": "purchase_heading",
+          "type": "heading",
+          "label": "Mortgage purchase",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "purchase"
+          }
+        },
+        {
+          "id": "purchase_purchase_amount",
+          "label": "Purchase amount",
+          "type": "currency",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "purchase"
+          }
+        },
+        {
+          "id": "purchase_purchase_address",
+          "label": "Purchase address",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "purchase"
+          }
+        },
+        {
+          "id": "purchase_source_of_deposit",
+          "label": "Source of deposit",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "purchase"
+          }
+        },
+        {
+          "id": "purchase_property_type",
+          "label": "Property type",
+          "options": [
+            {
+              "value": "detached",
+              "label": "Detached"
+            },
+            {
+              "value": "semi_detached",
+              "label": "Semi Detached"
+            },
+            {
+              "value": "terraced",
+              "label": "Terraced"
+            },
+            {
+              "value": "end_of_terrace",
+              "label": "End of terrace"
+            },
+            {
+              "value": "flat",
+              "label": "Flat"
+            },
+            {
+              "value": "bungalow",
+              "label": "Bungalow"
+            },
+            {
+              "value": "other",
+              "label": "Other"
+            }
+          ],
+          "type": "select",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "purchase"
+          }
+        },
+        {
+          "id": "purchase_property_type_2",
+          "label": "Tenure",
+          "options": [
+            {
+              "value": "freehold",
+              "label": "Freehold"
+            },
+            {
+              "value": "leasehold",
+              "label": "Leasehold"
+            }
+          ],
+          "type": "radio",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "purchase"
+          }
+        },
+        {
+          "id": "purchase_year_of_build",
+          "label": "Year of build",
+          "type": "number",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "purchase"
+          }
+        },
+        {
+          "id": "purchase_type_of_construction",
+          "label": "Type of construction",
+          "options": [
+            {
+              "value": "standard",
+              "label": "Standard"
+            },
+            {
+              "value": "non_standard",
+              "label": "Non standard"
+            },
+            {
+              "value": "other",
+              "label": "Other"
+            }
+          ],
+          "type": "select",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "purchase"
+          }
+        },
+        {
+          "id": "purchase_number_of_bedrooms",
+          "label": "Number of bedrooms",
+          "type": "number",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "purchase"
+          }
+        },
+        {
+          "id": "purchase_number_of_bathrooms",
+          "label": "Number of bathrooms",
+          "type": "number",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "purchase"
+          }
+        },
+        {
+          "id": "purchase_estate_agents_details",
+          "label": "Estate agents details",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "purchase"
+          }
+        },
+        {
+          "id": "purchase_any_other_relevant_information",
+          "label": "Any other relevant information",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "purchase"
+          }
+        },
+        {
+          "id": "purchase_monthly_surplus",
+          "type": "currency",
+          "label": "How much surplus income would you like to have left at the end of each month, after all your monthly commitments have been paid?",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "purchase"
+          }
+        },
+        {
+          "id": "sale_connected",
+          "type": "yesno",
+          "label": "Is there a sale connected to the purchase?",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "purchase"
+          },
+          "source": "e40c85ba-a42f-4d9f-9cc4-2ddf214d950c"
+        },
+        {
+          "id": "remortgage_heading",
+          "type": "heading",
+          "label": "Remortgage",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "remortgage"
+          }
+        },
+        {
+          "id": "remortgage_estimated_value",
+          "label": "Estimated value",
+          "type": "currency",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "remortgage"
+          }
+        },
+        {
+          "id": "remortgage_outstanding_loan_amount",
+          "label": "Outstanding loan amount",
+          "type": "currency",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "remortgage"
+          }
+        },
+        {
+          "id": "remortgage_current_lender",
+          "label": "Current lender",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "remortgage"
+          }
+        },
+        {
+          "id": "remortgage_current_interest_rate",
+          "label": "Current interest rate",
+          "type": "percent",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "remortgage"
+          }
+        },
+        {
+          "id": "remortgage_end_of_fixed_rate",
+          "label": "End of fixed rate",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "remortgage"
+          }
+        },
+        {
+          "id": "remortgage_property_type",
+          "label": "Property type",
+          "options": [
+            {
+              "value": "detached",
+              "label": "Detached"
+            },
+            {
+              "value": "semi_detached",
+              "label": "Semi Detached"
+            },
+            {
+              "value": "terraced",
+              "label": "Terraced"
+            },
+            {
+              "value": "end_of_terrace",
+              "label": "End of terrace"
+            },
+            {
+              "value": "flat",
+              "label": "Flat"
+            },
+            {
+              "value": "bungalow",
+              "label": "Bungalow"
+            },
+            {
+              "value": "other",
+              "label": "Other"
+            }
+          ],
+          "type": "select",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "remortgage"
+          }
+        },
+        {
+          "id": "remortgage_property_type_2",
+          "label": "Tenure",
+          "options": [
+            {
+              "value": "freehold",
+              "label": "Freehold"
+            },
+            {
+              "value": "leasehold",
+              "label": "Leasehold"
+            }
+          ],
+          "type": "radio",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "remortgage"
+          }
+        },
+        {
+          "id": "remortgage_year_of_build",
+          "label": "Year of build",
+          "type": "number",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "remortgage"
+          }
+        },
+        {
+          "id": "remortgage_type_of_construction",
+          "label": "Type of construction",
+          "options": [
+            {
+              "value": "standard",
+              "label": "Standard"
+            },
+            {
+              "value": "non_standard",
+              "label": "Non standard"
+            },
+            {
+              "value": "other",
+              "label": "Other"
+            }
+          ],
+          "type": "select",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "remortgage"
+          }
+        },
+        {
+          "id": "remortgage_number_of_bedrooms",
+          "label": "Number of bedrooms",
+          "type": "number",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "remortgage"
+          }
+        },
+        {
+          "id": "remortgage_number_of_bathrooms",
+          "label": "Number of bathrooms",
+          "type": "number",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "remortgage"
+          }
+        },
+        {
+          "id": "remortgage_any_other_relevant_information",
+          "label": "Any other relevant information",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 3,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "remortgage"
+          }
+        },
+        {
+          "id": "remortgage_monthly_surplus",
+          "type": "currency",
+          "label": "How much surplus income would you like to have left at the end of each month, after all your monthly commitments have been paid?",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "remortgage"
+          }
+        },
+        {
+          "id": "other_mortgage_details",
+          "type": "textarea",
+          "label": "Other Mortgage Details",
+          "colSpan": 2,
+          "rows": 6,
+          "helpText": "Stamp duty, estate agency fees, legal costs, surveys and any other relevant details.",
+          "source": "27f5b73b-6a08-4ff2-bc4b-292a4b0b8dfa"
+        }
+      ]
+    },
+    {
+      "id": "s12_connected_sale",
+      "title": "Sale of Existing Property",
+      "fields": [
+        {
+          "id": "sale_property_source",
+          "type": "radio",
+          "label": "Which property is being sold?",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "owns_properties",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "options": [
+            {
+              "value": "property_1",
+              "label": "Property 1, entered earlier",
+              "description": "Its details are copied below for you to check or amend."
+            },
+            {
+              "value": "other",
+              "label": "A different property"
+            }
+          ],
+          "carryOver": [
+            {
+              "whenValue": "property_1",
+              "copy": {
+                "sale_address": "prop1_address",
+                "sale_estimated_value": "prop1_estimated_value",
+                "sale_mortgage_outstanding": "prop1_mortgage_outstanding",
+                "sale_current_lender": "prop1_current_lender"
+              }
+            }
+          ]
+        },
+        {
+          "id": "sale_address",
+          "type": "text",
+          "label": "Property address",
+          "colSpan": 2
+        },
+        {
+          "id": "sale_estimated_value",
+          "type": "currency",
+          "label": "Estimated value",
+          "colSpan": 1,
+          "source": "25dc8365-2848-4819-b5fa-70c852d064f4"
+        },
+        {
+          "id": "sale_mortgage_outstanding",
+          "type": "currency",
+          "label": "Mortgage outstanding",
+          "colSpan": 1,
+          "source": "b747b464-dbdc-4a71-b92e-e63ce945a05f"
+        },
+        {
+          "id": "sale_current_lender",
+          "type": "text",
+          "label": "Current lender",
+          "colSpan": 1,
+          "source": "0f0ef308-bef5-49cc-a87a-b2e58123722a"
+        },
+        {
+          "id": "sale_current_interest_rate",
+          "type": "percent",
+          "label": "Current interest rate",
+          "colSpan": 1,
+          "source": "eae885e7-e1f7-42e5-93b7-8365aadb05ac"
+        },
+        {
+          "id": "sale_mortgage_term_remaining",
+          "type": "text",
+          "label": "Mortgage term remaining",
+          "colSpan": 1,
+          "source": "30ad6556-c10d-4fa5-9726-de62f8d26bcf"
+        },
+        {
+          "id": "sale_product_expiry_date",
+          "type": "date",
+          "label": "Current mortgage product expiry date",
+          "colSpan": 1,
+          "source": "9b30c492-73de-411c-9146-f05d239672aa"
+        },
+        {
+          "id": "sale_early_repayment_charges",
+          "type": "radio",
+          "label": "Are there any early repayment charges?",
+          "options": [
+            {
+              "value": "yes",
+              "label": "Yes"
+            },
+            {
+              "value": "no",
+              "label": "No"
+            },
+            {
+              "value": "not_known",
+              "label": "Not known"
+            }
+          ],
+          "colSpan": 2,
+          "source": "53f4e801-5c62-420d-9ee9-248de4a50397"
+        },
+        {
+          "id": "sale_early_repayment_charge_details",
+          "type": "text",
+          "label": "Early repayment charge details",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "sale_early_repayment_charges",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "sale_position",
+          "type": "select",
+          "label": "Current position of the sale",
+          "colSpan": 1,
+          "source": "858d6aba-aff1-46e5-8a64-cdea5f717379",
+          "options": [
+            {
+              "value": "not_yet_marketed",
+              "label": "Not yet marketed"
+            },
+            {
+              "value": "on_the_market",
+              "label": "On the market"
+            },
+            {
+              "value": "offer_received",
+              "label": "Offer received"
+            },
+            {
+              "value": "offer_accepted",
+              "label": "Offer accepted"
+            },
+            {
+              "value": "contracts_exchanged",
+              "label": "Contracts exchanged"
+            }
+          ]
+        },
+        {
+          "id": "sale_notes",
+          "type": "textarea",
+          "label": "Sale notes",
+          "colSpan": 2,
+          "source": "1b68ddeb-318f-42b8-96fc-3b79d0f30c22",
+          "rows": 6
+        }
+      ],
+      "visibleWhen": {
+        "all": [
+          {
+            "field": "mortgage_type",
+            "operator": "eq",
+            "value": "purchase"
+          },
+          {
+            "field": "sale_connected",
+            "operator": "eq",
+            "value": "yes"
+          }
+        ]
+      }
+    },
+    {
+      "id": "s13_solicitor",
+      "title": "Solicitor",
+      "fields": [
+        {
+          "id": "has_solicitor",
+          "type": "yesno",
+          "label": "Do you have a solicitor?",
+          "colSpan": 2
+        },
+        {
+          "id": "solicitor_heading",
+          "type": "heading",
+          "label": "Your solicitor",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "has_solicitor",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "solicitor_firm_name",
+          "type": "text",
+          "label": "Firm name",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_solicitor",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "solicitor_contact_name",
+          "type": "text",
+          "label": "Contact name",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_solicitor",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "solicitor_email",
+          "type": "email",
+          "label": "Email",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_solicitor",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "solicitor_phone",
+          "type": "tel",
+          "label": "Telephone number",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "has_solicitor",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "solicitor_recommendation_notes",
+          "type": "textarea",
+          "label": "Solicitor recommendation notes",
+          "colSpan": 2,
+          "rows": 6,
+          "helpText": "Optional. Anything useful for your adviser’s solicitor recommendation.",
+          "visibleWhen": {
+            "field": "has_solicitor",
+            "operator": "eq",
+            "value": "no"
+          }
+        }
+      ]
+    },
+    {
+      "id": "s14_plans_and_future_changes",
+      "title": "Plans and Future Changes",
+      "fields": [
+        {
+          "id": "future_changes",
+          "type": "yesno",
+          "label": "Are there any expected future changes to your circumstances?",
+          "colSpan": 2,
+          "source": "72ecdd82-1d7c-4440-be23-ba02ebb00bd3"
+        },
+        {
+          "id": "future_changes_notes",
+          "type": "textarea",
+          "label": "Future changes notes",
+          "colSpan": 2,
+          "source": "365c4233-1980-43c0-85f4-85add668c965",
+          "visibleWhen": {
+            "field": "future_changes",
+            "operator": "eq",
+            "value": "yes"
+          },
+          "rows": 6
+        }
+      ]
+    },
+    {
+      "id": "s15_sick_pay_info",
+      "title": "Sick Pay Info",
+      "fields": [
+        {
+          "id": "sp1_heading",
+          "type": "heading",
+          "label": "Applicant 1",
+          "colSpan": 2
+        },
+        {
+          "id": "sp1_do_you_receive_any_sick_pay",
+          "label": "Do you receive any sick pay?",
+          "type": "radio",
+          "colSpan": 2,
+          "options": [
+            {
+              "value": "yes",
+              "label": "Yes"
+            },
+            {
+              "value": "no",
+              "label": "No"
+            },
+            {
+              "value": "not_known",
+              "label": "Not known"
+            }
+          ]
+        },
+        {
+          "id": "sp1_if_yes_how_much_sick_pay_do_you_receive",
+          "label": "If yes, How much sick pay do you receive?",
+          "helpText": "Monetary amount",
+          "type": "currency",
+          "colSpan": 1
+        },
+        {
+          "id": "sp1_how_long_is_sick_pay_received_for",
+          "label": "How long is sick pay received for?",
+          "helpText": "Duration in months, or \"Not known\"",
+          "type": "text",
+          "colSpan": 1
+        },
+        {
+          "id": "sp1_do_you_have_any_savings_or_other_income_that_wou",
+          "label": "Do you have any savings or other income that would help you pay your monthly bills?",
+          "helpText": "Duration in months",
+          "type": "text",
+          "colSpan": 2
+        },
+        {
+          "id": "sp1_if_your_income_stopped_but_your_bills_continued",
+          "label": "If your income stopped but your bills continued. How long would you be able to pay your monthly bills for?",
+          "helpText": "Duration in months, or \"Not known\"",
+          "type": "text",
+          "colSpan": 2
+        },
+        {
+          "id": "sp1_after_your_savings_have_run_out_how_long_could_y",
+          "label": "After your savings have run out, how long could you continue to pay your bills for, after this?",
+          "helpText": "Duration in months, or \"Not known\"",
+          "type": "text",
+          "colSpan": 2
+        },
+        {
+          "id": "sp2_heading",
+          "type": "heading",
+          "label": "Applicant 2",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "sp2_do_you_receive_any_sick_pay",
+          "label": "Do you receive any sick pay?",
+          "type": "radio",
+          "colSpan": 2,
+          "options": [
+            {
+              "value": "yes",
+              "label": "Yes"
+            },
+            {
+              "value": "no",
+              "label": "No"
+            },
+            {
+              "value": "not_known",
+              "label": "Not known"
+            }
+          ],
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "sp2_if_yes_how_much_sick_pay_do_you_receive",
+          "label": "If yes, How much sick pay do you receive?",
+          "helpText": "Monetary amount",
+          "type": "currency",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "sp2_how_long_is_sick_pay_received_for",
+          "label": "How long is sick pay received for?",
+          "helpText": "Duration in months, or \"Not known\"",
+          "type": "text",
+          "colSpan": 1,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "sp2_do_you_have_any_savings_or_other_income_that_wou",
+          "label": "Do you have any savings or other income that would help you pay your monthly bills?",
+          "helpText": "Duration in months",
+          "type": "text",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "sp2_if_your_income_stopped_but_your_bills_continued",
+          "label": "If your income stopped but your bills continued. How long would you be able to pay your monthly bills for?",
+          "helpText": "Duration in months, or \"Not known\"",
+          "type": "text",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "sp2_after_your_savings_have_run_out_how_long_could_y",
+          "label": "After your savings have run out, how long could you continue to pay your bills for, after this?",
+          "helpText": "Duration in months, or \"Not known\"",
+          "type": "text",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        }
+      ]
+    },
+    {
+      "id": "s16_other_employment_benefits",
+      "title": "Other Employment Benefits",
+      "fields": [
+        {
+          "id": "a1_other_employment_benefits",
+          "type": "textarea",
+          "label": "Applicant 1: other employment benefits relevant to protection",
+          "colSpan": 2,
+          "rows": 6,
+          "helpText": "For example death in service, private medical cover or income protection through work. Enter \"Not known\" if unsure."
+        },
+        {
+          "id": "a2_other_employment_benefits",
+          "type": "textarea",
+          "label": "Applicant 2: other employment benefits relevant to protection",
+          "colSpan": 2,
+          "rows": 6,
+          "helpText": "For example death in service, private medical cover or income protection through work. Enter \"Not known\" if unsure.",
+          "visibleWhen": {
+            "field": "joint_case",
+            "operator": "eq",
+            "value": "yes"
+          }
+        }
+      ]
+    },
+    {
+      "id": "s17_current_protection",
+      "title": "Current Protection",
+      "fields": [
+        {
+          "id": "prot_heading",
+          "type": "heading",
+          "label": "Current protection plans",
+          "colSpan": 2
+        },
+        {
+          "id": "prot_do_you_have_anything_that_pays_out_a_lump_sum_up",
+          "label": "Do you have anything that pays out a lump sum upon death?",
+          "type": "radio",
+          "colSpan": 2,
+          "options": [
+            {
+              "value": "yes",
+              "label": "Yes"
+            },
+            {
+              "value": "no",
+              "label": "No"
+            },
+            {
+              "value": "not_known",
+              "label": "Not known"
+            }
+          ]
+        },
+        {
+          "id": "prot_do_you_have_anything_that_pays_out_a_lump_sum_up_2",
+          "label": "Do you have anything that pays out a lump sum upon diagnosis of cancer, heart attack, stroke, M.S etc?",
+          "type": "radio",
+          "colSpan": 2,
+          "options": [
+            {
+              "value": "yes",
+              "label": "Yes"
+            },
+            {
+              "value": "no",
+              "label": "No"
+            },
+            {
+              "value": "not_known",
+              "label": "Not known"
+            }
+          ]
+        },
+        {
+          "id": "prot_do_you_have_anything_that_pays_off_your_mortgage",
+          "label": "Do you have anything that pays off your mortgage if either applicant was to die or get ill?",
+          "options": [
+            {
+              "value": "yes",
+              "label": "Yes"
+            },
+            {
+              "value": "no",
+              "label": "No"
+            },
+            {
+              "value": "i_don_t_have_a_mortgage",
+              "label": "I don't have a mortgage"
+            },
+            {
+              "value": "not_known",
+              "label": "Not known"
+            }
+          ],
+          "type": "radio",
+          "colSpan": 2
+        },
+        {
+          "id": "prot_do_you_have_anything_in_place_that_pays_your_wag",
+          "label": "Do you have anything in place that pays your wage if you are unable to work due to an accident or sickness?",
+          "options": [
+            {
+              "value": "yes",
+              "label": "Yes"
+            },
+            {
+              "value": "no",
+              "label": "No"
+            },
+            {
+              "value": "not_known",
+              "label": "Not known"
+            }
+          ],
+          "type": "radio",
+          "colSpan": 1
+        },
+        {
+          "id": "prot_do_you_have_anything_in_place_that_pays_your_wag_details",
+          "label": "Enter details of any existing policies you have.",
+          "helpText": "Insurance company, payout, term and monthly premium. If more than one enter all below.",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 5
+        },
+        {
+          "id": "pension_heading",
+          "type": "heading",
+          "label": "Pensions, investments and savings",
+          "colSpan": 2
+        },
+        {
+          "id": "pensions_investments_savings",
+          "type": "radio",
+          "label": "Do you have any pensions, investments or savings?",
+          "options": [
+            {
+              "value": "yes",
+              "label": "Yes"
+            },
+            {
+              "value": "no",
+              "label": "No"
+            },
+            {
+              "value": "not_known",
+              "label": "Not known"
+            }
+          ],
+          "colSpan": 2,
+          "source": "b4ae0ff1-3bac-4c4e-989e-46c3002b49ac"
+        },
+        {
+          "id": "pension_have_your_pensions_investments_been_reviewed",
+          "label": "Have your pensions/investments been reviewed?",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "pension_are_you_happy_with_your_pensions_investments",
+          "label": "Are you happy with your pensions/investments?",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "pensions_investments_savings_details",
+          "type": "textarea",
+          "label": "Pensions, Investments and Savings — Details",
+          "colSpan": 2,
+          "rows": 6,
+          "helpText": "Providers, current values, contributions and anything else relevant, including savings.",
+          "visibleWhen": {
+            "field": "pensions_investments_savings",
+            "operator": "eq",
+            "value": "yes"
+          }
+        },
+        {
+          "id": "pension_has_will",
+          "label": "Do you have a will?",
+          "type": "yesno",
+          "colSpan": 2
+        },
+        {
+          "id": "pension_do_you_understand_the_consequences_if_you_don_t",
+          "label": "Do you understand the consequences if you don't have a will?",
+          "type": "yesno",
+          "colSpan": 2,
+          "visibleWhen": {
+            "field": "pension_has_will",
+            "operator": "eq",
+            "value": "no"
+          }
+        },
+        {
+          "id": "pension_are_you_concerned_about_care_fees",
+          "label": "Are you concerned about care fees?",
+          "type": "yesno",
+          "colSpan": 2
+        }
+      ]
+    },
+    {
+      "id": "s18_general_insurance",
+      "title": "General Insurance",
+      "fields": [
+        {
+          "id": "gi_provider",
+          "type": "text",
+          "label": "Current general insurance provider",
+          "colSpan": 1,
+          "source": "fa99d5d9-60ee-406d-b18c-f10e0bfa3bd0",
+          "helpText": "Enter \"Not known\" if unsure."
+        },
+        {
+          "id": "gi_renewal_date",
+          "type": "date",
+          "label": "Renewal date",
+          "colSpan": 1,
+          "source": "5572503f-f035-452a-9080-7c3d288957cf",
+          "helpText": "Leave blank if not known."
+        },
+        {
+          "id": "gi_current_premium",
+          "type": "text",
+          "label": "Current premium paid (£)",
+          "colSpan": 1,
+          "source": "59572993-b599-4f6c-be08-d026ab1a7b98",
+          "helpText": "Amount in £, or \"Not known\"."
+        },
+        {
+          "id": "gi_premium_frequency",
+          "type": "text",
+          "label": "Premium frequency",
+          "colSpan": 1,
+          "source": "ed56a499-21a6-469b-8fe2-dd9c382e9620",
+          "helpText": "Monthly or annually, or \"Not known\"."
+        }
+      ]
+    },
+    {
+      "id": "s19_additional_services",
+      "title": "Additional Services",
+      "fields": [
+        {
+          "id": "is_there_anything_specific_that_you_would_like_y",
+          "label": "Is there anything specific that you would like your adviser to look at to protect you and your family?",
+          "type": "textarea",
+          "colSpan": 2,
+          "rows": 5
+        },
+        {
+          "id": "please_ensure_that_all_information_you_have_prov",
+          "label": "Please ensure that all information you have provided is true, accurate, and complete. Providing incorrect or incomplete information may affect your mortgage application and protection insurance recommendations. Ultimately, it could prevent you from obtaining a mortgage or invalidate a future insurance claim, so it is essential that all details are correct. — I understand",
+          "required": true,
+          "type": "checkbox",
+          "colSpan": 2
+        }
+      ]
+    }
+  ],
+  "submitLabel": "Submit FactFind",
+  "successTitle": "Thank you — your FactFind has been submitted",
+  "successMessage": "Thank you for completing this questionaire, your adviser will be in touch shortly to discuss the next steps.",
+  "placeholder": false
+}

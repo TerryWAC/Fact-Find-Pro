@@ -26,6 +26,7 @@ jobs:
           python-version: '3.13'
       - run: npm run test:transfer
       - run: npm run verify:typeforms
+      - run: npm run verify:variants
       - run: python scripts/build-setup-sql.py --check
       - run: npm run build
       - run: npm run check:pdf-assets

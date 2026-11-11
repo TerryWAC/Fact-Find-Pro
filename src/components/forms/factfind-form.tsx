@@ -98,6 +98,7 @@ export function FactFindForm({
     register,
     watch,
     reset,
+    setValue,
     setError,
     clearErrors,
     formState: { errors, isDirty },
@@ -139,10 +140,16 @@ export function FactFindForm({
     pendingFocus.current = null
   }, [focusRequest])
 
+  // Fields whose answer carries earlier answers into other fields (see below).
+  const carryFields = useMemo(() => schema.steps.flatMap((entry) => entry.fields.filter((field) => field.carryOver?.length)), [schema])
+  const lastCarry = useRef<Record<string, string>>({})
+
   // Pick up where the client left off on this device.
   useEffect(() => {
     const draft = loadDraft(storageKey, schema.version)
     if (draft) {
+      // A restored selection must not copy over answers the client already amended.
+      for (const field of carryFields) lastCarry.current[field.id] = String(draft.values[field.id] ?? '')
       reset({ ...defaultValues, ...draft.values }, { keepDefaultValues: true })
       if (schema.steps.some((entry) => entry.id === draft.activeStepId)) setActiveStepId(draft.activeStepId)
       setCompletedIds(draft.completedIds)
@@ -167,6 +174,27 @@ export function FactFindForm({
     }, 400)
     return () => window.clearTimeout(timer)
   }, [storageKey, schema.version, valuesJson, activeStepId, completedIds])
+
+  // Carry earlier answers across when a respondent picks something they have
+  // already described, e.g. "the property being sold is Property 1". Copies
+  // once per selection; the copied answers stay editable.
+  const carrySignature = carryFields.map((field) => `${field.id}=${String(values[field.id] ?? '')}`).join('|')
+  useEffect(() => {
+    for (const field of carryFields) {
+      const current = String(values[field.id] ?? '')
+      if (lastCarry.current[field.id] === current) continue
+      const seen = field.id in lastCarry.current
+      lastCarry.current[field.id] = current
+      if (!seen) continue
+      const rule = field.carryOver?.find((entry) => entry.whenValue === current)
+      if (!rule) continue
+      for (const [target, source] of Object.entries(rule.copy)) {
+        setValue(target, values[source] ?? '', { shouldDirty: true })
+      }
+    }
+    // The signature changes only when a carry-over selector's answer changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [carrySignature])
 
   useEffect(() => {
     if (!isDirty) return

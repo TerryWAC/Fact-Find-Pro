@@ -85,6 +85,8 @@ The installable home-screen web app works online. Persistent drafts, cross-devic
 
 Existing-adviser preparation is complete and secure single-use activation links can be issued from Admin > Existing advisers; no invitation is sent until an admin confirms it there. Historical client submissions and legacy Typeform URLs have not been migrated. See [Existing advisers](docs/existing-adviser-migration.md).
 
+One adviser, Tom Hunt of Future Perfect, has a bespoke Mortgage question set served only by his mortgage link through the per-link variant mechanism. See [Future Perfect Mortgage FactFind](docs/future-perfect-mortgage-variant.md); `npm run verify:variants` keeps the generated schema in step with its build script.
+
 ## Code map
 
 - `src/app`: authentication, adviser/admin pages, public forms and server actions.

@@ -1,4 +1,4 @@
-import { getFormSchema } from '@/lib/forms/registry'
+import { getSchemaForSubmission } from '@/lib/forms/registry'
 import { isStepVisible } from '@/lib/forms/engine'
 import { normaliseSubmissionData, type StepBlock } from '@/lib/submission-data'
 import type { FactFindType, Json } from '@/lib/supabase/database.types'
@@ -7,7 +7,8 @@ const comparable = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, 
 
 /** Client copies exclude internal sections, including legacy flat answer maps. */
 export function clientSubmissionSteps(type: FactFindType, data: Json): StepBlock[] {
-  const internal = getFormSchema(type).steps.filter((step) =>
+  // The submission's own question set (standard or a link's bespoke variant) names its internal sections.
+  const internal = getSchemaForSubmission(type, data).steps.filter((step) =>
     isStepVisible(step, { who_completing: 'adviser' }) &&
     !isStepVisible(step, { who_completing: 'client' }),
   )

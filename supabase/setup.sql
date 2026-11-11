@@ -48,7 +48,7 @@
    ==========================================================================
 */
 
-/* ======================= PART 1 of 14  Schema, RLS, triggers and public RPCs ======================= */
+/* ======================= PART 1 of 15  Schema, RLS, triggers and public RPCs ======================= */
 
 /*
    =============================================================================
@@ -657,7 +657,7 @@ grant execute on function public.submit_factfind(public.factfind_type, text, tex
 grant execute on function public.is_admin() to authenticated;
 grant execute on function public.is_approved() to authenticated;
 
-/* ======================= PART 2 of 14  Default notification email templates ======================= */
+/* ======================= PART 2 of 15  Default notification email templates ======================= */
 
 /*
    =============================================================================
@@ -741,7 +741,7 @@ values
   )
 on conflict (key) do nothing;
 
-/* ======================= PART 3 of 14  Storage buckets and their policies ======================= */
+/* ======================= PART 3 of 15  Storage buckets and their policies ======================= */
 
 /*
    =============================================================================
@@ -792,7 +792,7 @@ create policy "submission_uploads_admin_all" on storage.objects
   using (bucket_id = 'submission-uploads' and public.is_admin())
   with check (bucket_id = 'submission-uploads' and public.is_admin());
 
-/* ======================= PART 4 of 14  Onboarding fields and the team roster ======================= */
+/* ======================= PART 4 of 15  Onboarding fields and the team roster ======================= */
 
 /*
    =============================================================================
@@ -885,7 +885,7 @@ create policy "team_members_admin_all" on public.team_members
 
 grant select, insert, update, delete on public.team_members to authenticated, service_role;
 
-/* ======================= PART 5 of 14  Admin allowlist (auto-approves the first admin) ======================= */
+/* ======================= PART 5 of 15  Admin allowlist (auto-approves the first admin) ======================= */
 
 /*
    ==========================================================================
@@ -1017,7 +1017,7 @@ begin
   end loop;
 end $$;
 
-/* ======================= PART 6 of 14  Adviser branding (colour check, adviser photo on public links) ======================= */
+/* ======================= PART 6 of 15  Adviser branding (colour check, adviser photo on public links) ======================= */
 
 /*
    =============================================================================
@@ -1072,7 +1072,7 @@ $$;
 revoke all on function public.resolve_factfind_form(public.factfind_type, text) from public;
 grant execute on function public.resolve_factfind_form(public.factfind_type, text) to anon, authenticated;
 
-/* ======================= PART 7 of 14  PDF copy to the client (preference and email template) ======================= */
+/* ======================= PART 7 of 15  PDF copy to the client (preference and email template) ======================= */
 
 /*
    =============================================================================
@@ -1108,7 +1108,7 @@ values
   )
 on conflict (key) do nothing;
 
-/* ======================= PART 8 of 14  Internal function access and fixed search paths ======================= */
+/* ======================= PART 8 of 15  Internal function access and fixed search paths ======================= */
 
 /* Internal helpers run through owner-executed triggers/functions, never the Data API. */
 revoke execute on function public.generate_adviser_slug() from public, anon, authenticated;
@@ -1127,7 +1127,7 @@ alter function public.touch_updated_at() set search_path = pg_catalog, public;
    resolve_factfind_form and submit_factfind enforce the active adviser link.
  */
 
-/* ======================= PART 9 of 14  Require validated server writes for completed FactFinds ======================= */
+/* ======================= PART 9 of 15  Require validated server writes for completed FactFinds ======================= */
 
 /*
    Apply after deploying the server action that uses the server-only key.
@@ -1140,7 +1140,7 @@ grant execute on function public.submit_factfind(public.factfind_type, text, tex
 comment on function public.submit_factfind(public.factfind_type, text, text, text, text, jsonb, jsonb) is
   'Server-only persistence after validation against the trusted Typeform-derived schema. Public link ownership and active-account checks remain enforced.';
 
-/* ======================= PART 10 of 14  Private existing-adviser directory and reserved FactFind accounts ======================= */
+/* ======================= PART 10 of 15  Private existing-adviser directory and reserved FactFind accounts ======================= */
 
 /* Imported advisers are prepared privately until their individual activation is released. */
 alter table public.profiles add column if not exists import_pending boolean not null default false;
@@ -1222,7 +1222,7 @@ drop policy if exists adviser_import_assets_admin_read on storage.objects;
 create policy adviser_import_assets_admin_read on storage.objects for select to authenticated
   using (bucket_id = 'adviser-imports' and (select public.is_admin()));
 
-/* ======================= PART 11 of 14  Adviser practice details and public business contacts ======================= */
+/* ======================= PART 11 of 15  Adviser practice details and public business contacts ======================= */
 
 /* Optional, adviser-authored practice details. Existing accounts are not changed. */
 alter table public.profiles
@@ -1262,7 +1262,7 @@ grant execute on function public.resolve_factfind_form(public.factfind_type, tex
 comment on column public.profiles.contact_email is 'Optional public business contact and client-copy Reply-To; account email is unchanged.';
 notify pgrst, 'reload schema';
 
-/* ======================= PART 12 of 14  Activation links for prepared adviser accounts ======================= */
+/* ======================= PART 12 of 15  Activation links for prepared adviser accounts ======================= */
 
 /*
    =============================================================================
@@ -1318,7 +1318,7 @@ values
   )
 on conflict (key) do nothing;
 
-/* ======================= PART 13 of 14  Activation email describes the v1 to v2 move ======================= */
+/* ======================= PART 13 of 15  Activation email describes the v1 to v2 move ======================= */
 
 /*
   Activation email: describe the move as FactFind Pro v1 to v2.
@@ -1342,7 +1342,7 @@ set
   updated_at = now()
 where key = 'adviser_activation';
 
-/* ======================= PART 14 of 14  Version 1 retirement notice template ======================= */
+/* ======================= PART 14 of 15  Version 1 retirement notice template ======================= */
 
 /*
   One-off notice to existing advisers that Fact Find Version 1 is being
@@ -1373,3 +1373,48 @@ values
     'Dear {{name}},\n\nWe are writing to let you know that Fact Find Version 1 will be discontinued from tomorrow, 5 November 2026. From this date, Version 1 will no longer be accessible or operational.\n\nWe have now moved to Fact Find Version 2, which will be the only version available going forward.\n\nHow to access Fact Find Version 2\n\nWe have already sent an email to all members with instructions on how to log in and access the new Version 2 platform. If you haven''t received this email, please check your junk or spam folder.\n\nAlternatively, you can register directly here:\n{{signup_url}}\n\nPlease ensure you have registered and can access Version 2 before Version 1 is discontinued tomorrow to avoid any disruption to your work.\n\nIf you experience any issues accessing the new platform or need assistance, please get in touch with our team.\n\nThank you for your cooperation.\n\nKind regards,\nThe Club Team'
   )
 on conflict (key) do nothing;
+
+/* ======================= PART 15 of 15  Per-link question-set variants ======================= */
+
+/*
+  Per-link question-set variants.
+
+  A FactFind link normally serves the standard question set for its type. A
+  link can instead name a variant (a bespoke question set kept in the app,
+  e.g. 'future_perfect' for Tom Hunt's Mortgage FactFind). The variant is
+  resolved with the link so the public page, server validation and previews
+  all use the same schema. Null means the standard questions. Safe to re-run.
+*/
+
+alter table public.factfind_forms
+  add column if not exists variant text
+  check (variant is null or variant ~ '^[a-z][a-z0-9_]{0,39}$');
+
+comment on column public.factfind_forms.variant is 'Named bespoke question set served by this link; null for the standard FactFind.';
+
+drop function if exists public.resolve_factfind_form(public.factfind_type, text);
+
+create function public.resolve_factfind_form(p_form_type public.factfind_type, p_slug text)
+returns table (
+  form_id uuid, adviser_id uuid, adviser_name text, company_name text,
+  logo_url text, avatar_url text, brand_colour text,
+  form_type public.factfind_type, is_active boolean,
+  job_title text, website text, business_location text,
+  contact_phone text, contact_email text, services text, client_focus text,
+  variant text
+)
+language sql stable security definer set search_path = ''
+as $$
+  select f.id, f.adviser_id, p.name, p.company_name, p.logo_url, p.avatar_url,
+    p.brand_colour, f.form_type, f.is_active, p.job_title, p.website,
+    p.business_location, p.phone, p.contact_email, p.services, p.client_focus,
+    f.variant
+  from public.factfind_forms f
+  join public.profiles p on p.id = f.adviser_id
+  where f.form_type = p_form_type and f.unique_slug = p_slug
+    and f.is_active and p.status = 'approved' and not p.import_pending
+  limit 1;
+$$;
+revoke all on function public.resolve_factfind_form(public.factfind_type, text) from public;
+grant execute on function public.resolve_factfind_form(public.factfind_type, text) to anon, authenticated;
+notify pgrst, 'reload schema';

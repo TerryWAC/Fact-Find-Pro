@@ -56,6 +56,7 @@ export default async function LinksPage() {
               type={form.form_type}
               url={factFindUrl(baseUrl, form.form_type, form.unique_slug)}
               isActive={form.is_active}
+              bespoke={Boolean(form.variant)}
             />
           ))}
         </div>

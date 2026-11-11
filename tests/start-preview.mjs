@@ -269,11 +269,15 @@ const mock = http.createServer(async (req, res) => {
       form_type,
       unique_slug: 'preview',
       is_active: true,
+      variant: null,
       created_at: '2026-01-01T00:00:00Z',
     }))
-    const preparedForms = types.map((form_type, index) => ({ id: `00000000-0000-4000-8000-${String(300 + index).padStart(12, '0')}`, adviser_id: preparedAdviserId, form_type, unique_slug: 'reservedmock', is_active: false, created_at: '2026-09-14T00:00:00Z' }))
+    const preparedForms = types.map((form_type, index) => ({ id: `00000000-0000-4000-8000-${String(300 + index).padStart(12, '0')}`, adviser_id: preparedAdviserId, form_type, unique_slug: 'reservedmock', is_active: false, variant: null, created_at: '2026-09-14T00:00:00Z' }))
+    // A second mortgage link for the test adviser that serves the bespoke question set.
+    const bespokeForm = { id: '00000000-0000-4000-8000-000000000400', adviser_id: testAdviserId, form_type: 'mortgage', unique_slug: 'bespoke', is_active: true, variant: 'future_perfect', created_at: '2026-11-11T00:00:00Z' }
     let rows = []
     if (user && user.id !== preparedAdviserId) rows.push(...ownForms(user.id))
+    if (service || user?.id === testAdviserId) rows.push(bespokeForm)
     if (service || user?.profileRole === 'admin' || user?.id === preparedAdviserId) rows.push(...preparedForms)
     rows = rows.map((row) => ({ ...row, ...formEdits.get(row.id) }))
     if (req.method === 'PATCH') {
@@ -359,11 +363,14 @@ const mock = http.createServer(async (req, res) => {
     return send({ ok: true })
   }
   if (req.url === '/rest/v1/rpc/resolve_factfind_form') {
-    if (!['preview', 'violet'].includes(body.p_slug)) return send([])
+    // 'bespoke' is the test adviser's mortgage link that serves the Future Perfect question set.
+    const bespoke = body.p_slug === 'bespoke' && body.p_form_type === 'mortgage'
+    if (!['preview', 'violet'].includes(body.p_slug) && !bespoke) return send([])
     const practice = profileEdits.get(testAdviserId) ?? {}
     return send([
       {
-        form_id: '00000000-0000-4000-8000-000000000001',
+        variant: bespoke ? 'future_perfect' : null,
+        form_id: bespoke ? '00000000-0000-4000-8000-000000000400' : '00000000-0000-4000-8000-000000000001',
         adviser_id: '00000000-0000-4000-8000-000000000002',
         adviser_name: 'Alex Morgan',
         company_name: 'Morgan Financial',
@@ -388,7 +395,7 @@ const mock = http.createServer(async (req, res) => {
       failNext = false
       return send({ code: 'XX000', message: 'Simulated connection failure' }, 503)
     }
-    if (!['preview', 'violet'].includes(body.p_slug))
+    if (!['preview', 'violet', 'bespoke'].includes(body.p_slug))
       return send({ code: 'P0002', message: 'Inactive link' }, 404)
     submissions.push(body)
     const id =

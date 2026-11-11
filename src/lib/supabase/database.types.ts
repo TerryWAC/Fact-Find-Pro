@@ -93,6 +93,8 @@ type FactFindFormRow = {
   form_type: FactFindType
   unique_slug: string
   is_active: boolean
+  /** Named bespoke question set served by this link; null for the standard FactFind. */
+  variant: string | null
   created_at: string
 }
 
@@ -102,6 +104,7 @@ type FactFindFormInsert = {
   form_type: FactFindType
   unique_slug: string
   is_active?: boolean
+  variant?: string | null
   created_at?: string
 }
 
@@ -380,6 +383,7 @@ export type Database = {
           contact_email: string | null
           services: string | null
           client_focus: string | null
+          variant: string | null
         }[]
       }
       submit_factfind: {

@@ -123,7 +123,8 @@ export async function getAdviserForms(adviserId: string) {
 
   const { data } = await supabase
     .from('factfind_forms')
-    .select('id, form_type, unique_slug, is_active, created_at')
+    // All columns, so the page keeps working on a database that predates `variant`.
+    .select('*')
     .eq('adviser_id', adviserId)
 
   const forms = data ?? []

@@ -13,9 +13,11 @@ interface LinkCardProps {
   type: FactFindType
   url: string
   isActive: boolean
+  /** The link serves a question set prepared for this practice rather than the standard one. */
+  bespoke?: boolean
 }
 
-export function LinkCard({ type, url, isActive }: LinkCardProps) {
+export function LinkCard({ type, url, isActive, bespoke = false }: LinkCardProps) {
   const meta = FACTFIND_TYPE_META[type]
   const Icon = factFindIcon(type)
 
@@ -36,6 +38,7 @@ export function LinkCard({ type, url, isActive }: LinkCardProps) {
             ) : (
               <Badge variant="secondary">Paused</Badge>
             )}
+            {bespoke && <Badge variant="outline">Your question set</Badge>}
           </div>
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{meta.description}</p>
         </div>

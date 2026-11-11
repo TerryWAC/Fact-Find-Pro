@@ -12,6 +12,8 @@ These snapshots were read from the `form` JSON embedded in the four existing pub
 
 `sources.json` records the capture date, public URLs and SHA-256 hashes of these snapshots. Medical has one additional email question in the app, for 401 app questions overall.
 
+`future-perfect-mortgage.json` is separate from the four standard forms: it is the definition of "Tom Hunt - Mortgage" (`qd0zpSvg`) read on 11 November 2026, questions and jump logic only, no responses. It feeds `scripts/build-mortgage-future-perfect.mjs`, which produces that adviser's bespoke question set (see `docs/future-perfect-mortgage-variant.md`). It is not part of the 400-question comparison.
+
 ## Repeat the comparison
 
 Run `npm run verify:typeforms`. This needs installed development dependencies, but no Typeform token or network access. CI runs it too. The verifier independently walks the source jumps and compares the resulting question set with the application's actual `isStepVisible` and `isFieldVisible` functions. It also checks question inventory, refs, groups, labels, choices, help text and required flags.

@@ -45,16 +45,26 @@ export async function submitFactFind(input: SubmitFactFindInput): Promise<Submit
     return { ok: false, error: 'This FactFind link is not valid.' }
   }
 
-  const prepared = prepareSubmission(getFormSchema(input.formType), input.submissionData)
-  if (!prepared.ok) return prepared
-
   if (!hasAdminClient()) {
     console.error('Validated submission persistence is unavailable: Supabase server key missing.')
     return { ok: false, error: 'Submissions are temporarily unavailable. Your answers are still here; please try again shortly.' }
   }
 
-  const headerList = await headers()
   const supabase = createAdminClient()
+
+  // The link decides which question set the answers are checked against; the
+  // client cannot choose a schema, only answer the one its link serves.
+  const { data: link } = await supabase
+    .from('factfind_forms')
+    .select('variant')
+    .eq('form_type', input.formType)
+    .eq('unique_slug', slug)
+    .eq('is_active', true)
+    .maybeSingle()
+  const prepared = prepareSubmission(getFormSchema(input.formType, link?.variant), input.submissionData)
+  if (!prepared.ok) return prepared
+
+  const headerList = await headers()
 
   const { data, error } = await supabase.rpc('submit_factfind', {
     p_form_type: input.formType,

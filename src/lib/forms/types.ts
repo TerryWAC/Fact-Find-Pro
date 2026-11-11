@@ -77,6 +77,13 @@ export interface FormField {
   identity?: 'client_name' | 'client_first_name' | 'client_last_name' | 'client_email' | 'client_phone'
   /** Where the field came from when imported (e.g. a Typeform ref). */
   source?: string
+  /**
+   * Copy earlier answers into other fields when this field takes a value, so a
+   * respondent can pick something they already described (an existing
+   * property) and amend it rather than type it twice. `copy` maps target field
+   * id → source field id.
+   */
+  carryOver?: Array<{ whenValue: string; copy: Record<string, string> }>
 }
 
 export interface FormStep {

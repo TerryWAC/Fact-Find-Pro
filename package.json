@@ -23,6 +23,8 @@
     "provision:advisers": "node --env-file=.env.local scripts/provision-adviser-batch.mjs",
     "verify:typeform": "node scripts/verify-typeform-import.mjs",
     "verify:typeforms": "node scripts/verify-typeforms.mjs",
+    "build:variants": "node scripts/build-mortgage-future-perfect.mjs",
+    "verify:variants": "node scripts/build-mortgage-future-perfect.mjs --check",
     "preview:client": "node tests/start-preview.mjs",
     "test:e2e": "npm run build:preview && playwright test",
     "build:preview": "node tests/start-preview.mjs --build",
