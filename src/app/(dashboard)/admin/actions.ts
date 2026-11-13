@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient, hasAdminClient } from '@/lib/supabase/admin'
 import { sendEmail } from '@/lib/email/send'
 import { emailOutcome } from '@/lib/email/outcome'
 import { getBaseUrl } from '@/lib/utils'
@@ -178,4 +179,69 @@ export async function setUserStatus(userId: string, status: UserStatus): Promise
 
   revalidateAdmin()
   return { ok: true, message: 'User status updated.' }
+}
+
+const MAX_IMAGE_BYTES = 2 * 1024 * 1024
+const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml']
+
+/**
+ * Replaces an adviser's logo or photo on their behalf.
+ *
+ * Advisers upload their own branding in Settings; this is for the owner
+ * applying artwork an adviser has sent in. The file goes to the adviser's own
+ * folder in the `branding` bucket through the service role (storage policies
+ * only let advisers write their own folder), the profile points at it, and
+ * the adviser's activity shows that an administrator changed it.
+ */
+export async function replaceAdviserBrandImage(
+  userId: string,
+  kind: 'logo' | 'headshot',
+  formData: FormData,
+): Promise<AdminActionResult> {
+  const { supabase, adminId, error: authError } = await requireAdminClient()
+  if (authError || !adminId) return { ok: false, error: authError ?? 'Not authorised.' }
+  if (!['logo', 'headshot'].includes(kind)) return { ok: false, error: 'Choose a logo or a photo.' }
+  if (!/^[0-9a-f-]{36}$/i.test(userId)) return { ok: false, error: 'Adviser not found.' }
+
+  const file = formData.get('file')
+  if (!(file instanceof File) || file.size === 0) return { ok: false, error: 'Choose an image to upload.' }
+  if (file.size > MAX_IMAGE_BYTES) return { ok: false, error: 'That image is larger than 2MB. Please use a smaller file.' }
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) return { ok: false, error: 'Use a PNG, JPG, WEBP or SVG image.' }
+  if (!hasAdminClient()) return { ok: false, error: 'Image uploads are not configured on this server.' }
+
+  const { data: adviser } = await supabase
+    .from('profiles')
+    .select('id, name, role, import_pending')
+    .eq('id', userId)
+    .maybeSingle()
+  if (!adviser || adviser.role !== 'adviser' || adviser.import_pending) return { ok: false, error: 'Choose an active adviser account.' }
+
+  const noun = kind === 'logo' ? 'Logo' : 'Photo'
+  const extension = file.name.split('.').pop()?.toLowerCase().replace(/[^a-z0-9]/g, '') || 'png'
+  const path = `${adviser.id}/${kind}-${Date.now()}.${extension}`
+  const admin = createAdminClient()
+
+  const { error: uploadError } = await admin.storage
+    .from('branding')
+    .upload(path, file, { cacheControl: '3600', upsert: true, contentType: file.type })
+  if (uploadError) return { ok: false, error: uploadError.message }
+
+  const { data: { publicUrl } } = admin.storage.from('branding').getPublicUrl(path)
+  const { error } = await admin
+    .from('profiles')
+    .update(kind === 'logo' ? { logo_url: publicUrl } : { avatar_url: publicUrl })
+    .eq('id', adviser.id)
+  if (error) return { ok: false, error: error.message }
+
+  await admin.from('activity_log').insert({
+    adviser_id: adviser.id,
+    actor_id: adminId,
+    type: 'branding.updated',
+    title: `${noun} updated`,
+    description: `${noun} replaced by an administrator.`,
+  })
+
+  revalidateAdmin()
+  revalidatePath('/', 'layout')
+  return { ok: true, message: `${noun} updated for ${adviser.name}.` }
 }

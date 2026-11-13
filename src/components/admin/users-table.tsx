@@ -4,7 +4,7 @@ import { useMemo, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { toast } from 'sonner'
-import { Check, Loader2, Mail, MoreHorizontal, Undo2, UserX, X } from 'lucide-react'
+import { Check, Image as ImageIcon, Loader2, Mail, MoreHorizontal, Undo2, UserRound, UserX, X } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -26,7 +26,8 @@ import {
 import { EmptyState } from '@/components/shared/empty-state'
 import { UserStatusBadge } from '@/components/shared/status-badge'
 import { RejectDialog } from './reject-dialog'
-import { approveUsers, rejectUsers, setUserStatus, resendApprovalEmail } from '@/app/(dashboard)/admin/actions'
+import { BrandImageDialog, type BrandImageKind } from './brand-image-dialog'
+import { approveUsers, rejectUsers, setUserStatus, resendApprovalEmail, replaceAdviserBrandImage } from '@/app/(dashboard)/admin/actions'
 import type { UserRole, UserStatus } from '@/lib/supabase/database.types'
 import { formatDate } from '@/lib/utils'
 import { practiceWebsite, type PracticeDetails } from '@/lib/practice'
@@ -54,6 +55,7 @@ export function UsersTable({
   const router = useRouter()
   const [selected, setSelected] = useState<string[]>([])
   const [rejectTarget, setRejectTarget] = useState<string[] | null>(null)
+  const [brandTarget, setBrandTarget] = useState<{ id: string; name: string; kind: BrandImageKind } | null>(null)
   const [isPending, startTransition] = useTransition()
 
   // Only pending registrations can be bulk approved or rejected.
@@ -122,6 +124,23 @@ export function UsersTable({
       if (!result.ok) toast.error(result.error ?? 'Could not send the email')
       else if (result.warning) toast.warning(result.message)
       else toast.success(result.message)
+    })
+  }
+
+  function runBrandImage(file: File) {
+    if (!brandTarget) return
+    const { id, kind } = brandTarget
+    startTransition(async () => {
+      const formData = new FormData()
+      formData.set('file', file)
+      const result = await replaceAdviserBrandImage(id, kind, formData)
+      if (!result.ok) {
+        toast.error(result.error ?? 'Could not save the image')
+        return
+      }
+      toast.success(result.message ?? 'Updated')
+      setBrandTarget(null)
+      router.refresh()
     })
   }
 
@@ -293,6 +312,19 @@ export function UsersTable({
                             Resend approval email
                           </DropdownMenuItem>
                         )}
+                        {user.status === 'approved' && user.role === 'adviser' && (
+                          <>
+                            <DropdownMenuItem onSelect={() => setBrandTarget({ id: user.id, name: user.name, kind: 'logo' })}>
+                              <ImageIcon className="h-4 w-4" />
+                              Replace logo
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => setBrandTarget({ id: user.id, name: user.name, kind: 'headshot' })}>
+                              <UserRound className="h-4 w-4" />
+                              Replace photo
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                          </>
+                        )}
                         <DropdownMenuItem
                           onSelect={() => setRejectTarget([user.id])}
                           className="text-destructive focus:text-destructive"
@@ -316,6 +348,14 @@ export function UsersTable({
         pending={isPending}
         onCancel={() => setRejectTarget(null)}
         onConfirm={(reason) => rejectTarget && runReject(rejectTarget, reason)}
+      />
+      <BrandImageDialog
+        open={brandTarget !== null}
+        kind={brandTarget?.kind ?? 'logo'}
+        adviserName={brandTarget?.name ?? ''}
+        pending={isPending}
+        onCancel={() => setBrandTarget(null)}
+        onConfirm={runBrandImage}
       />
     </>
   )

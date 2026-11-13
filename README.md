@@ -1,6 +1,6 @@
 # FactFind Pro
 
-Branded Mortgage, Protection, Medical and Home fact finds for UK advisers. Clients use their adviser's link without an account; approved advisers review submissions in their dashboard and download PDFs. Admins manage registrations, templates and the privately prepared existing-adviser directory.
+Branded Mortgage, Protection, Medical and Home fact finds for UK advisers. Clients use their adviser's link without an account; approved advisers review submissions in their dashboard and download PDFs. Admins manage registrations, templates and the privately prepared existing-adviser directory, and can replace an approved adviser's logo or photo from Admin > Users when an adviser sends artwork in.
 
 Start with [Launch and transfer](docs/transfer-and-launch.md) for the current release, ownership handover and the limits on existing-adviser activation. [Readiness](docs/readiness.md) links to the evidence and known limitations.
 

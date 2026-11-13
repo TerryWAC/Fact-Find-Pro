@@ -376,8 +376,8 @@ const mock = http.createServer(async (req, res) => {
         adviser_id: '00000000-0000-4000-8000-000000000002',
         adviser_name: 'Alex Morgan',
         company_name: 'Morgan Financial',
-        logo_url: null,
-        avatar_url: null,
+        logo_url: practice.logo_url ?? null,
+        avatar_url: practice.avatar_url ?? null,
         brand_colour: body.p_slug === 'violet' ? '#6D28D9' : null,
         job_title: practice.job_title ?? null,
         website: practice.website ?? null,
@@ -440,6 +440,10 @@ const mock = http.createServer(async (req, res) => {
   }
   if (pathname.startsWith('/storage/v1/object/adviser-imports/') && req.method === 'GET') {
     if (!service) return send({ message: 'Not allowed' }, 403)
+    res.setHeader('Content-Type', 'image/png')
+    return res.end(tinyPng)
+  }
+  if (pathname.startsWith('/storage/v1/object/public/branding/') && req.method === 'GET') {
     res.setHeader('Content-Type', 'image/png')
     return res.end(tinyPng)
   }
